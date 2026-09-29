@@ -1,6 +1,7 @@
 import { API_PREFIX, ERROR_HTTP_STATUS, EVENT_STREAM_MEDIA_TYPE } from '@kb/contracts'
 import type { z } from 'zod'
 
+import { isAbortError } from '@/core/api/abort'
 import { ApiError, networkError, parseErrorBody } from '@/core/api/api-error'
 import { parseJsonSafely } from '@/core/api/json'
 import type { ApiClient, ApiClientConfig, HttpMethod, QueryParams } from '@/core/api/types'
@@ -35,10 +36,6 @@ function toQueryString(query: QueryParams | undefined): string {
 
 function withBearer(headers: SendInit['headers'], token: string | null) {
   return token ? { ...headers, Authorization: `Bearer ${token}` } : headers
-}
-
-function isAbortError(error: unknown): boolean {
-  return error instanceof DOMException && error.name === 'AbortError'
 }
 
 function isSuccessStatus(status: number): boolean {

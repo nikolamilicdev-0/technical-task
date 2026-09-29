@@ -1,13 +1,32 @@
 import { describe, expect, it } from 'vitest'
 
+import { isAbortError } from '@/core/api/abort'
 import {
   ApiError,
   isApiError,
+  isNotFoundError,
   isRetryableError,
   networkError,
   parseErrorBody,
   parseRetryAfter,
 } from '@/core/api/api-error'
+
+describe('isNotFoundError', () => {
+  it('matches only not_found API errors', () => {
+    expect(isNotFoundError(new ApiError({ status: 404, code: 'not_found' }))).toBe(true)
+    expect(isNotFoundError(new ApiError({ status: 422, code: 'invalid_payload' }))).toBe(false)
+    expect(isNotFoundError(new Error('not_found'))).toBe(false)
+    expect(isNotFoundError(undefined)).toBe(false)
+  })
+})
+
+describe('isAbortError', () => {
+  it('recognises aborts by their DOMException name', () => {
+    expect(isAbortError(new DOMException('Stopped', 'AbortError'))).toBe(true)
+    expect(isAbortError(new DOMException('Late', 'TimeoutError'))).toBe(false)
+    expect(isAbortError(networkError())).toBe(false)
+  })
+})
 
 describe('parseErrorBody', () => {
   it('keeps the contracts error shape', () => {

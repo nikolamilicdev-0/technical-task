@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest'
 
-import { formatCompactNumber, formatNumber, formatPercent } from '@/core/utils/format-number'
+import {
+  formatBytes,
+  formatCompactNumber,
+  formatNumber,
+  formatPercent,
+} from '@/core/utils/format-number'
 
 describe('formatNumber', () => {
   it('groups thousands', () => {
@@ -31,5 +36,18 @@ describe('formatPercent', () => {
     [1, '100%'],
   ])('shows %d as %s', (ratio, expected) => {
     expect(formatPercent(ratio)).toBe(expected)
+  })
+})
+
+describe('formatBytes', () => {
+  it.each([
+    [0, '0 bytes'],
+    [1, '1 byte'],
+    [512, '512 bytes'],
+    [12_646, '12.3 kB'],
+    [10 * 1_024 * 1_024, '10 MB'],
+    [3 * 1_024 ** 4, '3,072 GB'],
+  ])('shows %d bytes as %s', (bytes, expected) => {
+    expect(formatBytes(bytes)).toBe(expected)
   })
 })

@@ -49,6 +49,11 @@ export function isApiError(error: unknown): error is ApiError {
   return error instanceof ApiError
 }
 
+/** The resource does not exist, or row-level security hides it from this user. */
+export function isNotFoundError(error: unknown): boolean {
+  return isApiError(error) && error.code === 'not_found'
+}
+
 export function networkError(): ApiError {
   return new ApiError({ status: NETWORK_ERROR_STATUS, code: 'internal_error' })
 }

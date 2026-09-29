@@ -72,7 +72,143 @@
   },
   "documents": {
     "title": "Documents",
-    "description": "Everything you've added, ready to search and ask about."
+    "description": "Everything you've added, ready to search and ask about.",
+    "actions": {
+      "new": "New document",
+      "upload": "Upload file"
+    },
+    "list": {
+      "loading": "Loading documents",
+      "searchLabel": "Search documents by title",
+      "searchPlaceholder": "Search by title",
+      "tags": "Tags",
+      "tagsSelected": {
+        "one": "Tags, {count} selected",
+        "other": "Tags, {count} selected"
+      },
+      "tagsHeading": "Show documents tagged",
+      "noTags": "No tags yet. Add them in the editor.",
+      "clearTags": "Clear selection",
+      "count": {
+        "one": "{count} document",
+        "other": "{count} documents"
+      },
+      "filteredCount": {
+        "one": "{shown} of {count} document",
+        "other": "{shown} of {count} documents"
+      },
+      "truncated": "Only the {shown} most recently updated are listed and searched.",
+      "errorTitle": "Documents didn't load"
+    },
+    "empty": {
+      "none": {
+        "title": "No documents yet",
+        "description": "Write a note in Markdown or upload a text, Markdown or PDF file. Chat answers come from what you add here."
+      },
+      "noMatches": {
+        "title": "No matching documents",
+        "description": "Nothing matches this search and tag selection. Try other words or clear the filters.",
+        "clear": "Clear filters"
+      }
+    },
+    "card": {
+      "tags": "Tags",
+      "moreTags": "+{count}",
+      "moreTagsLabel": {
+        "one": "{count} more tag",
+        "other": "{count} more tags"
+      },
+      "justNow": "just now",
+      "updated": "Updated {time}",
+      "updatedUpload": "Updated {time} · {filename}",
+      "emptyPreview": "No text preview."
+    },
+    "status": {
+      "pending": "Queued",
+      "processing": "Indexing",
+      "ready": "Ready",
+      "failed": "Failed"
+    },
+    "statusBar": {
+      "label": "Indexing status",
+      "pending": "Waiting to be indexed. Chat can use this document once it's ready.",
+      "processing": "Indexing now. This usually takes a few seconds.",
+      "ready": {
+        "one": "Indexed as {count} passage. Chat answers can cite it.",
+        "other": "Indexed as {count} passages. Chat answers can cite it."
+      },
+      "failed": "Indexing failed. Chat can't use this document until it's indexed.",
+      "retryScheduled": "Retrying automatically {time}.",
+      "reindex": "Retry indexing",
+      "reindexQueued": "Queued for indexing again"
+    },
+    "form": {
+      "title": "Title",
+      "titlePlaceholder": "e.g. Onboarding guide",
+      "tags": "Tags",
+      "tagsHint": "Press Enter or comma to add a tag, up to {maximum}.",
+      "tagsPlaceholder": "Add a tag",
+      "tagsFull": "Tag limit reached",
+      "removeTag": "Remove tag {tag}",
+      "content": "Content",
+      "contentPlaceholder": "Write or paste Markdown…",
+      "contentLength": {
+        "one": "Markdown · {count} character",
+        "other": "Markdown · {count} characters"
+      },
+      "contentView": "Content view",
+      "write": "Write",
+      "preview": "Preview",
+      "previewEmpty": "Nothing to preview yet.",
+      "unsaved": "Unsaved changes",
+      "discard": "Discard changes",
+      "save": "Save changes",
+      "create": "Create document"
+    },
+    "create": {
+      "metaTitle": "New document",
+      "title": "New document",
+      "description": "Write or paste Markdown. It's indexed for chat as soon as you create it.",
+      "created": "Document created"
+    },
+    "editor": {
+      "metaTitle": "Edit document",
+      "back": "All documents",
+      "loading": "Loading document",
+      "saved": "Changes saved",
+      "errorTitle": "This document didn't load",
+      "notFound": {
+        "title": "Document not found",
+        "description": "It may have been deleted, or the link is incomplete."
+      }
+    },
+    "delete": {
+      "title": "Delete this document",
+      "description": "It's removed from search and chat right away. This can't be undone.",
+      "action": "Delete document",
+      "confirmTitle": "Delete “{title}”?",
+      "confirmDescription": "The document and its index are removed for good. Earlier chat answers keep the excerpts they quoted.",
+      "confirm": "Delete",
+      "deleted": "Document deleted"
+    },
+    "upload": {
+      "title": "Upload a file",
+      "description": "Its text becomes a new document, indexed for chat.",
+      "dropzone": "Choose a file or drag it here",
+      "formats": "TXT, Markdown or PDF, up to {maximum}",
+      "remove": "Remove {filename}",
+      "submit": "Upload",
+      "progress": "Uploading… {percent}",
+      "processing": "Reading the file…",
+      "uploaded": "“{title}” uploaded",
+      "open": "Open",
+      "errors": {
+        "tooLarge": "This file is larger than {maximum}.",
+        "unsupportedType": "Only .txt, .md and .pdf files can be uploaded.",
+        "empty": "This file is empty.",
+        "unreadable": "No usable text could be read from this file. It may be a scanned or protected PDF, not UTF-8 text, or longer than {characters} characters."
+      }
+    }
   },
   "chat": {
     "title": "Chat",

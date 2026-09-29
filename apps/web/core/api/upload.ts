@@ -1,8 +1,7 @@
+import { ABORT_ERROR_NAME } from '@/core/api/abort'
 import { networkError } from '@/core/api/api-error'
 import { parseJsonSafely } from '@/core/api/json'
 import type { XhrUploadRequest, XhrUploadResult } from '@/core/api/types'
-
-const ABORT_ERROR_NAME = 'AbortError'
 
 function abortError(): DOMException {
   return new DOMException('The upload was aborted.', ABORT_ERROR_NAME)
