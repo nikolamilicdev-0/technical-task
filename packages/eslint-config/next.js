@@ -1,0 +1,75 @@
+import nextPlugin from '@next/eslint-plugin-next'
+import prettier from 'eslint-config-prettier/flat'
+import { defineConfig } from 'eslint/config'
+
+import { reactRules } from './react-internal.js'
+
+const TIER_RULE = '@typescript-eslint/no-restricted-imports'
+
+/** Matches `@/<tier>` alias imports and relative `../<tier>` imports. */
+const tierImport = (tier) => `^(?:@/|(?:\\.\\./)+)${tier}(?:/|$)`
+
+const FEATURES_IMPORT = {
+  regex: tierImport('features'),
+  allowTypeImports: true,
+  message: 'core/ must not depend on features/ (tiers: @kb/ui < core < features).',
+}
+const APP_IMPORT = {
+  regex: tierImport('app'),
+  allowTypeImports: true,
+  message: 'app/ holds only route files; move shared code into core/ or a feature.',
+}
+
+const COPY_FILES = ['features/**/*.tsx', 'core/components/**/*.tsx']
+const COPY_ATTRIBUTES = [
+  'alt',
+  'aria-description',
+  'aria-label',
+  'aria-placeholder',
+  'aria-roledescription',
+  'aria-valuetext',
+  'description',
+  'label',
+  'placeholder',
+  'title',
+]
+const COPY_ATTRIBUTE_SELECTOR = `JSXAttribute[name.name=/^(?:${COPY_ATTRIBUTES.join('|')})$/]`
+const HARDCODED_ATTRIBUTE_COPY = {
+  selector: [
+    `${COPY_ATTRIBUTE_SELECTOR} > Literal[value=/\\S/]`,
+    `${COPY_ATTRIBUTE_SELECTOR} > JSXExpressionContainer > :matches(Literal[value=/\\S/], TemplateLiteral)`,
+  ].join(', '),
+  message: 'User-facing copy comes from messages/en.json through the strings getters.',
+}
+
+/** @param {{ rootDir: string }} options absolute path of the Next.js app */
+export function nextConfig({ rootDir }) {
+  return defineConfig(
+    reactRules,
+    nextPlugin.configs['core-web-vitals'],
+    {
+      languageOptions: { parserOptions: { tsconfigRootDir: rootDir } },
+      settings: { next: { rootDir } },
+    },
+    {
+      files: ['core/**/*.{ts,tsx}'],
+      rules: { [TIER_RULE]: ['error', { patterns: [FEATURES_IMPORT, APP_IMPORT] }] },
+    },
+    {
+      files: ['features/**/*.{ts,tsx}'],
+      rules: { [TIER_RULE]: ['error', { patterns: [APP_IMPORT] }] },
+    },
+    {
+      files: COPY_FILES,
+      rules: {
+        // Props stay exempt (className, variants); copy-bearing attributes are checked below.
+        'react/jsx-no-literals': [
+          'error',
+          { noStrings: true, ignoreProps: true, allowedStrings: [''] },
+        ],
+        'no-restricted-syntax': ['error', HARDCODED_ATTRIBUTE_COPY],
+      },
+    },
+    prettier
+  )
+}

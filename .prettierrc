@@ -1,0 +1,16 @@
+{
+  "semi": false,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "trailingComma": "es5",
+  "printWidth": 100,
+  "overrides": [
+    {
+      "files": ["apps/web/**", "packages/ui/**"],
+      "options": {
+        "plugins": ["prettier-plugin-tailwindcss"],
+        "tailwindStylesheet": "./apps/web/app/globals.css"
+      }
+    }
+  ]
+}

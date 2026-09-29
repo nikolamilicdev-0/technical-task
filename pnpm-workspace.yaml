@@ -1,0 +1,27 @@
+packages: [apps/*, packages/*]
+catalog:
+  typescript: ~6.0.3
+  zod: ^4.6.5
+  eslint: ^10.11.0
+  vitest: ^4.1.11
+  '@types/node': ^22.20.4
+  react: 19.3.0
+  react-dom: 19.3.0
+  '@types/react': ^19.3.0
+  '@types/react-dom': ^19.3.0
+autoInstallPeers: true
+strictPeerDependencies: false
+# Both plugins run on ESLint 10 (React version pinned in react-internal.js); their ranges stop at 9.
+peerDependencyRules:
+  allowedVersions:
+    eslint-plugin-jsx-a11y>eslint: '10'
+    eslint-plugin-react>eslint: '10'
+# Packages allowed to run install scripts; pnpm ≥ 11 fails the install on unreviewed ones.
+allowBuilds:
+  '@tailwindcss/oxide': true
+  sharp: true
+  unrs-resolver: true
+  esbuild: true
+# Exact versions that were younger than pnpm's 24 h release-age gate when pinned; prune once aged.
+minimumReleaseAgeExclude:
+  - '@next/eslint-plugin-next@16.3.7'

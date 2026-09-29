@@ -1,0 +1,25 @@
+import { z } from 'zod'
+
+import { PAGE_SIZE_DEFAULT, PAGE_SIZE_MAX } from './limits.js'
+
+export const idSchema = z.uuid()
+
+// Postgres serialises timestamptz with a numeric offset (`+00:00`), not only `Z`.
+export const timestampSchema = z.iso.datetime({ offset: true })
+
+export const tokenCountSchema = z.number().int().nonnegative()
+
+export const paginationQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(PAGE_SIZE_MAX).default(PAGE_SIZE_DEFAULT),
+  offset: z.coerce.number().int().nonnegative().default(0),
+})
+export type PaginationQuery = z.infer<typeof paginationQuerySchema>
+
+export function paginatedSchema<TItem extends z.ZodType>(item: TItem) {
+  return z.object({
+    items: z.array(item),
+    total: z.number().int().nonnegative(),
+    limit: z.number().int().positive(),
+    offset: z.number().int().nonnegative(),
+  })
+}

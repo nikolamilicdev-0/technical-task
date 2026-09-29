@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "rootDir": "./src",
+    "outDir": "./dist",
+    // src is shared with the browser: the build must not see Node globals.
+    "types": []
+  },
+  "include": ["src"]
+}
