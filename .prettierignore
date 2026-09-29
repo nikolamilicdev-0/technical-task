@@ -7,3 +7,4 @@ pnpm-lock.yaml
 supabase/.temp
 apps/api/src/database/database.types.ts
 AGENTS.md
+.claude/

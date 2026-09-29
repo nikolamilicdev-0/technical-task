@@ -25,3 +25,4 @@ allowBuilds:
 # Exact versions that were younger than pnpm's 24 h release-age gate when pinned; prune once aged.
 minimumReleaseAgeExclude:
   - '@next/eslint-plugin-next@16.3.7'
+  - '@types/multer@2.3.0'

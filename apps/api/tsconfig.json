@@ -1,0 +1,12 @@
+{
+  "extends": "@kb/typescript-config/nestjs.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["node"],
+    // Workspace packages are type-checked from src/, where importHelpers makes TS 6 demand tslib;
+    // incremental builds gain nothing because nest build empties dist/ and turbo caches typecheck.
+    "importHelpers": false,
+    "incremental": false
+  },
+  "include": ["src", "__tests__", "vitest.config.ts"]
+}

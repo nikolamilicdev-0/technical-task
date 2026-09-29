@@ -22,3 +22,6 @@ supabase/.branches/
 .claude/settings.local.json
 .DS_Store
 *.log
+
+# Claude Code worktrees and local settings live under .claude/
+.claude/worktrees/
