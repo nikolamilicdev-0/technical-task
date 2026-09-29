@@ -113,3 +113,27 @@ Append-only log of architectural decisions. To change one, add a new entry that 
 **Why** HNSW indexes need a fixed dimension. Zero-padding preserves cosine similarity, so switching to a 768-dimension Ollama model is an env-only change, and the signature keeps vector spaces from mixing in one search.
 
 **How to apply** Retrieval always filters by the current signature. Models with more than 1536 dimensions need a column migration, a `VECTOR_DIMENSIONS` bump and `POST /api/documents/reindex-all`.
+
+## DEC-015 — Readiness probe: `embedding_column_dimensions()` through the service-role client
+
+**Decision** `GET /api/health/ready` calls `embedding_column_dimensions()` with the service-role client. This is an exception to DEC-004: the probe is read-only and reads catalog metadata, never user data.
+
+**Why** The probe is public, so it has no user token to scope a client with, and the function is granted only to `authenticated` and `service_role`. Granting it to `anon` would make schema details public for no gain.
+
+**How to apply** Keep the probe read-only and limited to that function. Every other service-role use still needs its own DEC entry; user requests always use the caller's RLS-scoped client.
+
+## DEC-016 — Configuration: an own `APP_CONFIG` factory module instead of `@nestjs/config`
+
+**Decision** `AppConfigModule` provides `APP_CONFIG`, a typed read-only `AppConfig` built by a DI-time factory that validates `process.env` with the zod env schema (the API variables plus `@kb/ai`'s `AI_*` ones). `@nestjs/config` is not used.
+
+**Why** The root `.env` (DEC-010) must be loaded before validation runs. `ConfigModule.forRoot()` starts reading and validating as soon as `app.module.ts` is evaluated, which in ESM happens before `main.ts` can call `loadRootEnv()`, and its `envFilePath` is relative to the working directory rather than the workspace root. A DI-time factory runs after the root `.env` is loaded, reports every invalid variable in one error, and hands out typed sections instead of `config.get('KEY')` strings.
+
+**How to apply** Inject `APP_CONFIG` and read typed sections; never read `process.env` outside `src/config`. A new variable is added to `env.schema.ts`, `buildAppConfig` and `.env.example` together.
+
+## DEC-017 — Google Gemini provider profile over Google's OpenAI-compatible endpoint
+
+**Decision** `@kb/ai` ships a `gemini` profile: base URL `https://generativelanguage.googleapis.com/v1beta/openai`, default chat model `gemini-3.5-flash-lite`, embeddings `gemini-embedding-001` with `defaultEmbeddingDimensions` 1536, and `max_completion_tokens` as the output limit.
+
+**Why** Gemini speaks the OpenAI wire protocol, so the existing adapter serves it (DEC-003). `gemini-embedding-001` returns 3072 values natively, more than the `vector(1536)` column holds (DEC-014); Google truncates to the requested size without re-normalising, which is harmless because retrieval compares by cosine. "Thinking" Gemini Flash models count their reasoning tokens against `max_completion_tokens`, so a tight `RAG_MAX_ANSWER_TOKENS` can end an answer early.
+
+**How to apply** Set `AI_CHAT_PROVIDER=gemini` and `AI_CHAT_API_KEY`; embeddings follow chat unless `AI_EMBEDDING_*` says otherwise. Prefer the lite model, or raise `RAG_MAX_ANSWER_TOKENS` for thinking models. Never set `AI_EMBEDDING_DIMENSIONS` above 1536 without the column migration.
