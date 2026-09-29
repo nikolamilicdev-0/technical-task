@@ -37,6 +37,18 @@ pnpm dev         # web → http://localhost:3000 · API → http://localhost:400
 - Re-running `pnpm bootstrap` is safe: it never overwrites an existing `.env` (unless you pass `--force-env`).
 - Hosted projects: disable **Confirm email** under Authentication → Providers, or confirm each sign-up through the emailed link.
 
+### Local Supabase
+
+`pnpm bootstrap --local` starts the stack in Docker (the first run downloads the images), writes its URL and keys to `.env`, applies the migrations and regenerates the database types. Studio runs at http://127.0.0.1:54323 and the auth mail catcher at http://127.0.0.1:54324.
+
+| Command                                        | Purpose                                                              |
+| ---------------------------------------------- | -------------------------------------------------------------------- |
+| `pnpm db:start` · `db:stop` · `db:status`      | Start, stop or inspect the local stack                               |
+| `pnpm db:reset`                                | Recreate the local database from the migrations (deletes local data) |
+| `pnpm db:new <name>`                           | Create a migration in `supabase/migrations`                          |
+| `pnpm db:migrate` · `pnpm db:push [--dry-run]` | Apply pending migrations to the database `.env` points at            |
+| `pnpm db:types`                                | Regenerate `apps/api/src/database/database.types.ts`                 |
+
 ## Architecture
 
 ```mermaid
