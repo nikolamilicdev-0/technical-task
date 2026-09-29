@@ -1,0 +1,12 @@
+{
+  "$schema": "../../node_modules/turbo/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build", "typecheck"],
+      "env": ["SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY", "NEXT_PUBLIC_*"],
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/.env", "!**/__tests__/**"],
+      "outputs": [".next/**", "!.next/cache/**", "!.next/dev/**"]
+    }
+  }
+}

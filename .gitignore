@@ -8,6 +8,7 @@ dist/
 coverage/
 .vitest/
 *.tsbuildinfo
+next-env.d.ts
 
 # Environment (only the template is committed)
 .env
