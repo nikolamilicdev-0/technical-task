@@ -1,6 +1,9 @@
 import type { ProviderId } from './provider-ids.js'
 import type { ProviderProfile } from './provider-profiles.types.js'
 
+// gemini-embedding-001 returns 3072 values natively; 1536 fits the vector(1536) column (DEC-014).
+const GEMINI_EMBEDDING_DIMENSIONS = 1536
+
 /** Built-in knowledge per provider; every value here can be overridden through `AiConfig`. */
 export const PROVIDER_PROFILES: Readonly<Record<ProviderId, ProviderProfile>> = {
   openai: {
@@ -50,6 +53,19 @@ export const PROVIDER_PROFILES: Readonly<Record<ProviderId, ProviderProfile>> = 
     supportsEmbeddingDimensions: false,
     maxTokensParam: 'max_tokens',
     attributionHeaders: { appName: 'X-Title', appUrl: 'HTTP-Referer' },
+  },
+  gemini: {
+    id: 'gemini',
+    label: 'Google Gemini',
+    defaultBaseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai',
+    requiresApiKey: true,
+    defaultChatModel: 'gemini-3.5-flash-lite',
+    defaultEmbeddingModel: 'gemini-embedding-001',
+    defaultEmbeddingDimensions: GEMINI_EMBEDDING_DIMENSIONS,
+    supportsEmbeddings: true,
+    supportsStreamUsage: true,
+    supportsEmbeddingDimensions: true,
+    maxTokensParam: 'max_completion_tokens',
   },
   ollama: {
     id: 'ollama',

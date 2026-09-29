@@ -31,7 +31,7 @@ export function resolveEmbeddingEndpoint(config: AiConfig): ResolvedEmbeddingEnd
   }
   return {
     ...resolveConnection(profile, embedding, app, profile.defaultEmbeddingModel),
-    dimensions: embedding.dimensions,
+    dimensions: embedding.dimensions ?? defaultDimensions(profile),
     supportsEmbeddingDimensions: profile.supportsEmbeddingDimensions,
   }
 }
@@ -71,6 +71,10 @@ function attributionHeaders(
   if (app.name !== undefined) headers[names.appName] = app.name
   if (app.url !== undefined) headers[names.appUrl] = app.url
   return headers
+}
+
+function defaultDimensions(profile: ProviderProfile): number | undefined {
+  return profile.supportsEmbeddingDimensions ? profile.defaultEmbeddingDimensions : undefined
 }
 
 function unsupported(profile: ProviderProfile, message: string): AiProviderError {

@@ -15,6 +15,8 @@ interface ProviderCapabilities {
   readonly defaultBaseUrl?: string
   readonly defaultChatModel?: string
   readonly defaultEmbeddingModel?: string
+  /** Output size requested when none is configured; applied only if `supportsEmbeddingDimensions`. */
+  readonly defaultEmbeddingDimensions?: number
   readonly supportsEmbeddings: boolean
   readonly supportsStreamUsage: boolean
   readonly supportsEmbeddingDimensions: boolean

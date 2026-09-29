@@ -1,4 +1,4 @@
-import type { AiConfig } from '@kb/ai'
+import { type AiConfig, aiConfigFromEnv, aiEnvSchema } from '@kb/ai'
 import { describe, expect, it } from 'vitest'
 
 import { PROVIDER_IDS } from '../../../src/providers/provider-ids.js'
@@ -11,6 +11,8 @@ import { buildAiConfig, captureAiErrorSync, TEST_API_KEY } from '../../fixtures.
 
 const OPENAI_EMBEDDINGS = { provider: 'openai', apiKey: TEST_API_KEY } as const
 const APP = { name: 'ai-knowledge-base', url: 'http://localhost:3000' }
+const GEMINI_KEY = 'gemini-test-key'
+const GEMINI_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/openai'
 
 describe('resolveChatEndpoint', () => {
   it.each(PROVIDER_IDS.filter((id) => id !== 'custom'))('applies the %s defaults', (provider) => {
@@ -86,6 +88,21 @@ describe('resolveChatEndpoint', () => {
       'proxy-key'
     )
   })
+
+  it('points Gemini at its OpenAI-compatible endpoint with the configured key', () => {
+    const config = buildAiConfig({ provider: 'gemini', apiKey: GEMINI_KEY })
+    expect(resolveChatEndpoint(config)).toEqual({
+      provider: 'gemini',
+      baseUrl: GEMINI_BASE_URL,
+      apiKey: GEMINI_KEY,
+      headers: {},
+      model: 'gemini-3.5-flash-lite',
+      timeoutMs: 60_000,
+      maxRetries: 2,
+      streamUsage: true,
+      maxTokensParam: 'max_completion_tokens',
+    })
+  })
 })
 
 describe('resolveEmbeddingEndpoint', () => {
@@ -102,6 +119,31 @@ describe('resolveEmbeddingEndpoint', () => {
       dimensions: 768,
       supportsEmbeddingDimensions: false,
     })
+  })
+
+  it('sizes Gemini embeddings to its profile default, reusing the chat key', () => {
+    const config = buildAiConfig({ provider: 'gemini', apiKey: GEMINI_KEY })
+    expect(resolveEmbeddingEndpoint(config)).toMatchObject({
+      provider: 'gemini',
+      baseUrl: GEMINI_BASE_URL,
+      apiKey: GEMINI_KEY,
+      model: 'gemini-embedding-001',
+      dimensions: 1536,
+      supportsEmbeddingDimensions: true,
+    })
+  })
+
+  it.each([
+    ['Gemini defaults to its profile size', { AI_CHAT_PROVIDER: 'gemini' }, 1536],
+    [
+      'AI_EMBEDDING_DIMENSIONS wins over the profile size',
+      { AI_CHAT_PROVIDER: 'gemini', AI_EMBEDDING_DIMENSIONS: '768' },
+      768,
+    ],
+    ['OpenAI has no profile size, so the native one stays', {}, undefined],
+  ])('resolves the embedding size from the environment: %s', (_, env, dimensions) => {
+    const config = aiConfigFromEnv(aiEnvSchema.parse({ AI_CHAT_API_KEY: TEST_API_KEY, ...env }))
+    expect(resolveEmbeddingEndpoint(config).dimensions).toBe(dimensions)
   })
 
   it('rejects a provider that serves no embeddings as unsupported', () => {

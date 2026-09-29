@@ -9,6 +9,7 @@ const ENV_EXAMPLE = parseEnv(
   readFileSync(new URL('../../../../../.env.example', import.meta.url), 'utf8')
 )
 const OPENAI_KEY = 'sk-test'
+const GEMINI_KEY = 'gemini-test-key'
 const LOCAL_SERVER_URL = 'http://localhost:1234/v1'
 
 function fromEnv(env: Record<string, string | undefined>): AiConfig {
@@ -151,6 +152,20 @@ describe('aiConfigFromEnv', () => {
     expect(config.embedding.model).toBe('nomic-embed-text')
   })
 
+  it('accepts the documented Google Gemini example, sharing the chat key with embeddings', () => {
+    const config = fromEnv({
+      AI_CHAT_PROVIDER: 'gemini',
+      AI_CHAT_API_KEY: GEMINI_KEY,
+      AI_EMBEDDING_DIMENSIONS: '1536',
+    })
+    expect(config.chat).toMatchObject({ provider: 'gemini', apiKey: GEMINI_KEY })
+    expect(config.embedding).toMatchObject({
+      provider: 'gemini',
+      apiKey: GEMINI_KEY,
+      dimensions: 1536,
+    })
+  })
+
   describe('embedding settings inherited from chat', () => {
     const customChat = {
       AI_CHAT_PROVIDER: 'custom',
@@ -225,10 +240,16 @@ describe('aiConfigFromEnv', () => {
       'Together AI requires an API key',
     ],
     [
+      'Gemini without a key',
+      { AI_CHAT_PROVIDER: 'gemini' },
+      'AI_CHAT_API_KEY',
+      'Google Gemini requires an API key',
+    ],
+    [
       'Groq embeddings inherited from the chat provider',
       { AI_CHAT_PROVIDER: 'groq', AI_CHAT_API_KEY: 'gsk-test' },
       'AI_EMBEDDING_PROVIDER',
-      'Groq does not serve embeddings; use one of: openai, together, openrouter, ollama, custom',
+      'Groq does not serve embeddings; use one of: openai, together, openrouter, gemini, ollama, custom',
     ],
   ])('reports %s under the variable name', (_, env, path, message) => {
     expect(issuesOf(() => fromEnv(env))).toEqual([{ path, message }])

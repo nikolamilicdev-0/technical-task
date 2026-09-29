@@ -4,7 +4,7 @@ import { PROVIDER_IDS } from '../../../src/providers/provider-ids.js'
 import { PROVIDER_PROFILES } from '../../../src/providers/provider-profiles.js'
 
 const PROFILES = Object.values(PROVIDER_PROFILES)
-const HOSTED_PROVIDERS = ['openai', 'groq', 'together', 'openrouter']
+const HOSTED_PROVIDERS = ['openai', 'groq', 'together', 'openrouter', 'gemini']
 const BASE_URL_WITHOUT_TRAILING_SLASH = /^https?:\/\/.+[^/]$/
 
 describe('PROVIDER_PROFILES', () => {
@@ -18,6 +18,7 @@ describe('PROVIDER_PROFILES', () => {
     ['groq', false, false, 'max_tokens'],
     ['together', true, false, 'max_tokens'],
     ['openrouter', true, false, 'max_tokens'],
+    ['gemini', true, true, 'max_completion_tokens'],
     ['ollama', true, false, 'max_tokens'],
     ['custom', true, false, 'max_tokens'],
   ] as const)(
@@ -55,6 +56,12 @@ describe('PROVIDER_PROFILES', () => {
     for (const profile of PROFILES) {
       if (!profile.supportsEmbeddings) expect(profile.supportsEmbeddingDimensions).toBe(false)
     }
+  })
+
+  it('defaults the embedding size only where the provider honours dimensions', () => {
+    const sized = PROFILES.filter((profile) => profile.defaultEmbeddingDimensions !== undefined)
+    expect(sized.map((profile) => profile.id)).toEqual(['gemini'])
+    for (const profile of sized) expect(profile.supportsEmbeddingDimensions).toBe(true)
   })
 
   it('requires a key only from hosted providers; keyless ones carry a placeholder', () => {

@@ -66,7 +66,10 @@ export class OpenAiCompatibleEmbeddingModel implements EmbeddingModel {
     data: readonly Embedding[],
     inputCount: number
   ): Pick<EmbeddingResult, 'embeddings' | 'dimensions'> {
-    const items = [...data].sort((left, right) => left.index - right.index)
+    // The SDK types `index` as required; Gemini (proto3 JSON) omits it when it is 0.
+    const items = data
+      .map((item) => ({ ...item, index: item.index ?? 0 }))
+      .sort((left, right) => left.index - right.index)
     if (items.length !== inputCount || items.some((item, position) => item.index !== position)) {
       const message = `${this.provider} returned ${items.length} embeddings for ${inputCount} texts`
       throw this.#error('server', message)

@@ -120,4 +120,9 @@ describe('createAiClients', () => {
     expect(chat).toBeInstanceOf(OpenAiCompatibleChatModel)
     expect(embedding.signature).toBe('nomic-embed-text')
   })
+
+  it('signs Gemini vectors with the 1536 dimensions its profile requests by default', () => {
+    const { embedding } = createAiClients(buildAiConfig({ provider: 'gemini' }), recordEndpoints())
+    expect(embedding).toMatchObject({ dimensions: 1536, signature: 'gemini-embedding-001#1536' })
+  })
 })

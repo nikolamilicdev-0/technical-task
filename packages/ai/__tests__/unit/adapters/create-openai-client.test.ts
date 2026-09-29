@@ -3,7 +3,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { createOpenAiClient } from '../../../src/adapters/openai-compatible/create-openai-client.js'
 import type { OpenAiLikeClient } from '../../../src/adapters/openai-compatible/openai-like-client.types.js'
-import { buildChatEndpoint } from '../../fixtures.js'
+import { resolveChatEndpoint } from '../../../src/providers/resolve-endpoint.js'
+import { buildAiConfig, buildChatEndpoint } from '../../fixtures.js'
 
 const OLLAMA_ENDPOINT = buildChatEndpoint({
   provider: 'ollama',
@@ -47,5 +48,13 @@ describe('createOpenAiClient', () => {
     expect(headers.get('authorization')).toBe('Bearer ollama')
     expect(headers.get('x-title')).toBe('kb')
     expect(headers.has('openai-organization')).toBe(false)
+  })
+
+  it('reaches Gemini under its OpenAI-compatible path with a Bearer key', async () => {
+    const config = buildAiConfig({ provider: 'gemini', apiKey: 'gemini-key' })
+    const client = asSdkClient(createOpenAiClient(resolveChatEndpoint(config)))
+    const { req, url } = await client.buildRequest({ method: 'post', path: '/chat/completions' })
+    expect(url).toBe('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions')
+    expect(new Headers(req.headers).get('authorization')).toBe('Bearer gemini-key')
   })
 })

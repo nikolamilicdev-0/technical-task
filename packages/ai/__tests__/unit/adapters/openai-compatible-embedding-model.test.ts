@@ -43,6 +43,20 @@ describe('OpenAiCompatibleEmbeddingModel', () => {
     })
   })
 
+  it('accepts the first vector without an index, as Gemini sends it', async () => {
+    const response = buildEmbeddingResponse([
+      [0, 1],
+      [1, 0],
+    ])
+    Reflect.deleteProperty(response.data[0], 'index')
+    const { model } = setup({ embeddingResponses: [response] })
+    const { embeddings } = await model.embed({ texts: ['first', 'second'] })
+    expect(embeddings).toEqual([
+      [0, 1],
+      [1, 0],
+    ])
+  })
+
   it('always requests floats and forwards the caller signal', async () => {
     const { signal } = new AbortController()
     const { calls, model } = setup({ embeddingResponses: [buildEmbeddingResponse([[1, 0]])] })

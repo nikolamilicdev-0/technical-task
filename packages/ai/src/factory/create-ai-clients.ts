@@ -34,6 +34,7 @@ function createChatModel(
     case 'groq':
     case 'together':
     case 'openrouter':
+    case 'gemini':
     case 'ollama':
     case 'custom':
       return new OpenAiCompatibleChatModel(createClient(endpoint), endpoint)
@@ -49,6 +50,7 @@ function createEmbeddingModel(
     case 'groq':
     case 'together':
     case 'openrouter':
+    case 'gemini':
     case 'ollama':
     case 'custom':
       return new OpenAiCompatibleEmbeddingModel(createClient(endpoint), endpoint)

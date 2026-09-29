@@ -4,6 +4,7 @@ export const PROVIDER_IDS = [
   'groq',
   'together',
   'openrouter',
+  'gemini',
   'ollama',
   'custom',
 ] as const
