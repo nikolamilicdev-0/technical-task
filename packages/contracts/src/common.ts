@@ -9,6 +9,17 @@ export const timestampSchema = z.iso.datetime({ offset: true })
 
 export const tokenCountSchema = z.number().int().nonnegative()
 
+// Postgres `text` cannot store U+0000; one reaching the database fails the request with a 500.
+const NUL_CHARACTER = '\u0000'
+export const NUL_CHARACTER_MESSAGE = 'Must not contain NUL (U+0000) characters'
+
+/** Rejects NUL characters: required on every string the API stores as Postgres `text`. */
+export function withoutNul<TSchema extends z.ZodType<string>>(schema: TSchema): TSchema {
+  return schema.refine((value) => !value.includes(NUL_CHARACTER), {
+    message: NUL_CHARACTER_MESSAGE,
+  })
+}
+
 export const paginationQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(PAGE_SIZE_MAX).default(PAGE_SIZE_DEFAULT),
   offset: z.coerce.number().int().nonnegative().default(0),

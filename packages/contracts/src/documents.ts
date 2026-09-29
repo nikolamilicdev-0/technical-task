@@ -1,6 +1,12 @@
 import { z } from 'zod'
 
-import { idSchema, paginatedSchema, paginationQuerySchema, timestampSchema } from './common.js'
+import {
+  idSchema,
+  paginatedSchema,
+  paginationQuerySchema,
+  timestampSchema,
+  withoutNul,
+} from './common.js'
 import { DOCUMENT_CONTENT_MAX, DOCUMENT_TITLE_MAX, MAX_TAGS, TAG_MAX_LENGTH } from './limits.js'
 
 export const EMBEDDING_STATUSES = ['pending', 'processing', 'ready', 'failed'] as const
@@ -11,9 +17,9 @@ export const DOCUMENT_SOURCE_TYPES = ['editor', 'upload'] as const
 export const documentSourceTypeSchema = z.enum(DOCUMENT_SOURCE_TYPES)
 export type DocumentSourceType = z.infer<typeof documentSourceTypeSchema>
 
-export const documentTitleSchema = z.string().trim().min(1).max(DOCUMENT_TITLE_MAX)
-export const documentContentSchema = z.string().min(1).max(DOCUMENT_CONTENT_MAX)
-export const tagSchema = z.string().trim().min(1).max(TAG_MAX_LENGTH)
+export const documentTitleSchema = withoutNul(z.string().trim().min(1).max(DOCUMENT_TITLE_MAX))
+export const documentContentSchema = withoutNul(z.string().min(1).max(DOCUMENT_CONTENT_MAX))
+export const tagSchema = withoutNul(z.string().trim().min(1).max(TAG_MAX_LENGTH))
 export const tagsSchema = z
   .array(tagSchema)
   .max(MAX_TAGS)

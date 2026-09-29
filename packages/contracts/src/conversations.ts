@@ -1,10 +1,18 @@
 import { z } from 'zod'
 
-import { idSchema, paginatedSchema, paginationQuerySchema, timestampSchema } from './common.js'
+import {
+  idSchema,
+  paginatedSchema,
+  paginationQuerySchema,
+  timestampSchema,
+  withoutNul,
+} from './common.js'
 import { CONVERSATION_TITLE_MAX } from './limits.js'
 import { messageSchema } from './messages.js'
 
-export const conversationTitleSchema = z.string().trim().min(1).max(CONVERSATION_TITLE_MAX)
+export const conversationTitleSchema = withoutNul(
+  z.string().trim().min(1).max(CONVERSATION_TITLE_MAX)
+)
 
 export const conversationSchema = z.object({
   id: idSchema,

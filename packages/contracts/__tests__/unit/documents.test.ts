@@ -77,6 +77,9 @@ describe('createDocumentSchema', () => {
     ],
     ['too many tags', { title: 'Guide', content: 'Body', tags: tags(MAX_TAGS + 1) }, 'tags'],
     ['a non-string tag', { title: 'Guide', content: 'Body', tags: [42] }, 'tags.0'],
+    ['a NUL in the title', { title: 'Gu\u0000ide', content: 'Body' }, 'title'],
+    ['a NUL in the content', { title: 'Guide', content: 'Bo\u0000dy' }, 'content'],
+    ['a NUL in a tag', { title: 'Guide', content: 'Body', tags: ['o\u0000ps'] }, 'tags.0'],
   ])('rejects %s', (_, input, path) => {
     expect(issuePaths(createDocumentSchema, input)).toContain(path)
   })
@@ -100,6 +103,7 @@ describe('updateDocumentSchema', () => {
     ['a patch with only unknown keys', { embeddingStatus: 'ready' }, ''],
     ['a blank title', { title: ' ' }, 'title'],
     ['empty content', { content: '' }, 'content'],
+    ['a NUL in the content', { content: 'New\u0000body' }, 'content'],
   ])('rejects %s', (_, input, path) => {
     expect(issuePaths(updateDocumentSchema, input)).toContain(path)
   })
@@ -129,6 +133,7 @@ describe('listDocumentsQuerySchema', () => {
     ['a negative offset', { offset: '-1' }, 'offset'],
     ['a blank search term', { search: '  ' }, 'search'],
     ['an unknown status', { status: 'done' }, 'status'],
+    ['a NUL in the tag filter', { tag: 'o\u0000ps' }, 'tag'],
   ])('rejects %s', (_, input, path) => {
     expect(issuePaths(listDocumentsQuerySchema, input)).toContain(path)
   })

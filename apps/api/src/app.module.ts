@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common'
 import { APP_FILTER, APP_GUARD } from '@nestjs/core'
 import { EventEmitterModule } from '@nestjs/event-emitter'
+import { ScheduleModule } from '@nestjs/schedule'
 
 import { AiModule } from './ai/ai.module.js'
 import { AuthGuard } from './auth/auth.guard.js'
@@ -10,6 +11,7 @@ import { AppConfigModule } from './config/config.module.js'
 import { DatabaseModule } from './database/database.module.js'
 import { DocumentsModule } from './modules/documents/documents.module.js'
 import { HealthModule } from './modules/health/health.module.js'
+import { IngestionModule } from './modules/ingestion/ingestion.module.js'
 import { UploadModule } from './modules/upload/upload.module.js'
 import { ThrottlingModule } from './throttling/throttling.module.js'
 import { UserThrottlerGuard } from './throttling/user-throttler.guard.js'
@@ -18,6 +20,7 @@ import { UserThrottlerGuard } from './throttling/user-throttler.guard.js'
   imports: [
     AppConfigModule,
     EventEmitterModule.forRoot(),
+    ScheduleModule.forRoot(),
     DatabaseModule,
     AuthModule,
     AiModule,
@@ -25,6 +28,7 @@ import { UserThrottlerGuard } from './throttling/user-throttler.guard.js'
     HealthModule,
     DocumentsModule,
     UploadModule,
+    IngestionModule,
   ],
   providers: [
     // Global guards run in this order: identify the caller, then rate-limit per user.
