@@ -201,7 +201,7 @@ History stays readable, and every change reaches `main` through review.
   `commitlint.config.mjs` (`repo`, `web`, `api`, `contracts`, `ai`, `ui`, `db`, `ci`, `docs`,
   `deps`); husky runs lint-staged and commitlint on every commit.
 - Branches follow git flow: `main` holds released history, `develop` integrates, and work happens on
-  `feat/<slug>`, `fix/<slug>`, `docs/<slug>` or `chore/<slug>` branches cut from `develop`. Changes
+  `feature/<slug>`, `fix/<slug>`, `docs/<slug>` or `chore/<slug>` branches cut from `develop`. Changes
   land through pull requests with CI green; nobody commits directly to `develop` or `main`.
 - A spec directory name (`specs/NNN-slug`) is independent of the branch name.
 - Pushing, opening or merging a pull request and creating a remote happen only with the
