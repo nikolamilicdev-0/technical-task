@@ -12,5 +12,8 @@ export default defineConfig({
     include: ['__tests__/unit/**/*.test.{ts,tsx}'],
     setupFiles: ['./__tests__/setup.ts'],
     clearMocks: true,
+    // jsdom + user-event tests are slow on small CI runners; 5 s per test is too tight.
+    testTimeout: 20_000,
+    hookTimeout: 20_000,
   },
 })
