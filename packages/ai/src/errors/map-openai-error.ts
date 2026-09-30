@@ -8,7 +8,11 @@ import type { AiErrorCode, ProviderCallContext } from './ai-provider-error.types
 type ClassifiedErrorCode = Exclude<AiErrorCode, 'unsupported'>
 type SummarizedErrorCode = Exclude<ClassifiedErrorCode, 'aborted'>
 
+const BAD_REQUEST_STATUS = 400
 const TOO_MANY_REQUESTS_STATUS = 429
+// Gemini answers a bad key with 400 INVALID_ARGUMENT, not 401; its chat endpoint wraps the body
+// in an array, which the SDK stringifies into the message.
+const INVALID_API_KEY_MESSAGE = /API key not valid|pass a valid API key/i
 const STATUS_ERROR_CODES: ReadonlyMap<number, SummarizedErrorCode> = new Map([
   [400, 'invalid_request'],
   [401, 'authentication'],
@@ -79,6 +83,9 @@ function classify(error: unknown): ClassifiedErrorCode {
   if (status === undefined) return 'server'
   if (status === TOO_MANY_REQUESTS_STATUS && apiError.code === QUOTA_EXHAUSTED_CODE) {
     return 'permission'
+  }
+  if (status === BAD_REQUEST_STATUS && INVALID_API_KEY_MESSAGE.test(apiError.message)) {
+    return 'authentication'
   }
   return STATUS_ERROR_CODES.get(status) ?? classifyStatusRange(status)
 }

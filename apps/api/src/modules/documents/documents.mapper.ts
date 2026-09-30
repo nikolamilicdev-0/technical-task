@@ -4,12 +4,12 @@ import {
   type DocumentSummary,
   documentSourceTypeSchema,
   embeddingStatusSchema,
-  timestampSchema,
   type UpdateDocumentInput,
 } from '@kb/contracts'
 import { z } from 'zod'
 
 import { countCodePoints, takeCodePoints } from '../../common/utils/text.js'
+import { countColumn, timestampColumn } from '../../database/column-schemas.js'
 import { CONTENT_PREVIEW_LENGTH, POSTGRES_INFINITY } from './documents.constants.js'
 import type {
   ContentPreview,
@@ -19,10 +19,6 @@ import type {
   DocumentSummaryRow,
   DocumentUpdateRow,
 } from './documents.types.js'
-
-// PostgREST sends `+00:00` offsets with microseconds; clients get one canonical UTC format.
-const timestampColumn = timestampSchema.transform((value) => new Date(value).toISOString())
-const countColumn = z.number().int().nonnegative()
 
 // Parsing restores the NOT NULL guarantees that the generated types drop for view columns.
 const metadataRowSchema = z.object({

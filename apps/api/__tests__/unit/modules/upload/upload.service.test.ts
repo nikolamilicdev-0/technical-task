@@ -123,6 +123,11 @@ describe('UploadService', () => {
       textFile('huge.txt', 'x'.repeat(DOCUMENT_CONTENT_MAX + 1)),
       'The file contains more than 500,000 characters of text',
     ],
+    [
+      'a PDF whose font maps a glyph to NUL',
+      pdfFile('nul-text.pdf'),
+      'The file text contains NUL (U+0000) characters, which cannot be stored',
+    ],
   ])('answers 422 for %s', async (_, file, message) => {
     const error = await rejectionOf(service.upload(USER, file, NO_FIELDS))
 

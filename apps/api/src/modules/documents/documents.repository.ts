@@ -9,6 +9,7 @@ import { Injectable } from '@nestjs/common'
 import type { DatabaseClient } from '../../database/database-client.types.js'
 import { DATABASE_RELATIONS, POSTGREST_ERROR_CODES } from '../../database/database.constants.js'
 import { toDatabaseError } from '../../database/database-error.js'
+import { exactCount } from '../../database/exact-count.js'
 import type { TablesInsert } from '../../database/database.types.js'
 import { toArrayLiteral, toContainsPattern } from '../../database/postgrest-filters.js'
 import { DOCUMENT_COLUMNS, DOCUMENT_SUMMARY_COLUMNS } from './documents.constants.js'
@@ -108,9 +109,4 @@ export class DocumentsRepository {
     if (status !== undefined) request = request.eq('embedding_status', status)
     return request
   }
-}
-
-function exactCount(count: number | null): number {
-  if (count === null) throw new Error('PostgREST returned no row count for a counted request')
-  return count
 }

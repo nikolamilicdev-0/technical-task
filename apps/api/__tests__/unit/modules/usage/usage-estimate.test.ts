@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest'
 
 import { TokenCounter } from '../../../../src/ai/token-counter.js'
-import { estimateEmbeddingUsage, meterUsage } from '../../../../src/modules/usage/usage-estimate.js'
+import {
+  estimateChatUsage,
+  estimateEmbeddingUsage,
+  meterUsage,
+} from '../../../../src/modules/usage/usage-estimate.js'
 
 const counter = new TokenCounter()
 const REPORTED = { promptTokens: 12, completionTokens: 0, totalTokens: 12 }
@@ -21,6 +25,23 @@ describe('estimateEmbeddingUsage', () => {
       promptTokens: 0,
       completionTokens: 0,
       totalTokens: 0,
+    })
+  })
+})
+
+describe('estimateChatUsage', () => {
+  it('counts every prompt message plus four tokens of chat framing, and the answer', () => {
+    const messages = [
+      { role: 'system' as const, content: 'Answer from the sources.' },
+      { role: 'user' as const, content: 'What does it cost?' },
+    ]
+    const promptTokens =
+      counter.count('Answer from the sources.') + counter.count('What does it cost?') + 2 * 4
+
+    expect(estimateChatUsage(messages, 'Twenty euros [1].', counter)).toEqual({
+      promptTokens,
+      completionTokens: counter.count('Twenty euros [1].'),
+      totalTokens: promptTokens + counter.count('Twenty euros [1].'),
     })
   })
 })

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import {
+  containsNul,
   countCodePoints,
   takeCodePoints,
   truncateUtf16,
@@ -40,5 +41,14 @@ describe('truncateUtf16', () => {
   it('never keeps half of a surrogate pair', () => {
     expect(truncateUtf16(`ab${GLOBE}`, 3)).toBe('ab')
     expect(truncateUtf16(`ab${GLOBE}`, 4)).toBe(`ab${GLOBE}`)
+  })
+})
+
+describe('containsNul', () => {
+  it('finds U+0000 anywhere, and nothing else', () => {
+    expect(containsNul('a\u0000b')).toBe(true)
+    expect(containsNul('\u0000')).toBe(true)
+    expect(containsNul('plain \\0 text')).toBe(false)
+    expect(containsNul('')).toBe(false)
   })
 })

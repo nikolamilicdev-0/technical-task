@@ -36,4 +36,6 @@ export const UPLOAD_MESSAGES = {
   tooMuchText: `The file contains more than ${CONTENT_MAX_TEXT} characters of text`,
   notUtf8Text: 'The file is not UTF-8 encoded text',
   unreadablePdf: 'The PDF could not be read; it may be damaged or password-protected',
+  nulInText: 'The file text contains NUL (U+0000) characters, which cannot be stored',
+  nulInFilename: 'The filename must not contain NUL (U+0000) characters',
 } as const

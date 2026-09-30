@@ -125,10 +125,18 @@ Content-Type: application/json
 
 { "title": "", "tags": ["a tag that is far too long to be accepted by the API"] }
 
-### 12. Delete → 204
+### 12. Re-index one document → { "queued": 1 }; 0 while it is being indexed (3 requests a minute)
+POST {{baseUrl}}/documents/{{documentId}}/reindex
+Authorization: Bearer {{token}}
+
+### 13. Re-index every document of the caller → { "queued": n }
+POST {{baseUrl}}/documents/reindex-all
+Authorization: Bearer {{token}}
+
+### 14. Delete → 204
 DELETE {{baseUrl}}/documents/{{documentId}}
 Authorization: Bearer {{token}}
 
-### 13. The deleted document (or another user's) → 404 not_found
+### 15. The deleted document (or another user's) → 404 not_found
 GET {{baseUrl}}/documents/{{documentId}}
 Authorization: Bearer {{token}}

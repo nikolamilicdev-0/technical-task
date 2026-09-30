@@ -41,6 +41,26 @@ describe('mapOpenAiError', () => {
     expect(mapOpenAiError(statusError(status), CHAT, NOW).code).toBe(code)
   })
 
+  it.each([
+    ['an invalid key', { message: 'API key not valid. Please pass a valid API key.' }],
+    ['a malformed key', { message: 'Please pass a valid API key' }],
+    // The SDK wraps a body that has no `error` field, such as Gemini's array, in one.
+    [
+      'an array-wrapped body',
+      [
+        {
+          error: { code: 400, message: 'Please pass a valid API key', status: 'INVALID_ARGUMENT' },
+        },
+      ],
+    ],
+  ])('maps a Gemini 400 for %s to authentication', (_, error) => {
+    const mapped = mapOpenAiError(statusError(400, {}, error), CHAT, NOW)
+
+    expect(mapped.code).toBe('authentication')
+    expect(mapped.message).toContain('AI_CHAT_API_KEY')
+    expect(mapped.retryable).toBe(false)
+  })
+
   it('treats an exhausted quota as a permission problem, not a retryable rate limit', () => {
     const quota = statusError(429, {}, { code: 'insufficient_quota', message: 'Quota exceeded' })
     const error = mapOpenAiError(quota, CHAT, NOW)

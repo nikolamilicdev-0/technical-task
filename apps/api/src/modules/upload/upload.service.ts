@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common'
 
 import { ApiHttpException } from '../../common/errors/api-http.exception.js'
 import { DEFAULT_ERROR_MESSAGES } from '../../common/errors/error.constants.js'
+import { containsNul } from '../../common/utils/text.js'
 import type { UserContext } from '../../database/user-context.types.js'
 import { DocumentsService } from '../documents/documents.service.js'
 import { selectExtractor } from './extractors/select-extractor.js'
@@ -40,6 +41,8 @@ async function readText(file: UploadedDocumentFile): Promise<string> {
   const text = await extract(file.buffer).catch(toUnprocessable)
   if (text.trim() === '') throw unprocessable(UPLOAD_MESSAGES.noText)
   if (text.length > DOCUMENT_CONTENT_MAX) throw unprocessable(UPLOAD_MESSAGES.tooMuchText)
+  // Broken PDF fonts can map glyphs to U+0000, which Postgres cannot store.
+  if (containsNul(text)) throw unprocessable(UPLOAD_MESSAGES.nulInText)
   return text
 }
 

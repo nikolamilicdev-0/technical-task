@@ -18,3 +18,11 @@ export interface UsageEvent {
   readonly conversationId?: string
   readonly messageId?: string
 }
+
+/** The period a usage summary covers, `[from, to)`, with days counted in `timezone`. */
+export interface UsageWindow {
+  readonly from: string
+  readonly to: string
+  /** IANA name, such as `Europe/Paris`; it decides where each day starts. */
+  readonly timezone: string
+}

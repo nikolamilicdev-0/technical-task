@@ -29,4 +29,20 @@ describe('uploadFileFilter', () => {
       },
     })
   })
+
+  it('refuses a filename with a NUL character with 422 before reading the file', () => {
+    const accept = vi.fn<Accept>()
+
+    uploadFileFilter({}, { mimetype: 'text/markdown', originalname: 'notes\u0000.md' }, accept)
+
+    const [error, accepted] = accept.mock.lastCall ?? []
+    expect(accepted).toBe(false)
+    expect(error).toMatchObject({
+      body: {
+        code: 'invalid_payload',
+        messages: ['Invalid request payload'],
+        errors: { file: ['The filename must not contain NUL (U+0000) characters'] },
+      },
+    })
+  })
 })

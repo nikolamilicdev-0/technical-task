@@ -9,10 +9,12 @@ import { AuthModule } from './auth/auth.module.js'
 import { ApiExceptionFilter } from './common/errors/api-exception.filter.js'
 import { AppConfigModule } from './config/config.module.js'
 import { DatabaseModule } from './database/database.module.js'
+import { ChatModule } from './modules/chat/chat.module.js'
 import { DocumentsModule } from './modules/documents/documents.module.js'
 import { HealthModule } from './modules/health/health.module.js'
 import { IngestionModule } from './modules/ingestion/ingestion.module.js'
 import { UploadModule } from './modules/upload/upload.module.js'
+import { UsageModule } from './modules/usage/usage.module.js'
 import { ThrottlingModule } from './throttling/throttling.module.js'
 import { UserThrottlerGuard } from './throttling/user-throttler.guard.js'
 
@@ -29,6 +31,8 @@ import { UserThrottlerGuard } from './throttling/user-throttler.guard.js'
     DocumentsModule,
     UploadModule,
     IngestionModule,
+    ChatModule,
+    UsageModule,
   ],
   providers: [
     // Global guards run in this order: identify the caller, then rate-limit per user.

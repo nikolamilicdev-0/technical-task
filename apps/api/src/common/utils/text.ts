@@ -27,3 +27,11 @@ export function truncateUtf16(text: string, maxLength: number): string {
   const splitsPair = last >= HIGH_SURROGATE_MIN && last <= HIGH_SURROGATE_MAX
   return text.slice(0, splitsPair ? maxLength - 1 : maxLength)
 }
+
+// Postgres `text` cannot store U+0000: a value holding one fails its request with a 500.
+const NUL_CHARACTER = '\u0000'
+
+/** True when the text holds U+0000, which no Postgres `text` column can store. */
+export function containsNul(text: string): boolean {
+  return text.includes(NUL_CHARACTER)
+}

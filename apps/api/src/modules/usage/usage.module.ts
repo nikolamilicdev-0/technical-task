@@ -1,10 +1,14 @@
 import { Module } from '@nestjs/common'
 
+import { UsageController } from './usage.controller.js'
 import { UsageRecorder } from './usage-recorder.js'
+import { UsageRepository } from './usage.repository.js'
+import { UsageService } from './usage.service.js'
 
-/** Records metered AI calls for every module that makes them. */
+/** Meters AI calls for every module that makes them, and reports usage to its owner. */
 @Module({
-  providers: [UsageRecorder],
+  controllers: [UsageController],
+  providers: [UsageRecorder, UsageRepository, UsageService],
   exports: [UsageRecorder],
 })
 export class UsageModule {}
