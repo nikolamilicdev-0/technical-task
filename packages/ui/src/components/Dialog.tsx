@@ -61,6 +61,13 @@ export interface DialogProps {
   size?: DialogSize
   /** Keeps the title for screen readers while hiding it visually. */
   hideTitle?: boolean
+  /** Runs before focus moves in; `event.preventDefault()` lets a form focus its own field. */
+  onOpenAutoFocus?: (event: Event) => void
+  /**
+   * Runs as the dialog hands focus back. Without a `trigger` there is nothing to return to, so
+   * call `event.preventDefault()` and focus the right element yourself.
+   */
+  onCloseAutoFocus?: (event: Event) => void
 }
 
 export function Dialog({
@@ -76,6 +83,8 @@ export function Dialog({
   placement = 'center',
   size = 'md',
   hideTitle = false,
+  onOpenAutoFocus,
+  onCloseAutoFocus,
 }: DialogProps) {
   const triggerNode = trigger ? (
     <DialogPrimitive.Trigger asChild>{trigger}</DialogPrimitive.Trigger>
@@ -90,6 +99,8 @@ export function Dialog({
         <DialogPrimitive.Overlay className={overlayVariants({ placement })}>
           <DialogPrimitive.Content
             className={contentVariants({ placement, size })}
+            onOpenAutoFocus={onOpenAutoFocus}
+            onCloseAutoFocus={onCloseAutoFocus}
             {...describedBy}
           >
             <Flex align="start" justify="between" gap="md">

@@ -1,7 +1,7 @@
 import { Text } from '@kb/ui'
 import type { Components } from 'react-markdown'
 
-const EXTERNAL_LINK = /^https?:\/\//i
+import { MarkdownLink } from '@/core/components/markdown/MarkdownLink'
 
 // Document headings sit below the page's own <h1>, so every level shifts down by one.
 // Each renderer drops react-markdown's `node` prop before spreading onto the DOM.
@@ -19,23 +19,7 @@ export const markdownComponents: Components = {
   h5: ({ node: _node, ...props }) => <Text as="h4" variant="label" className="mt-4" {...props} />,
   h6: ({ node: _node, ...props }) => <Text as="h4" variant="label" className="mt-4" {...props} />,
   p: ({ node: _node, ...props }) => <Text className="leading-7" {...props} />,
-  // Prose links stay inline anchors (a Button would break line wrapping inside a sentence).
-  a: ({ node: _node, href, children, ...props }) => {
-    const external = href ? EXTERNAL_LINK.test(href) : false
-    const target = external ? '_blank' : undefined
-    const rel = external ? 'noreferrer' : undefined
-    return (
-      <a
-        href={href}
-        target={target}
-        rel={rel}
-        className="font-medium text-primary underline decoration-primary/40 underline-offset-4 hover:decoration-primary"
-        {...props}
-      >
-        {children}
-      </a>
-    )
-  },
+  a: MarkdownLink,
   ul: ({ node: _node, ...props }) => (
     <ul className="list-disc space-y-1.5 ps-5 marker:text-on-surface-variant" {...props} />
   ),

@@ -16,6 +16,8 @@ interface ConfirmDialogProps {
   /** Keeps the dialog open with a busy confirm button while the action runs. */
   pending?: boolean
   tone?: ConfirmTone
+  /** Where focus goes on close; opened without a trigger, it has nowhere to return to. */
+  onCloseAutoFocus?: (event: Event) => void
 }
 
 export function ConfirmDialog({
@@ -27,6 +29,7 @@ export function ConfirmDialog({
   description,
   pending = false,
   tone = 'destructive',
+  onCloseAutoFocus,
 }: ConfirmDialogProps) {
   const t = useT()
   const cancel = () => onOpenChange(false)
@@ -51,6 +54,7 @@ export function ConfirmDialog({
       closeLabel={t.common.close}
       footer={footer}
       size="sm"
+      onCloseAutoFocus={onCloseAutoFocus}
     />
   )
 }

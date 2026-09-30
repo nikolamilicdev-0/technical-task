@@ -212,7 +212,134 @@
   },
   "chat": {
     "title": "Chat",
-    "description": "Ask questions and get answers grounded in your documents."
+    "description": "Ask questions and get answers grounded in your documents.",
+    "conversationMetaTitle": "Conversation",
+    "newChat": "New chat",
+    "untitled": "Untitled conversation",
+    "list": {
+      "title": "Conversations",
+      "open": "Show conversations",
+      "loading": "Loading conversations",
+      "errorTitle": "Conversations didn't load",
+      "empty": {
+        "title": "No conversations yet",
+        "description": "Ask a question and the conversation is saved here."
+      },
+      "truncated": "Only the {shown} most recent are listed.",
+      "justNow": "just now",
+      "rename": "Rename “{title}”",
+      "delete": "Delete “{title}”"
+    },
+    "rename": {
+      "title": "Rename conversation",
+      "field": "Title",
+      "submit": "Save",
+      "renamed": "Conversation renamed"
+    },
+    "delete": {
+      "confirmTitle": "Delete “{title}”?",
+      "confirmDescription": "The conversation and all of its answers are removed for good.",
+      "confirm": "Delete",
+      "deleted": "Conversation deleted"
+    },
+    "thread": {
+      "loading": "Loading conversation",
+      "errorTitle": "This conversation didn't load",
+      "messages": "Messages",
+      "notFound": {
+        "title": "Conversation not found",
+        "description": "It may have been deleted, or the link is incomplete.",
+        "action": "Start a new chat"
+      }
+    },
+    "empty": {
+      "title": "Ask your documents",
+      "description": "Answers are written from what you've added and cite the passages they rely on.",
+      "promptsLabel": "Try asking",
+      "prompts": [
+        "Summarize my most recent document.",
+        "What are the key points across my documents?",
+        "List the deadlines and dates my documents mention.",
+        "What should a new team member read first?"
+      ],
+      "noDocuments": {
+        "title": "Add a document to get started",
+        "description": "Chat answers only from your own documents. Write a note or upload a file first.",
+        "action": "Go to documents"
+      }
+    },
+    "composer": {
+      "label": "Message",
+      "placeholder": "Ask about your documents…",
+      "hint": "Enter sends. Shift+Enter adds a new line.",
+      "send": "Send message",
+      "stop": "Stop answering",
+      "count": "{count} / {maximum}"
+    },
+    "scope": {
+      "all": "All documents",
+      "selected": {
+        "one": "{count} document",
+        "other": "{count} documents"
+      },
+      "label": "Answer from: {scope}",
+      "heading": "Answer only from",
+      "none": "No documents are ready yet.",
+      "limit": "Pick up to {maximum}.",
+      "clear": "Use all documents"
+    },
+    "indexing": {
+      "pending": {
+        "one": "{count} document is still being indexed, so answers can't use it yet.",
+        "other": "{count} documents are still being indexed, so answers can't use them yet."
+      },
+      "failed": {
+        "one": "{count} document couldn't be indexed and is left out:",
+        "other": "{count} documents couldn't be indexed and are left out:"
+      }
+    },
+    "message": {
+      "question": "You asked",
+      "answer": "Answer",
+      "searching": "Searching your documents…",
+      "reading": {
+        "one": "Reading {count} source…",
+        "other": "Reading {count} sources…"
+      },
+      "usage": "{tokens} tokens",
+      "usageEstimated": "About {tokens} tokens",
+      "finish": {
+        "aborted": "Stopped",
+        "length": "The answer reached its length limit.",
+        "content_filter": "The AI provider's content filter stopped this answer.",
+        "error": "An error cut this answer short."
+      }
+    },
+    "sources": {
+      "count": {
+        "one": "{count} source",
+        "other": "{count} sources"
+      },
+      "cited": "{count} cited",
+      "summary": "{sources} · {cited}",
+      "citedBadge": "Cited",
+      "chip": "Source {index}: {title}",
+      "open": "Open “{title}”"
+    },
+    "status": {
+      "idle": "",
+      "connecting": "Sending your question",
+      "streaming": "Writing the answer",
+      "done": "Answer ready",
+      "stopped": "Answer stopped",
+      "error": ""
+    },
+    "errors": {
+      "rateLimited": "You've sent a lot of messages in a short time. Try again in {seconds} s.",
+      "providerUnavailable": "The AI provider is unavailable right now. Try again in {seconds} s.",
+      "interrupted": "The connection dropped before the answer finished.",
+      "conversationGone": "This conversation no longer exists. Start a new chat to keep asking."
+    }
   },
   "usage": {
     "title": "Usage",
