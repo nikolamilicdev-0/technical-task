@@ -8,9 +8,7 @@ import { useLoginForm } from '@/features/auth/hooks/useLoginForm'
 import { getAuthStrings } from '@/features/auth/lib/auth-strings'
 
 interface LoginFormClientProps {
-  /** Where to continue after signing in; validated before use. */
   next?: string
-  /** The user was sent here because their session ended. */
   sessionExpired: boolean
 }
 
@@ -24,7 +22,6 @@ export function LoginFormClient({ next, sessionExpired }: LoginFormClientProps) 
       {serverError}
     </Callout>
   ) : null
-  // Once the user has tried again, the fresh error replaces the expiry notice.
   const expiryNotice =
     sessionExpired && !serverError ? (
       <Callout tone="warning">{strings.login.sessionExpired}</Callout>

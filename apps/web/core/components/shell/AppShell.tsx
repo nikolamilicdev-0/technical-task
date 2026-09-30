@@ -14,7 +14,6 @@ interface AppShellProps {
   children: ReactNode
 }
 
-/** Signed-in frame: sidebar from `md` up, top bar with a drawer below it. */
 export function AppShell({ user, children }: AppShellProps) {
   const t = getDictionary()
   const navItems = resolveNavItems(t.nav)

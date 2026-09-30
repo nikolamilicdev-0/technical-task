@@ -15,11 +15,9 @@ interface DocumentsToolbarProps {
   selectedTags: readonly string[]
   onSelectedTagsChange: (tags: string[]) => void
   onUpload: () => void
-  /** The Upload button, where focus returns once the upload dialog closes. */
   uploadButtonRef?: Ref<HTMLButtonElement>
 }
 
-/** Title search and tag filter, then the two ways to add a document. */
 export function DocumentsToolbar({
   search,
   onSearchChange,

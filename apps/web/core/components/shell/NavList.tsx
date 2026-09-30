@@ -5,7 +5,6 @@ import type { NavItem } from '@/core/types'
 
 interface NavListProps {
   items: readonly NavItem[]
-  /** Accessible name of the navigation landmark. */
   label: string
   onNavigate?: () => void
 }

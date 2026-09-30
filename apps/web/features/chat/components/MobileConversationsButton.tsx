@@ -6,7 +6,6 @@ import { icons } from '@/core/icons'
 import { ConversationListClient } from '@/features/chat/components/ConversationListClient'
 import { getChatStrings } from '@/features/chat/lib/chat-strings'
 
-/** Below `lg` the conversation sidebar moves into a drawer that this button opens. */
 export function MobileConversationsButton() {
   const t = useT()
   const strings = getChatStrings(t)

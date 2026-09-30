@@ -1,6 +1,5 @@
 import type { DocumentsListParams } from '@/features/documents/types'
 
-/** React Query keys: invalidating `lists()` or `details()` covers every list or document. */
 export const documentsKeys = {
   all: ['documents'] as const,
   lists: () => [...documentsKeys.all, 'list'] as const,

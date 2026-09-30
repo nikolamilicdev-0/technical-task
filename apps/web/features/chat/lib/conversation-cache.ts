@@ -1,6 +1,5 @@
 import type { Conversation, ConversationList } from '@kb/contracts'
 
-/** A new conversation is the most recently active one, so it goes first. */
 export function prependConversation(
   list: ConversationList,
   conversation: Conversation

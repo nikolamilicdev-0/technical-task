@@ -16,7 +16,6 @@ import { documentsKeys } from '@/features/documents/lib/documents-keys'
 import { getDocumentsStrings } from '@/features/documents/lib/documents-strings'
 import { documentsService } from '@/features/documents/services/documents-service'
 
-/** Creates a document and opens it in the editor straight from the cache. */
 export function useCreateDocument() {
   const queryClient = useQueryClient()
   const router = useRouter()
@@ -33,7 +32,6 @@ export function useCreateDocument() {
   })
 }
 
-/** Saves edits optimistically; the editor rolls back if the API refuses them. */
 export function useUpdateDocument(id: string) {
   const queryClient = useQueryClient()
   const strings = getDocumentsStrings(useT())
@@ -57,7 +55,6 @@ export function useUpdateDocument(id: string) {
   })
 }
 
-/** Deletes a document; it leaves every cached list at once and returns if the API refuses. */
 export function useDeleteDocument() {
   const queryClient = useQueryClient()
   const t = useT()
@@ -87,7 +84,6 @@ export function useDeleteDocument() {
   })
 }
 
-/** Queues a failed document for indexing again; it reads as queued until the next poll. */
 export function useReindexDocument(id: string) {
   const queryClient = useQueryClient()
   const t = useT()
@@ -98,15 +94,19 @@ export function useReindexDocument(id: string) {
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: documentsKeys.all })
       const previous = queryClient.getQueryData<Document>(detailKey)
+      const previousLists = queryClient.getQueriesData<DocumentList>({
+        queryKey: documentsKeys.lists(),
+      })
       if (previous) queryClient.setQueryData(detailKey, withPendingStatus(previous))
       queryClient.setQueriesData<DocumentList>(
         { queryKey: documentsKeys.lists() },
         (list) => list && updateInList(list, id, withPendingStatus)
       )
-      return { previous }
+      return { previous, previousLists }
     },
     onError: (error, _variables, snapshot) => {
       if (snapshot?.previous) queryClient.setQueryData(detailKey, snapshot.previous)
+      snapshot?.previousLists.forEach(([key, list]) => queryClient.setQueryData(key, list))
       toast.error(getErrorMessage(error, t.errors))
     },
     onSuccess: () => toast.success(strings.statusBar.reindexQueued),

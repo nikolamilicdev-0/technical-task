@@ -10,11 +10,9 @@ import { describeIndexing, getDocumentsStrings } from '@/features/documents/lib/
 
 interface DocumentStatusBarProps {
   document: Document
-  /** Shared clock for the retry schedule. */
   now: number
 }
 
-/** Where the document stands in indexing, with a retry once indexing has failed. */
 export function DocumentStatusBar({ document, now }: DocumentStatusBarProps) {
   const strings = getDocumentsStrings(useT())
   const reindex = useReindexDocument(document.id)

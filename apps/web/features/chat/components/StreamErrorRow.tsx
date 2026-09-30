@@ -11,7 +11,6 @@ interface StreamErrorRowProps {
   onRetry: () => void
 }
 
-/** Why the answer failed, under the question it belongs to, with a retry when one can help. */
 export function StreamErrorRow({ error, onRetry }: StreamErrorRowProps) {
   const t = useT()
   const retryButton = canRetry(error) ? (

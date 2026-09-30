@@ -1,11 +1,7 @@
-'use client'
-
 import { Button, Dialog } from '@kb/ui'
 import { useRef } from 'react'
 
 import { useT } from '@/core/i18n/useT'
-
-type ConfirmTone = 'primary' | 'destructive'
 
 interface ConfirmDialogProps {
   open: boolean
@@ -14,10 +10,7 @@ interface ConfirmDialogProps {
   confirmLabel: string
   onConfirm: () => void
   description?: string
-  /** Keeps the dialog open with a busy confirm button while the action runs. */
   pending?: boolean
-  tone?: ConfirmTone
-  /** Where focus goes on close; by default it returns to whatever opened the dialog. */
   onCloseAutoFocus?: (event: Event) => void
 }
 
@@ -29,7 +22,6 @@ export function ConfirmDialog({
   onConfirm,
   description,
   pending = false,
-  tone = 'destructive',
   onCloseAutoFocus,
 }: ConfirmDialogProps) {
   const t = useT()
@@ -46,7 +38,7 @@ export function ConfirmDialog({
       <Button ref={cancelRef} variant="outline" onClick={cancel} disabled={pending}>
         {t.common.cancel}
       </Button>
-      <Button variant={tone} loading={pending} onClick={onConfirm}>
+      <Button variant="destructive" loading={pending} onClick={onConfirm}>
         {confirmLabel}
       </Button>
     </>

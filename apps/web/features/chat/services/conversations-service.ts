@@ -13,7 +13,6 @@ import {
 import { getApiClient } from '@/core/api/browser-client'
 import type { ConversationsListParams } from '@/features/chat/types'
 
-/** Conversation API calls; every response is validated against its contracts schema. */
 export const conversationsService = {
   list: (query: ConversationsListParams, signal?: AbortSignal): Promise<ConversationList> =>
     getApiClient().request(apiRoutes.conversations.collection, {

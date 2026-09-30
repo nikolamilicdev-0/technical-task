@@ -18,12 +18,10 @@ const DROPZONE_CLASSES = [
 ].join(' ')
 
 interface UploadDropzoneProps {
-  /** Receives a file that passed the size and type checks. */
   onFileAccepted: (file: File) => void
   inputRef?: Ref<HTMLInputElement>
 }
 
-/** Drop target and file picker in one: the whole area is the picker's label. */
 export function UploadDropzone({ onFileAccepted, inputRef }: UploadDropzoneProps) {
   const strings = getDocumentsStrings(useT())
   const inputId = useId()

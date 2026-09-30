@@ -16,7 +16,6 @@ function renderTiles(estimatedRequests: number) {
   return screen.getByRole('heading', { name: totals.heading }).closest('section') ?? document.body
 }
 
-/** Each term with the details that follow it, as a screen reader pairs them. */
 function readTerms(section: HTMLElement) {
   return within(section)
     .getAllByRole('term')

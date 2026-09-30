@@ -1,9 +1,7 @@
 const FULL_WIDTH_PERCENT = 100
 
-/**
- * Bar lengths as a percentage of the largest value, so the busiest row fills its track. Values
- * that are not positive get no bar, and with none above zero every bar is empty (never NaN).
- */
+// Percentages of the largest value: non-positive values get no bar, and all-zero input never
+// divides by zero.
 export function computeBarWidths(values: readonly number[]): number[] {
   const lengths = values.map((value) => (Number.isFinite(value) && value > 0 ? value : 0))
   const max = lengths.reduce((largest, value) => Math.max(largest, value), 0)

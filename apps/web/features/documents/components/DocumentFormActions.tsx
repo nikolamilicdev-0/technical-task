@@ -6,7 +6,6 @@ import { routes } from '@/core/config/routes'
 import { useT } from '@/core/i18n/useT'
 import { getDocumentsStrings } from '@/features/documents/lib/documents-strings'
 
-// Sticks to the bottom of the viewport while the form is taller than the screen.
 const ACTIONS_BAR_CLASSES =
   'sticky bottom-0 z-10 -mx-4 -mb-4 rounded-b-xl border-t border-outline-variant bg-surface-container-lowest/95 px-4 py-3 backdrop-blur-sm sm:-mx-6 sm:-mb-6 sm:px-6'
 
@@ -16,7 +15,6 @@ function preventSubmit(event: MouseEvent<HTMLButtonElement>): void {
 
 interface DocumentFormActionsProps {
   submitLabel: string
-  /** Edit mode: Save waits for a change and Discard restores the saved values. */
   editing: boolean
   dirty: boolean
   pending: boolean

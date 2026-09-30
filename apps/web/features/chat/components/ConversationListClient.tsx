@@ -15,7 +15,6 @@ import { icons } from '@/core/icons'
 import { ConversationListItem } from '@/features/chat/components/ConversationListItem'
 import { ConversationListSkeleton } from '@/features/chat/components/ConversationListSkeleton'
 import { RenameConversationDialog } from '@/features/chat/components/RenameConversationDialog'
-import { LIST_TIME_REFRESH_MS } from '@/features/chat/constants'
 import { useActiveConversationId } from '@/features/chat/hooks/useActiveConversationId'
 import { useDeleteConversation } from '@/features/chat/hooks/useConversationMutations'
 import { useConversations } from '@/features/chat/hooks/useConversations'
@@ -29,13 +28,11 @@ interface DialogState {
 }
 
 interface ConversationListClientProps {
-  /** Called after picking a conversation or starting a new chat, e.g. to close a drawer. */
   onNavigate?: () => void
   /** Off inside the drawer, whose own title already names the list. */
   showTitle?: boolean
 }
 
-/** Every conversation, most recently active first, with new chat, rename and delete. */
 export function ConversationListClient({
   onNavigate,
   showTitle = true,
@@ -44,7 +41,7 @@ export function ConversationListClient({
   const strings = getChatStrings(t)
   const query = useConversations()
   const activeId = useActiveConversationId()
-  const now = useNow(LIST_TIME_REFRESH_MS)
+  const now = useNow()
   const remove = useDeleteConversation()
   const headingId = useId()
   const [dialog, setDialog] = useState<DialogState>({ open: null, target: null })

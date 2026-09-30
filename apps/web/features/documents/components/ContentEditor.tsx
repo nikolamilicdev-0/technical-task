@@ -19,7 +19,6 @@ interface ContentEditorProps {
   error?: string
 }
 
-/** Markdown source in a textarea, with the rendered preview one tab away. */
 export function ContentEditor({ control, registration, error }: ContentEditorProps) {
   const strings = getDocumentsStrings(useT())
   const baseId = useId()

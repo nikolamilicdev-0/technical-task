@@ -16,7 +16,6 @@ const MARKDOWN_RULES: readonly (readonly [RegExp, string])[] = [
 ]
 const WHITESPACE_RUN = /\s+/g
 
-/** Readable plain text for a card from the start of a Markdown document. */
 export function toPlainPreview(markdown: string): string {
   const text = MARKDOWN_RULES.reduce(
     (current, [pattern, replacement]) => current.replace(pattern, replacement),

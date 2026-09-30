@@ -7,7 +7,6 @@ import { DocumentsListSkeleton } from '@/features/documents/components/Documents
 import { getDocumentsStrings } from '@/features/documents/lib/documents-strings'
 
 interface DocumentsListBodyProps {
-  /** The route's loading state: the same skeleton the client shows while it fetches. */
   loading?: boolean
 }
 

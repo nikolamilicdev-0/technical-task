@@ -8,7 +8,6 @@ import { getListView } from '@/features/documents/lib/get-list-view'
 
 const NO_DOCUMENTS: readonly DocumentSummary[] = []
 
-/** The documents page's data: the list query, the filter state and what to show for them. */
 export function useDocumentsList() {
   const query = useDocuments()
   const [search, setSearch] = useState('')

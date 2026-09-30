@@ -10,10 +10,8 @@ function toCurrentUser(claims: JwtPayload): CurrentUser {
   return { id: claims.sub, email: claims.email ?? null }
 }
 
-/**
- * The signed-in user from verified JWT claims (never the unverified cookie session), or null.
- * Cached per request so layouts and pages share one verification.
- */
+// Verified JWT claims, never the unverified cookie session; cached per request, so layouts and
+// pages share one verification.
 export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
   const supabase = await createSupabaseServerClient()
   const { data, error } = await supabase.auth.getClaims()

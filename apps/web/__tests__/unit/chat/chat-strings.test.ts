@@ -12,7 +12,6 @@ import {
   describeStreamError,
   describeThreadTitle,
   describeUsage,
-  formatConversationTime,
   getChatStrings,
 } from '@/features/chat/lib/chat-strings'
 import type { StreamError } from '@/features/chat/types'
@@ -92,15 +91,6 @@ describe('describeIndexing', () => {
       indexing: null,
       failed: null,
     })
-  })
-})
-
-describe('formatConversationTime', () => {
-  const now = Date.parse('2026-09-30T12:00:00.000Z')
-
-  it('reads recent activity as just now, older activity relatively', () => {
-    expect(formatConversationTime(strings, '2026-09-30T11:59:30.000Z', now)).toBe('just now')
-    expect(formatConversationTime(strings, '2026-09-30T09:00:00.000Z', now)).toBe('3 hours ago')
   })
 })
 

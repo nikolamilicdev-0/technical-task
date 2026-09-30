@@ -7,7 +7,7 @@ import type {
   ResponsiveClassMap,
 } from '../types'
 
-export const BREAKPOINTS = ['base', 'sm', 'md', 'lg', 'xl'] as const satisfies readonly Breakpoint[]
+const BREAKPOINTS = ['base', 'sm', 'md', 'lg', 'xl'] as const satisfies readonly Breakpoint[]
 
 // Every class is spelled out: Tailwind only generates classes it finds verbatim in source.
 export const FLEX_DIRECTION_CLASSES = {
@@ -144,7 +144,6 @@ export const GRID_SPAN_CLASSES = {
   },
 } as const satisfies ResponsiveClassMap<GridSpan>
 
-/** Resolves a responsive prop to the matching static classes, mobile-first. */
 export function responsiveClasses<TValue extends PropertyKey>(
   value: Responsive<NoInfer<TValue>> | undefined,
   classMap: ResponsiveClassMap<TValue>

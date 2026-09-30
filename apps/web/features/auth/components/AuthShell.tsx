@@ -5,10 +5,8 @@ import { Wordmark } from '@/core/components/shell/Wordmark'
 import { getDictionary } from '@/core/i18n/dictionary'
 import { getAuthStrings } from '@/features/auth/lib/auth-strings'
 
-/**
- * Sign-in and sign-up frame: the product's promise beside the form from `lg` up. The promise
- * panel, or the wordmark row below `lg`, is the banner, so no content sits outside a landmark.
- */
+// The promise panel, or the wordmark row below `lg`, is the banner, so no content sits outside
+// a landmark.
 export function AuthShell({ children }: { children: ReactNode }) {
   const dictionary = getDictionary()
   const strings = getAuthStrings(dictionary)

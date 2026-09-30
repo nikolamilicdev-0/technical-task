@@ -12,10 +12,7 @@ interface SidebarNavProps {
   email: string | null
 }
 
-/**
- * Persistent navigation from `md` up; the account menu sits at the bottom. Like the mobile top
- * bar it is the page's banner, so the wordmark and account menu sit inside a landmark.
- */
+/** A `header` like the mobile bar, so the wordmark and account menu sit inside a landmark. */
 export function SidebarNav({ items, email }: SidebarNavProps) {
   const t = getDictionary()
   return (

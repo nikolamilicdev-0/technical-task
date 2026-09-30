@@ -12,7 +12,6 @@ interface NotFoundStateProps {
   title?: string
   description?: string
   titleAs?: EmptyStateProps['titleAs']
-  /** Replaces the default way back to the documents. */
   action?: ReactNode
 }
 

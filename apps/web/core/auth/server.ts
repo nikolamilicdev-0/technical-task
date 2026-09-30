@@ -6,7 +6,6 @@ import { cookies } from 'next/headers'
 
 import { getPublicEnv } from '@/core/config/env'
 
-/** Per-request Supabase client for Server Components, reading the session from cookies. */
 export async function createSupabaseServerClient(): Promise<SupabaseClient> {
   const cookieStore = await cookies()
   const env = getPublicEnv()

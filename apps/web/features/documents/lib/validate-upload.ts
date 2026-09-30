@@ -11,10 +11,7 @@ const ACCEPTED_EXTENSIONS: ReadonlySet<string> = new Set(ACCEPTED_UPLOAD_EXTENSI
 const MIME_PARAMETER_SEPARATOR = ';'
 const EXTENSION_SEPARATOR = '.'
 
-/**
- * The API's own checks, made before sending: an accepted MIME type or else extension (browsers
- * often report Markdown with an empty type), some content, and at most MAX_UPLOAD_BYTES.
- */
+/** MIME type or else extension: browsers often report Markdown with an empty type. */
 export function validateUpload(file: UploadFileMetadata): UploadValidation {
   if (!isAcceptedType(file)) return { ok: false, reason: 'unsupportedType' }
   if (file.size === 0) return { ok: false, reason: 'empty' }

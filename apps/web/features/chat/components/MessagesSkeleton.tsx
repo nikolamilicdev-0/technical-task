@@ -1,6 +1,5 @@
 import { Flex, Skeleton } from '@kb/ui'
 
-/** Placeholder exchanges while a conversation loads: a question, then its answer, twice. */
 export function MessagesSkeleton() {
   return (
     <Flex direction="column" gap="xl" aria-hidden>

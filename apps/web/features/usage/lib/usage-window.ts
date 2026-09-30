@@ -1,13 +1,12 @@
 import { type UsageSummaryQuery, usageSummaryQuerySchema } from '@kb/contracts'
 
-/** The viewer's IANA time zone, such as `Europe/Paris`; undefined where the runtime has none. */
-export function getViewerTimeZone(): string | undefined {
+function getViewerTimeZone(): string | undefined {
   return Intl.DateTimeFormat().resolvedOptions().timeZone
 }
 
 /**
- * The last `days` calendar days, today included, bucketed in the viewer's time zone (dropped for
- * the API's UTC default when invalid). The window ends at the API's clock, so no `to` is sent.
+ * From local midnight `days - 1` days ago, bucketed in the viewer's zone (dropped for the API's UTC
+ * default when invalid); no `to` is sent, so the window ends at the API's clock (DEC-032).
  */
 export function toUsageQuery(
   days: number,

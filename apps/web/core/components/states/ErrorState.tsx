@@ -1,15 +1,11 @@
-'use client'
-
 import { Button, EmptyState, type EmptyStateProps } from '@kb/ui'
 
 import { useT } from '@/core/i18n/useT'
 import { icons } from '@/core/icons'
 
 interface ErrorStateProps {
-  /** Defaults to the generic "something went wrong" copy. */
   title?: string
   description?: string
-  /** Shows a retry button when set. */
   onRetry?: () => void
   titleAs?: EmptyStateProps['titleAs']
 }

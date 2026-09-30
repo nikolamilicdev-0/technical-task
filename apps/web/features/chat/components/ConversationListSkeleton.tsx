@@ -3,7 +3,6 @@ import { Flex, Skeleton, VisuallyHidden } from '@kb/ui'
 import { CONVERSATION_SKELETON_ITEMS } from '@/features/chat/constants'
 
 interface ConversationListSkeletonProps {
-  /** Announced to screen readers while the conversations load. */
   label: string
 }
 

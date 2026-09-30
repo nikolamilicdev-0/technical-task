@@ -20,11 +20,9 @@ import {
 interface UploadDocumentDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  /** Where focus goes on close; by default it returns to whatever opened the dialog. */
   onCloseAutoFocus?: (event: Event) => void
 }
 
-/** Pick or drop one file, upload it with progress, then offer to open the new document. */
 export function UploadDocumentDialog({
   open,
   onOpenChange,

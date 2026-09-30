@@ -26,10 +26,7 @@ interface RenameVariables {
   input: UpdateConversationInput
 }
 
-/**
- * Creates the conversation a first question goes to. It is cached as empty and listed first at
- * once, so the thread and the sidebar show it before the answer arrives.
- */
+/** Cached as empty and listed first at once, so thread and sidebar show it before the answer. */
 export function useCreateConversation() {
   const queryClient = useQueryClient()
   return useMutation({
@@ -46,7 +43,6 @@ export function useCreateConversation() {
   })
 }
 
-/** Renames a conversation in every cached list and in its detail. */
 export function useRenameConversation() {
   const queryClient = useQueryClient()
   const strings = getChatStrings(useT())
@@ -67,10 +63,7 @@ export function useRenameConversation() {
   })
 }
 
-/**
- * Deletes a conversation: it leaves every cached list at once and returns if the API refuses.
- * Deleting the open conversation starts a new chat first, so nothing refetches what is gone.
- */
+/** Deleting the open conversation starts a new chat first, so nothing refetches what is gone. */
 export function useDeleteConversation() {
   const queryClient = useQueryClient()
   const router = useRouter()

@@ -2,7 +2,6 @@ import type { CreateDocumentInput, Document, UpdateDocumentInput } from '@kb/con
 
 import { haveSameTags } from '@/features/documents/lib/tags'
 
-/** The PATCH body for a submitted edit form: only the fields that differ from the saved document. */
 export function toUpdateInput(
   values: CreateDocumentInput,
   saved: Pick<Document, 'title' | 'content' | 'tags'>

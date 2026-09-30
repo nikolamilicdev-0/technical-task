@@ -11,7 +11,6 @@ interface UsageByDayBarsProps {
   days: readonly UsageByDay[]
 }
 
-/** Tokens per day as a bar list, newest first; the busiest day fills its track. */
 export function UsageByDayBars({ days }: UsageByDayBarsProps) {
   const strings = getUsageStrings(useT())
   const headingId = useId()

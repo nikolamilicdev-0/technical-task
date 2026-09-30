@@ -13,7 +13,6 @@ export interface MenuProps {
   /** Rendered through `DropdownMenu.Trigger asChild`, so pass a single Button. */
   trigger: ReactNode
   items: readonly MenuEntry[]
-  /** Optional non-interactive heading, e.g. the signed-in account. */
   label?: ReactNode
   align?: MenuAlign
   side?: FloatingSide

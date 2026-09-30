@@ -23,16 +23,13 @@ export function citationHref(index: number): string {
   return `${CITATION_HREF_PREFIX}${index}`
 }
 
-/** The source number of a `#cite-n` link, or null for any other href. */
 export function parseCitationHref(href: string | undefined): number | null {
   const match = href ? CITATION_HREF.exec(href) : null
   return match ? Number(match[1]) : null
 }
 
-/**
- * Rewrites the answer's `[n]` markers into `[n](#cite-n)` links so Markdown renders them as
- * chips. `[n]` refers to `citations[n - 1]`; numbers without a source and code stay as written.
- */
+// `[n]` becomes a `#cite-n` link for its chip and refers to `citations[n - 1]` (DEC-030); a
+// number without a source, or one inside code, stays as written.
 export function linkifyCitations(markdown: string, sourceCount: number): string {
   if (sourceCount === 0) return markdown
   return splitCode(markdown)
@@ -49,7 +46,6 @@ export function linkifyCitations(markdown: string, sourceCount: number): string 
     .join('')
 }
 
-/** The citations with `cited` set exactly for the sources the answer's markers name. */
 export function markCited(citations: readonly Citation[], answer: string): Citation[] {
   const cited = new Set(
     splitCode(answer)
@@ -63,30 +59,22 @@ export function markCited(citations: readonly Citation[], answer: string): Citat
   return citations.map((citation) => ({ ...citation, cited: cited.has(citation.index) }))
 }
 
-/**
- * The headings above the cited passage, without the document title the breadcrumb starts with
- * (`Guide › Setup › Linux` → `Setup › Linux`); null for a passage above the first heading.
- */
+/** `Guide › Setup › Linux` → `Setup › Linux`; null for a passage above the first heading. */
 export function sectionPath({ headingPath, documentTitle }: Citation): string | null {
   const titlePrefix = `${documentTitle}${HEADING_SEPARATOR}`
   if (headingPath.startsWith(titlePrefix)) return headingPath.slice(titlePrefix.length) || null
   return headingPath === documentTitle || headingPath === '' ? null : headingPath
 }
 
-/** A source's excerpt as plain text, without the Markdown syntax of the passage it quotes. */
 export function toPlainExcerpt(excerpt: string): string {
   return toPlainPreview(excerpt.replace(INLINE_HEADING_MARKER, '$1'))
 }
 
-/** The best retrieval score among a message's sources; 0 when there are none. */
 export function topScore(citations: readonly Citation[]): number {
   return citations.reduce((best, citation) => Math.max(best, citation.score), 0)
 }
 
-/**
- * A score as a 0–1 share of the message's best one. Scores are rank-fusion or cosine values,
- * not percentages, so they only mean something relative to each other.
- */
+/** Fusion and cosine scores only mean something relative to each other (DEC-030). */
 export function relativeRelevance(score: number, best: number): number {
   if (best <= 0) return 0
   return Math.min(Math.max(score / best, 0), 1)
@@ -104,7 +92,6 @@ function splitCode(markdown: string): MarkdownSegment[] {
   return segments
 }
 
-/** The source numbers of one marker's list that name an existing source, in order. */
 function citedIn(list: string, sourceCount: number): number[] {
   return list
     .split(MARKER_SEPARATOR)

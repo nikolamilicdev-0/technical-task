@@ -7,11 +7,9 @@ import { conversationsService } from '@/features/chat/services/conversations-ser
 const UNSAVED_CONVERSATION_ID = 'unsaved'
 
 interface UseConversationOptions {
-  /** An answer is streaming into this conversation. */
   streaming: boolean
 }
 
-/** One conversation with every message, oldest first; none for a chat not saved yet. */
 export function useConversation(id: string | null, { streaming }: UseConversationOptions) {
   return useQuery({
     queryKey: conversationsKeys.detail(id ?? UNSAVED_CONVERSATION_ID),

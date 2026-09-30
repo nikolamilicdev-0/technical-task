@@ -1,7 +1,5 @@
-/*
- * @kb/ui design tokens (Material 3 role names). Raw colour values live only in this file:
- * every scheme-aware role resolves through light-dark(), so utilities never need `dark:`.
- */
+/* Material 3 role names. Raw colours live only in this file, and every scheme-aware role
+   resolves through light-dark(), so utilities never need `dark:`. */
 
 :root {
   color-scheme: light dark;

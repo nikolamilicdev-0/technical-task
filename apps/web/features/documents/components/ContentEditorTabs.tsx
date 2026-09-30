@@ -32,7 +32,6 @@ interface ContentEditorTabsProps {
   panelId: (tab: ContentEditorTab) => string
 }
 
-/** Write / Preview switch following the ARIA tabs pattern (roving focus, arrow keys). */
 export function ContentEditorTabs({ active, onChange, tabId, panelId }: ContentEditorTabsProps) {
   const strings = getDocumentsStrings(useT())
   const labels: Record<ContentEditorTab, string> = {

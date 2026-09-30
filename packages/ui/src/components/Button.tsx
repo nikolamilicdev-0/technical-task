@@ -53,7 +53,6 @@ const buttonVariants = cva(
 
 export type ButtonProps = ComponentPropsWithRef<'button'> &
   VariantProps<typeof buttonVariants> & {
-    /** Renders the single child (e.g. a Next `Link`) with button styling instead of a `<button>`. */
     asChild?: boolean
     /** Shows a spinner and ignores activation while keeping focus (no `disabled` focus loss). */
     loading?: boolean

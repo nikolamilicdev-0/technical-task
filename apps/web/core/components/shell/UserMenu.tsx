@@ -18,7 +18,6 @@ const TRIGGER_LAYOUTS = {
 
 interface UserMenuProps {
   email: string | null
-  /** Avatar-only trigger, for the mobile top bar. */
   compact?: boolean
 }
 

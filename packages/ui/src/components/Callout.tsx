@@ -24,7 +24,7 @@ export type CalloutProps = ComponentPropsWithRef<'div'> &
     icon?: IconComponent
   }
 
-/** An inline message such as a form-level error; pass `role="alert"` when it appears after an action. */
+/** Pass `role="alert"` when it appears after an action. */
 export function Callout({ tone, icon: Icon, className, children, ...props }: CalloutProps) {
   return (
     <div className={cn(calloutVariants({ tone }), className)} {...props}>

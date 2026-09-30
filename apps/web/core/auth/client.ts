@@ -5,7 +5,6 @@ import { getPublicEnv } from '@/core/config/env'
 
 let browserClient: SupabaseClient | undefined
 
-/** The browser Supabase client (session in cookies), created on first use. */
 export function getSupabaseBrowserClient(): SupabaseClient {
   if (!browserClient) {
     const env = getPublicEnv()

@@ -21,10 +21,7 @@ const ANSWER_COMPONENTS: Components = { a: CitationLink }
 
 type MessageBubbleProps = Omit<MessageItem, 'key'>
 
-/**
- * One message. A question is a plain-text bubble; an answer is Markdown whose `[n]` markers open
- * the sources listed under it. Memoised, so stored answers stay put while a new one streams.
- */
+/** Memoised, so stored answers stay put while a new one streams. */
 export const MessageBubble = memo(function MessageBubble({
   author,
   content,
@@ -62,7 +59,6 @@ export const MessageBubble = memo(function MessageBubble({
     )
   }
 
-  // Before the first token the answer is a typing indicator saying what happens meanwhile.
   const waiting = streaming && content === ''
   const body = waiting ? (
     <Flex align="center" gap="sm" className="h-7">

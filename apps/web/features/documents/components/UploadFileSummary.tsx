@@ -18,12 +18,11 @@ const UPLOAD_COMPLETE = 1
 interface UploadFileSummaryProps {
   file: File
   uploading: boolean
-  /** Bytes sent as a 0–1 fraction. */
   progress: number
   onRemove: () => void
 }
 
-/** The chosen file, then the upload's progress; at 100 % the server is still reading the text. */
+/** At 100 % the server is still reading the text. */
 export function UploadFileSummary({ file, uploading, progress, onRemove }: UploadFileSummaryProps) {
   const strings = getDocumentsStrings(useT())
   const FileIcon = icons.file

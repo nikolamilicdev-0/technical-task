@@ -1,6 +1,5 @@
 import { type RefObject, useLayoutEffect } from 'react'
 
-/** Grows the textarea with its text; its CSS `max-height` caps it, then it scrolls. */
 export function useAutosizeTextarea(
   ref: RefObject<HTMLTextAreaElement | null>,
   value: string

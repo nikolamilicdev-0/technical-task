@@ -6,8 +6,8 @@ import {
   type FieldErrors,
 } from '@kb/contracts'
 
-/** Status used when the request never got a response (offline, DNS, CORS, server down). */
-export const NETWORK_ERROR_STATUS = 0
+/** A request that never got a response: offline, DNS, CORS or the server down. */
+const NETWORK_ERROR_STATUS = 0
 
 const SERVER_ERROR_STATUS_MIN = 500
 const CLIENT_ERROR_STATUS_MIN = 400
@@ -22,7 +22,6 @@ export interface ApiErrorInit {
   retryAfter?: number
 }
 
-/** Every failed API call surfaces as an ApiError carrying the shared contracts error shape. */
 export class ApiError extends Error {
   readonly status: number
   readonly code: ErrorCode
@@ -58,7 +57,6 @@ export function networkError(): ApiError {
   return new ApiError({ status: NETWORK_ERROR_STATUS, code: 'internal_error' })
 }
 
-/** Builds the ApiError for a failed response: the contracts body when valid, else the status. */
 export function parseErrorBody(
   status: number,
   body: unknown,
@@ -78,7 +76,6 @@ export function parseErrorBody(
   })
 }
 
-/** Network failures and 5xx responses may succeed on retry; 4xx responses never will. */
 export function isRetryableError(error: unknown): boolean {
   return isApiError(error) && (error.isNetworkError || error.status >= SERVER_ERROR_STATUS_MIN)
 }

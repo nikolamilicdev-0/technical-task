@@ -46,7 +46,6 @@ const WITHOUT_DESCRIPTION = { 'aria-describedby': undefined }
 
 export interface DialogProps {
   title: ReactNode
-  /** Accessible name of the close button; copy comes from the app. */
   closeLabel: string
   children?: ReactNode
   description?: ReactNode
@@ -56,17 +55,11 @@ export interface DialogProps {
   open?: boolean
   defaultOpen?: boolean
   onOpenChange?: (open: boolean) => void
-  /** `start` turns the dialog into a drawer on the inline-start edge. */
   placement?: DialogPlacement
   size?: DialogSize
-  /** Keeps the title for screen readers while hiding it visually. */
   hideTitle?: boolean
-  /** Runs before focus moves in; `event.preventDefault()` lets a form focus its own field. */
   onOpenAutoFocus?: (event: Event) => void
-  /**
-   * Runs as focus goes back to the `trigger`, or without one to whatever opened the dialog if it
-   * is still on the page; call `event.preventDefault()` to place focus yourself instead.
-   */
+  /** Without a `trigger` focus returns to the opener; `event.preventDefault()` opts out. */
   onCloseAutoFocus?: (event: Event) => void
 }
 

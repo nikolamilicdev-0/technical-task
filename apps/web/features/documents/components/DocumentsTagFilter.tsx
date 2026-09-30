@@ -7,13 +7,11 @@ import { getDocumentsStrings } from '@/features/documents/lib/documents-strings'
 import { toggleTag } from '@/features/documents/lib/tags'
 
 interface DocumentsTagFilterProps {
-  /** Every tag in use, in display order. */
   tags: readonly string[]
   selected: readonly string[]
   onChange: (selected: string[]) => void
 }
 
-/** Checkbox menu of tags; documents with any checked tag stay visible. */
 export function DocumentsTagFilter({ tags, selected, onChange }: DocumentsTagFilterProps) {
   const strings = getDocumentsStrings(useT())
   const TagIcon = icons.tag

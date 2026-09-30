@@ -14,7 +14,6 @@ import { DocumentDangerZone } from '@/features/documents/components/DocumentDang
 import { DocumentEditorSkeleton } from '@/features/documents/components/DocumentEditorSkeleton'
 import { DocumentForm } from '@/features/documents/components/DocumentForm'
 import { DocumentStatusBar } from '@/features/documents/components/DocumentStatusBar'
-import { RELATIVE_TIME_REFRESH_MS } from '@/features/documents/constants'
 import { useDocument } from '@/features/documents/hooks/useDocument'
 import { useUpdateDocument } from '@/features/documents/hooks/useDocumentMutations'
 import { formatDocumentMeta, getDocumentsStrings } from '@/features/documents/lib/documents-strings'
@@ -25,13 +24,12 @@ interface DocumentEditorClientProps {
   id: string
 }
 
-/** One document: indexing status, the edit form and deletion. */
 export function DocumentEditorClient({ id }: DocumentEditorClientProps) {
   const t = useT()
   const strings = getDocumentsStrings(t)
   const documentQuery = useDocument(id)
   const update = useUpdateDocument(id)
-  const now = useNow(RELATIVE_TIME_REFRESH_MS)
+  const now = useNow()
   const { data: document, error } = documentQuery
 
   // Checked first: a document deleted elsewhere can still be cached here.

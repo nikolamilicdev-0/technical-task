@@ -35,7 +35,6 @@ import {
   XIcon,
 } from 'lucide-react'
 
-/** The app's icon vocabulary; components refer to icons by name so the set stays consistent. */
 export const icons = {
   brand: BookBookmarkIcon,
   documents: FileTextIcon,

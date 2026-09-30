@@ -3,6 +3,7 @@ import { DEFAULT_LOCALE } from '@/core/config/locale'
 type DateInput = string | Date
 
 const MS_PER_SECOND = 1_000
+const JUST_NOW_MS = 60_000
 
 // Largest unit first; a month and a year use their average length in seconds.
 const RELATIVE_UNITS: readonly (readonly [Intl.RelativeTimeFormatUnit, number])[] = [
@@ -19,12 +20,6 @@ function toDate(value: DateInput): Date {
   return value instanceof Date ? value : new Date(value)
 }
 
-/** `Sep 29, 2026`; pass a time zone to pin the calendar day (the default is the viewer's). */
-export function formatDate(value: DateInput, locale = DEFAULT_LOCALE, timeZone?: string): string {
-  return new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeZone }).format(toDate(value))
-}
-
-/** `Sep 29, 2026, 9:05 PM` */
 export function formatDateTime(
   value: DateInput,
   locale = DEFAULT_LOCALE,
@@ -37,7 +32,6 @@ export function formatDateTime(
   }).format(toDate(value))
 }
 
-/** `Sep 1 – 30, 2026`: a period in the viewer's calendar, with the parts both ends share once. */
 export function formatDateRange(from: DateInput, to: DateInput, locale = DEFAULT_LOCALE): string {
   return new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).formatRange(
     toDate(from),
@@ -45,7 +39,7 @@ export function formatDateRange(from: DateInput, to: DateInput, locale = DEFAULT
   )
 }
 
-/** A `YYYY-MM-DD` bucket (usage by day) read and formatted in UTC so it never shifts a day. */
+/** Read and formatted in UTC, so a `YYYY-MM-DD` bucket never shifts a day. */
 export function formatDay(day: string, locale = DEFAULT_LOCALE): string {
   return new Intl.DateTimeFormat(locale, {
     month: 'short',
@@ -54,7 +48,6 @@ export function formatDay(day: string, locale = DEFAULT_LOCALE): string {
   }).format(new Date(`${day}T00:00:00Z`))
 }
 
-/** `5 minutes ago`, `yesterday`, `in 2 hours`, measured against `now`. */
 export function formatRelativeTime(
   value: DateInput,
   now: Date = new Date(),
@@ -68,4 +61,15 @@ export function formatRelativeTime(
     Math.round(seconds / size),
     unit
   )
+}
+
+/** The last minute reads as `justNow`, and so does a clock running slightly ahead. */
+export function formatRecentTime(
+  value: string,
+  now: number,
+  justNow: string,
+  locale = DEFAULT_LOCALE
+): string {
+  if (now - Date.parse(value) < JUST_NOW_MS) return justNow
+  return formatRelativeTime(value, new Date(now), locale)
 }

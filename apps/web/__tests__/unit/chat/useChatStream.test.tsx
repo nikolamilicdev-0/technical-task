@@ -63,7 +63,8 @@ describe('useChatStream', () => {
       usage: { promptTokens: 200, completionTokens: 12, totalTokens: 212, estimated: false },
     })
     expect(answer?.citations.map((citation) => citation.cited)).toEqual([true, false])
-    expect(result.current.state.status).toBe('done')
+    // The commit lands in the cache before React renders the `done` status it follows.
+    await waitFor(() => expect(result.current.state.status).toBe('done'))
     expect(isInvalidated(LIST_KEY)).toBe(true)
     expect(isInvalidated(USAGE_KEY)).toBe(true)
     expect(isInvalidated(DETAIL_KEY)).toBe(false)
@@ -115,7 +116,7 @@ describe('useChatStream', () => {
     expect(result.current.state.pendingUserMessage?.content).toBe(QUESTION)
   })
 
-  it('stop() aborts, keeps the partial answer as aborted and refetches the stored copy', async () => {
+  it('stop() aborts, keeps the partial answer as aborted and marks the stored copy stale', async () => {
     const stream = scriptStream(fetchMock)
     const { result, detail, isInvalidated } = renderChatStream()
 
@@ -133,6 +134,21 @@ describe('useChatStream', () => {
       finishReason: 'aborted',
     })
     expect(isInvalidated(DETAIL_KEY)).toBe(true)
+  })
+
+  it('does not refetch a stopped conversation before the API has stored the partial answer', async () => {
+    const stream = scriptStream(fetchMock)
+    const { result, detail, queryClient } = renderChatStream({ observeDetail: true })
+
+    act(() => void result.current.send(QUESTION))
+    stream.push(META, delta('Install the'))
+    await waitFor(() => expect(result.current.state.draft).toBe('Install the'))
+
+    act(() => result.current.stop())
+    await waitFor(() => expect(detail()?.messages).toHaveLength(2))
+    expect(queryClient.getQueryState(DETAIL_KEY)?.fetchStatus).toBe('idle')
+    expect(fetchMock).toHaveBeenCalledOnce()
+    expect(detail()?.messages[1]).toMatchObject({ content: 'Install the', finishReason: 'aborted' })
   })
 
   it('unmounting mid-answer aborts the request and keeps the partial answer', async () => {

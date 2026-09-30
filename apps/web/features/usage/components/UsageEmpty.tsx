@@ -6,7 +6,6 @@ import { useT } from '@/core/i18n/useT'
 import { icons } from '@/core/icons'
 import { getUsageStrings } from '@/features/usage/lib/usage-strings'
 
-/** Nothing metered in the period yet: the two things that start using tokens. */
 export function UsageEmpty() {
   const t = useT()
   const strings = getUsageStrings(t)

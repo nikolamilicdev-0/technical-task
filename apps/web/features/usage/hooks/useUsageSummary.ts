@@ -5,10 +5,7 @@ import { usageKeys } from '@/features/usage/lib/usage-keys'
 import { toUsageQuery } from '@/features/usage/lib/usage-window'
 import { usageService } from '@/features/usage/services/usage-service'
 
-/**
- * Token usage of the last `days` calendar days. The window is worked out when the request goes
- * out, so a refetch after midnight moves it along; sending a message invalidates it.
- */
+/** The window is computed per request, so a refetch after midnight moves it along. */
 export function useUsageSummary(days: number = USAGE_PERIOD_DAYS) {
   return useQuery({
     queryKey: usageKeys.summary(days),

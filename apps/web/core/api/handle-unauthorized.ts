@@ -22,10 +22,7 @@ export function refreshSessionOnce(): Promise<boolean> {
   return refreshInFlight
 }
 
-/**
- * The API still rejects the session after a refresh: drop it locally and reload on the login
- * page (a full navigation also discards every cached query of the old session). Runs once.
- */
+/** A full navigation to the login page, so no cached query of the old session survives. */
 export async function handleUnauthorized(): Promise<void> {
   if (redirecting) return
   redirecting = true

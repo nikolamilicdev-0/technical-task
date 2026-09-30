@@ -8,7 +8,6 @@ import { DocumentEditorSkeleton } from '@/features/documents/components/Document
 import { DocumentPageShell } from '@/features/documents/components/DocumentPageShell'
 import { getDocumentsStrings } from '@/features/documents/lib/documents-strings'
 
-/** A document id from the URL, or the route's loading state. */
 type DocumentEditorBodyProps = { id: string; loading?: false } | { id?: undefined; loading: true }
 
 export function DocumentEditorBody(props: DocumentEditorBodyProps) {

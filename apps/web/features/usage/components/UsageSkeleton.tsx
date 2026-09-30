@@ -8,7 +8,6 @@ import {
 } from '@/features/usage/constants'
 
 interface UsageSkeletonProps {
-  /** Announced to screen readers while the summary loads. */
   label: string
 }
 
@@ -16,7 +15,6 @@ function SectionHeadingSkeleton() {
   return <Skeleton className="h-5 w-32" />
 }
 
-/** Totals, day bars and model rows in outline, for the route's loading state and the first fetch. */
 export function UsageSkeleton({ label }: UsageSkeletonProps) {
   const tiles = USAGE_TILE_KEYS.map((key) => (
     <Flex key={key} direction="column" gap="sm" className="bg-surface-container-lowest p-4 sm:p-5">

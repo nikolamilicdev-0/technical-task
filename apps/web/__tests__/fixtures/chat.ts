@@ -77,7 +77,6 @@ export function buildConversationList(
   return { items, total, limit: 200, offset: 0 }
 }
 
-/** One frame exactly as the API writes it. */
 export function sseFrame(event: ChatSseEvent): string {
   return `event: ${event.type}\ndata: ${JSON.stringify(event)}\n\n`
 }

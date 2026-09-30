@@ -10,12 +10,10 @@ const INLINE_CHIP_CLASSES = 'mx-0.5 h-5 min-w-5 px-1.5 align-text-bottom text-xs
 
 interface CitationChipProps {
   citation: Citation
-  /** The sources list the chip opens. */
   sourcesId: string
   onReveal: (index: number) => void
 }
 
-/** An inline `[n]` marker: names its source and opens it in the answer's sources. */
 export function CitationChip({ citation, sourcesId, onReveal }: CitationChipProps) {
   const strings = getChatStrings(useT())
   const label = interpolate(strings.sources.chip, {

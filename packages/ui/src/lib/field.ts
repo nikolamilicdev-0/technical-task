@@ -1,4 +1,3 @@
-/** Shared look of text controls (Input, Textarea); invalid state follows `aria-invalid`. */
 export const FIELD_CLASSES = [
   'w-full min-w-0 rounded-md border border-outline bg-surface-container-lowest px-3 text-sm text-on-surface shadow-xs',
   'transition placeholder:text-on-surface-variant/70 hover:border-on-surface-variant',

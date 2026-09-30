@@ -7,11 +7,10 @@ const REMARK_PLUGINS = [remarkGfm]
 
 interface MarkdownContentProps {
   content: string
-  /** Per-use overrides, e.g. rendering `#cite-n` links as citation chips. */
   components?: Components
 }
 
-/** Renders user Markdown with theme typography; raw HTML is never interpreted. */
+/** Raw HTML in the Markdown is never interpreted (there is no rehype-raw). */
 export function MarkdownContent({ content, components }: MarkdownContentProps) {
   const resolvedComponents = components
     ? { ...markdownComponents, ...components }

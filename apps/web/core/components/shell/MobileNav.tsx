@@ -16,7 +16,6 @@ interface MobileNavProps {
   email: string | null
 }
 
-/** Top bar below `md`: the navigation moves into a drawer from the inline-start edge. */
 export function MobileNav({ items, email }: MobileNavProps) {
   const t = useT()
   const [open, setOpen] = useState(false)

@@ -3,11 +3,9 @@ import { Card, Flex, Grid, Skeleton, VisuallyHidden } from '@kb/ui'
 import { DOCUMENT_GRID_COLUMNS, LIST_SKELETON_CARDS } from '@/features/documents/constants'
 
 interface DocumentsListSkeletonProps {
-  /** Announced to screen readers while the documents load. */
   label: string
 }
 
-/** Toolbar and card placeholders, for the route's loading state and the first fetch alike. */
 export function DocumentsListSkeleton({ label }: DocumentsListSkeletonProps) {
   const cards = Array.from({ length: LIST_SKELETON_CARDS }, (_, index) => (
     <Card key={index} as="li">

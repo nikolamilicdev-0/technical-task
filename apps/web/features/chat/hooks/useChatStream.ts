@@ -26,16 +26,12 @@ import { chatStreamService } from '@/features/chat/services/chat-stream-service'
 import type { ChatStreamAction, ChatStreamState, StreamError } from '@/features/chat/types'
 import { usageKeys } from '@/features/usage/lib/usage-keys'
 
-/** One question on its way: its abort switch and the conversation it writes to, once known. */
 interface StreamRun {
   controller: AbortController
   conversationId: string | null
 }
 
-/**
- * Streams answers (DEC-008). A first question creates its conversation and swaps the URL in
- * place; settled answers join the cache, interrupted ones keep their text until refetched.
- */
+/** A first question creates its conversation and swaps the URL in place (DEC-029). */
 export function useChatStream(
   initialConversationId: string | null,
   onConversationCreated?: (id: string) => void
@@ -70,7 +66,9 @@ export function useChatStream(
       )
       void queryClient.invalidateQueries({ queryKey: conversationsKeys.lists() })
       void queryClient.invalidateQueries({ queryKey: usageKeys.all })
-      if (!done) void queryClient.invalidateQueries({ queryKey: detailKey })
+      // A stopped answer is stored only after the API notices the abort; refetching now could
+      // replace the partial answer with a copy that lacks it, so the next mount or focus reloads.
+      if (!done) void queryClient.invalidateQueries({ queryKey: detailKey, refetchType: 'none' })
     },
     [queryClient]
   )
@@ -146,7 +144,6 @@ export function useChatStream(
           return
         }
       }
-      // The body ended without `done` or `error`: the answer was never stored as finished.
       if (runRef.current === run) fail(run, INTERRUPTED_STREAM_ERROR)
     } catch (error) {
       // An interrupted run was committed by whoever interrupted it.
@@ -154,7 +151,6 @@ export function useChatStream(
     }
   }
 
-  /** Asks a question; false when it is blank or an answer is still on its way. */
   const send = (content: string, documentIds?: string[]): boolean => {
     const question = content.trim()
     if (question === '' || isReceiving(stateRef.current.status)) return false

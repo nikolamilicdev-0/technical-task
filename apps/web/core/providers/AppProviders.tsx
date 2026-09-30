@@ -13,7 +13,6 @@ interface AppProvidersProps {
   children: ReactNode
 }
 
-/** App-wide context: copy, server-state cache, tooltips and the toast region. */
 export function AppProviders({ dictionary, children }: AppProvidersProps) {
   return (
     <TranslationProvider dictionary={dictionary}>

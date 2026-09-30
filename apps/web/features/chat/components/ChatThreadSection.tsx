@@ -35,7 +35,6 @@ interface ChatThreadSectionProps {
   onConversationCreated: (id: string) => void
 }
 
-/** One conversation, or a new chat: its messages, the answer in flight and the composer. */
 export function ChatThreadSection({
   initialConversationId,
   onConversationCreated,

@@ -1,11 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import {
-  formatBytes,
-  formatCompactNumber,
-  formatNumber,
-  formatPercent,
-} from '@/core/utils/format-number'
+import { formatBytes, formatNumber, formatPercent } from '@/core/utils/format-number'
 
 describe('formatNumber', () => {
   it('groups thousands', () => {
@@ -15,17 +10,6 @@ describe('formatNumber', () => {
 
   it('respects the locale', () => {
     expect(formatNumber(1_234.5, 'de-DE')).toBe('1.234,5')
-  })
-})
-
-describe('formatCompactNumber', () => {
-  it.each([
-    [999, '999'],
-    [1_234, '1.2K'],
-    [12_000, '12K'],
-    [1_500_000, '1.5M'],
-  ])('shortens %d to %s', (value, expected) => {
-    expect(formatCompactNumber(value)).toBe(expected)
   })
 })
 

@@ -26,7 +26,6 @@ export type GridProps<TElement extends GridElement = 'div'> = {
 } & Omit<ComponentPropsWithRef<TElement>, 'as'> &
   VariantProps<typeof gridVariants>
 
-/** CSS grid with a responsive column count, e.g. `columns={{ base: 1, md: 2, xl: 3 }}`. */
 export function Grid<TElement extends GridElement = 'div'>({
   as,
   columns,

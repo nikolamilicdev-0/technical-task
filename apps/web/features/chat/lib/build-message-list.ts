@@ -6,10 +6,8 @@ import { markCited } from '@/features/chat/lib/citations'
 import { toMessageUsage } from '@/features/chat/lib/commit-stream-result'
 import type { ChatStreamState, MessageItem } from '@/features/chat/types'
 
-/**
- * The thread's bubbles: the stored history, then the exchange in flight. The exchange drops out
- * as soon as the history holds its question, whether the commit or a refetch put it there.
- */
+// The exchange in flight drops out once the history holds its question, whether the commit or a
+// refetch put it there.
 export function buildMessageList(
   history: readonly Message[],
   stream: ChatStreamState

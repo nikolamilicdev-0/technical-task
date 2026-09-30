@@ -4,7 +4,6 @@ import { useCallback, useRef, useState } from 'react'
 import { documentsKeys } from '@/features/documents/lib/documents-keys'
 import { documentsService } from '@/features/documents/services/documents-service'
 
-/** Uploads one file with progress; the lists refetch afterwards, so polling picks the new one up. */
 export function useUploadDocument() {
   const queryClient = useQueryClient()
   const [progress, setProgress] = useState(0)

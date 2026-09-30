@@ -6,7 +6,6 @@ const twMerge = extendTailwindMerge({
   extend: { theme: { text: ['code'] } },
 })
 
-/** Joins class names and resolves Tailwind conflicts so the last class wins. */
 export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(inputs))
 }

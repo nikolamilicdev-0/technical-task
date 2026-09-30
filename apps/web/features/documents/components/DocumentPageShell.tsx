@@ -7,7 +7,6 @@ import { getDictionary } from '@/core/i18n/dictionary'
 import { icons } from '@/core/icons'
 import { getDocumentsStrings } from '@/features/documents/lib/documents-strings'
 
-/** Frame of the create and edit pages: a reading-width column with the way back to the list. */
 export function DocumentPageShell({ children }: { children: ReactNode }) {
   const strings = getDocumentsStrings(getDictionary())
   const BackIcon = icons.back

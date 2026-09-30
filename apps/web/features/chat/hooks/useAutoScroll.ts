@@ -2,10 +2,7 @@ import { useCallback, useEffect, useRef } from 'react'
 
 import { staysPinned } from '@/features/chat/lib/scroll-pinning'
 
-/**
- * Keeps a viewport pinned to the bottom as its content grows, unless the reader scrolled up.
- * The viewport and content elements must stay mounted for the component's lifetime.
- */
+/** The viewport and content must stay mounted: the observers attach once. */
 export function useAutoScroll() {
   const viewportRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)

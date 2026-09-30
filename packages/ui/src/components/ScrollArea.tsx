@@ -7,7 +7,6 @@ import { cn } from '../lib/cn'
 
 type ScrollOrientation = 'vertical' | 'horizontal' | 'both'
 type ScrollbarOrientation = 'vertical' | 'horizontal'
-/** When the scrollbars show: on hover, whenever the content overflows, always, or while scrolling. */
 type ScrollbarVisibility = 'hover' | 'auto' | 'always' | 'scroll'
 
 const SCROLLBARS = {
@@ -19,16 +18,11 @@ const SCROLLBARS = {
 export interface ScrollAreaProps {
   children: ReactNode
   orientation?: ScrollOrientation
-  /** `auto` keeps a scrollbar in view while content overflows, e.g. to show a wide table scrolls. */
   scrollbarVisibility?: ScrollbarVisibility
   className?: string
   viewportClassName?: string
-  /** The scrolling element, e.g. for keeping a chat thread pinned to the bottom. */
   viewportRef?: Ref<HTMLDivElement>
-  /**
-   * Names the scrolling element and puts it in the tab order, so keyboard users can scroll it
-   * with the arrow and page keys. Set it when the content may hold nothing focusable itself.
-   */
+  /** Makes the viewport a named, focusable region, for content with nothing focusable in it. */
   viewportLabel?: string
 }
 

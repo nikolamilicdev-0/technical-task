@@ -13,15 +13,11 @@ import type { DocumentFormValues } from '@/features/documents/types'
 interface DocumentFormProps {
   defaultValues: DocumentFormValues
   submitLabel: string
-  /** Rejects with an ApiError to show the API's validation errors on the fields. */
   onSubmit: (values: CreateDocumentInput) => Promise<unknown>
-  /** Edit mode: saving waits for a change, and a save makes the form clean again. */
   editing?: boolean
-  /** Keeps the submit button busy after success, e.g. while the page navigates away. */
   busy?: boolean
 }
 
-/** Title, tags and Markdown content, validated with the same schema the API uses. */
 export function DocumentForm({
   defaultValues,
   submitLabel,

@@ -8,13 +8,11 @@ import { describeScope, getChatStrings } from '@/features/chat/lib/chat-strings'
 import { isScopeFull, toggleScope } from '@/features/chat/lib/scope'
 
 interface DocumentScopePickerProps {
-  /** Documents chat can answer from right now. */
   documents: readonly DocumentSummary[]
   selected: readonly string[]
   onChange: (selected: string[]) => void
 }
 
-/** Narrows answers to picked documents; nothing picked means every ready document. */
 export function DocumentScopePicker({ documents, selected, onChange }: DocumentScopePickerProps) {
   const strings = getChatStrings(useT())
   const ScopeIcon = icons.scope
@@ -52,7 +50,6 @@ export function DocumentScopePicker({ documents, selected, onChange }: DocumentS
           },
         ]
 
-  // Picked documents read as a badge, so a narrowed answer is visible at a glance.
   const scopeLabel =
     selected.length > 0 ? (
       <Badge tone="primary">{summary}</Badge>

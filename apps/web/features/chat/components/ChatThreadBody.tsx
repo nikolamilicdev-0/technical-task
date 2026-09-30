@@ -7,7 +7,6 @@ import { ChatThreadSkeleton } from '@/features/chat/components/ChatThreadSkeleto
 import { ConversationNotFound } from '@/features/chat/components/ConversationNotFound'
 import { getChatStrings } from '@/features/chat/lib/chat-strings'
 
-/** A conversation id from the URL (null for a new chat), or the route's loading state. */
 type ChatThreadBodyProps =
   { conversationId: string | null; loading?: false } | { conversationId?: undefined; loading: true }
 

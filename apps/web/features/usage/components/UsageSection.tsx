@@ -3,14 +3,11 @@ import type { ReactNode } from 'react'
 
 interface UsageSectionProps {
   title: string
-  /** Set when a list or table inside takes its name from the heading (`aria-labelledby`). */
   headingId?: string
-  /** A short fact about the figures, such as the period they cover. */
   note?: ReactNode
   children: ReactNode
 }
 
-/** One block of the usage page: its heading and note above the figures. */
 export function UsageSection({ title, headingId, note, children }: UsageSectionProps) {
   const noteText = note ? (
     <Text variant="caption" tone="muted">

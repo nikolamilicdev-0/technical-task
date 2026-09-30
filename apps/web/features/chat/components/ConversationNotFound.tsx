@@ -12,7 +12,6 @@ interface ConversationNotFoundProps {
   titleAs?: EmptyStateProps['titleAs']
 }
 
-/** A conversation id that names nothing (deleted, someone else's, or mistyped). */
 export function ConversationNotFound({ titleAs }: ConversationNotFoundProps) {
   const strings = getChatStrings(useT())
   const newChat = (

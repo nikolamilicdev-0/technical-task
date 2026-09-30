@@ -20,7 +20,6 @@ function toUploadForm(file: File): FormData {
   return formData
 }
 
-/** Documents API calls; every response is validated against its contracts schema. */
 export const documentsService = {
   list: (query: DocumentsListParams, signal?: AbortSignal): Promise<DocumentList> =>
     getApiClient().request(apiRoutes.documents.collection, {

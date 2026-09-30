@@ -31,7 +31,6 @@ interface TagsInputProps {
   onChange: (tags: string[]) => void
   onBlur?: () => void
   name?: string
-  /** Receives the text input, e.g. react-hook-form's `field.ref` to focus it on errors. */
   ref?: RefCallback<HTMLInputElement>
   id?: string
   disabled?: boolean
@@ -39,7 +38,6 @@ interface TagsInputProps {
   'aria-invalid'?: boolean
 }
 
-/** Tags as removable chips before a text input: Enter or comma adds, Backspace drops the last. */
 export function TagsInput({
   value,
   onChange,

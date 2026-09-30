@@ -14,10 +14,7 @@ const FORMAT_MESSAGE_KEYS: Readonly<Partial<Record<string, keyof ValidationMessa
   url: 'url',
 }
 
-/**
- * Maps zod issues to dictionary copy. Messages set on a schema still win, and a refinement can
- * pick copy with `params: { messageKey: '<validation key>' }`.
- */
+/** A refinement picks its copy with `params: { messageKey: '<validation key>' }`. */
 export function createZodErrorMap(messages: ValidationMessages): z.core.$ZodErrorMap {
   return (issue) => messageForIssue(issue, messages)
 }

@@ -14,7 +14,6 @@ import { useUsageSummary } from '@/features/usage/hooks/useUsageSummary'
 import { getUsageView } from '@/features/usage/lib/get-usage-view'
 import { getUsageStrings } from '@/features/usage/lib/usage-strings'
 
-/** The usage page below its header: loading, error, empty and the summary itself. */
 export function UsageClient() {
   const t = useT()
   const strings = getUsageStrings(t)

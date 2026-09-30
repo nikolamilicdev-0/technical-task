@@ -35,7 +35,6 @@ const detailKey = documentsKeys.detail(DOCUMENT_ID)
 const listKey = documentsKeys.list(DOCUMENTS_LIST_PARAMS)
 const rejected = new ApiError({ status: 500, code: 'internal_error' })
 
-/** A promise the test settles by hand, to look at the cache while a request is in flight. */
 function deferred<TValue>() {
   let resolve: (value: TValue) => void = () => undefined
   let reject: (reason: unknown) => void = () => undefined
@@ -121,10 +120,14 @@ describe('useDeleteDocument', () => {
 })
 
 describe('useReindexDocument', () => {
-  it('marks the document queued, and restores its failure when the request fails', async () => {
+  it('marks the document queued everywhere, and restores its failure when the request fails', async () => {
     const { queryClient, wrapper, saved, detail } = setup()
-    const failed = { ...saved, embeddingStatus: 'failed' as const, embeddingError: 'Timeout' }
+    const failure = { embeddingStatus: 'failed' as const, embeddingError: 'Timeout' }
+    const failed = { ...saved, ...failure }
+    const failedList = buildDocumentList([buildDocumentSummary(failure)])
     queryClient.setQueryData(detailKey, failed)
+    queryClient.setQueryData(listKey, failedList)
+    const listed = () => queryClient.getQueryData<DocumentList>(listKey)?.items[0]
     const request = deferred<{ queued: number }>()
     service.reindex.mockReturnValue(request.promise)
     const { result } = renderHook(() => useReindexDocument(DOCUMENT_ID), { wrapper })
@@ -132,9 +135,11 @@ describe('useReindexDocument', () => {
     act(() => result.current.mutate())
     await waitFor(() => expect(detail()?.embeddingStatus).toBe('pending'))
     expect(detail()?.embeddingError).toBeNull()
+    expect(listed()?.embeddingStatus).toBe('pending')
 
     act(() => request.reject(rejected))
     await waitFor(() => expect(detail()).toEqual(failed))
+    expect(queryClient.getQueryData(listKey)).toEqual(failedList)
   })
 })
 

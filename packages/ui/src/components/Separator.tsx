@@ -9,7 +9,6 @@ const ORIENTATION_CLASSES = {
 
 export interface SeparatorProps {
   orientation?: SeparatorOrientation
-  /** Purely visual rules are hidden from assistive technology. */
   decorative?: boolean
   className?: string
 }

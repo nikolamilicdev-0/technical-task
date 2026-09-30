@@ -9,7 +9,6 @@ import { getDocumentsStrings } from '@/features/documents/lib/documents-strings'
 type DocumentsEmptyProps =
   { variant: 'none'; onUpload: () => void } | { variant: 'noMatches'; onClearFilters: () => void }
 
-/** No documents at all (with the ways to add one), or none that match the filters. */
 export function DocumentsEmpty(props: DocumentsEmptyProps) {
   const strings = getDocumentsStrings(useT())
   const AddIcon = icons.add

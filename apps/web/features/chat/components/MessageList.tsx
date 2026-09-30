@@ -9,7 +9,6 @@ interface MessageListProps {
   items: readonly MessageItem[]
 }
 
-/** The conversation in order, oldest first, ending with the answer in flight. */
 export function MessageList({ items }: MessageListProps) {
   const strings = getChatStrings(useT())
   const bubbles = items.map(({ key, ...item }) => <MessageBubble key={key} {...item} />)

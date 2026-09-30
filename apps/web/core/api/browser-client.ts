@@ -6,7 +6,7 @@ import { getPublicEnv } from '@/core/config/env'
 
 let apiClient: ApiClient | undefined
 
-/** The browser's API client, created on first use (so builds never need the env). */
+/** Created on first use, so `next build` never needs the env. */
 export function getApiClient(): ApiClient {
   apiClient ??= createApiClient({
     baseUrl: getPublicEnv().apiUrl,

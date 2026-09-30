@@ -3,11 +3,9 @@ import { Flex, Skeleton, VisuallyHidden } from '@kb/ui'
 import { DocumentFormSkeleton } from '@/features/documents/components/DocumentFormSkeleton'
 
 interface DocumentEditorSkeletonProps {
-  /** Announced to screen readers while the document loads. */
   label: string
 }
 
-/** Header, status bar and form placeholders, in the editor's layout. */
 export function DocumentEditorSkeleton({ label }: DocumentEditorSkeletonProps) {
   return (
     <Flex direction="column" gap="lg" role="status">

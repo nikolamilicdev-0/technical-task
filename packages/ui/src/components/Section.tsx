@@ -22,7 +22,6 @@ export type SectionProps<TElement extends SectionElement = 'section'> = {
 } & Omit<ComponentPropsWithRef<TElement>, 'as'> &
   VariantProps<typeof sectionVariants>
 
-/** A vertical band of page content with consistent block spacing. */
 export function Section<TElement extends SectionElement = 'section'>({
   as,
   spacing,

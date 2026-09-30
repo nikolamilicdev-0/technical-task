@@ -4,14 +4,10 @@ import type { ReactNode } from 'react'
 import { ConversationListClient } from '@/features/chat/components/ConversationListClient'
 
 interface ChatLayoutBodyProps {
-  /** The thread of the current route. */
   children: ReactNode
 }
 
-/**
- * The thread, plus the conversation sidebar from `lg` up (the app's own sidebar takes `md`); it
- * fills the viewport below the shell's `h-14` mobile bar, so only the messages scroll.
- */
+// `100dvh - 3.5rem` leaves room for the shell's `h-14` mobile bar, so only the messages scroll.
 export function ChatLayoutBody({ children }: ChatLayoutBodyProps) {
   return (
     <Grid

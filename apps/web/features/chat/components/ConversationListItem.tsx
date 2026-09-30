@@ -7,17 +7,15 @@ import { routes } from '@/core/config/routes'
 import { interpolate } from '@/core/i18n/interpolate'
 import { useT } from '@/core/i18n/useT'
 import { icons } from '@/core/icons'
-import { formatConversationTime, getChatStrings } from '@/features/chat/lib/chat-strings'
+import { formatRecentTime } from '@/core/utils/format-date'
+import { getChatStrings } from '@/features/chat/lib/chat-strings'
 import type { ConversationDialog, ConversationTarget } from '@/features/chat/types'
 
 interface ConversationListItemProps {
   conversation: Conversation
-  /** The conversation on screen. */
   active: boolean
-  /** Shared clock for the relative activity time. */
   now: number
   onNavigate?: () => void
-  /** Opens rename or delete; the opener gets focus back when the dialog closes. */
   onAction: (dialog: ConversationDialog, target: ConversationTarget, opener: HTMLElement) => void
 }
 
@@ -31,7 +29,7 @@ export function ConversationListItem({
   const strings = getChatStrings(useT())
   const title = conversation.title ?? strings.untitled
   const target = { id: conversation.id, title: conversation.title }
-  const time = formatConversationTime(strings, conversation.updatedAt, now)
+  const time = formatRecentTime(conversation.updatedAt, now, strings.list.justNow)
   const RenameIcon = icons.rename
   const DeleteIcon = icons.delete
 

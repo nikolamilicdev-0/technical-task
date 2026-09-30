@@ -5,7 +5,6 @@ import { icons } from '@/core/icons'
 
 interface WordmarkProps {
   name: string
-  /** Makes the mark a link, e.g. back to the signed-in home. */
   href?: string
 }
 

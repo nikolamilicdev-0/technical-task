@@ -22,7 +22,7 @@ loadRootEnv(process.cwd())
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  // Keep `next dev` from writing its own AGENTS.md / CLAUDE.md into the app.
+  // Keeps `next dev` from generating rules files in the app directory.
   agentRules: false,
   transpilePackages: ['@kb/ui', '@kb/contracts'],
   // Derived here so the secret key can never be exposed under a public name.

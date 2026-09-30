@@ -7,9 +7,8 @@ import {
 
 import type { Dictionary } from '@/core/i18n/dictionary'
 import { interpolate, pluralize } from '@/core/i18n/interpolate'
-import { formatRelativeTime } from '@/core/utils/format-date'
 import { formatNumber } from '@/core/utils/format-number'
-import { FINISH_NOTE_REASONS, JUST_NOW_MS } from '@/features/chat/constants'
+import { FINISH_NOTE_REASONS } from '@/features/chat/constants'
 import type {
   FinishNoteReason,
   IndexingNoticeCopy,
@@ -20,12 +19,10 @@ import type {
 
 export type ChatStrings = Dictionary['chat']
 
-/** All chat copy, for server bodies and client components alike. */
 export function getChatStrings(dictionary: Dictionary): ChatStrings {
   return dictionary.chat
 }
 
-/** What the error row says; rate limits and outages say when sending can succeed again. */
 export function describeStreamError(dictionary: Dictionary, error: StreamError): string {
   const copy = dictionary.chat.errors
   const { code, retryAfter } = error
@@ -41,7 +38,6 @@ export function describeStreamError(dictionary: Dictionary, error: StreamError):
   return dictionary.errors.codes[code]
 }
 
-/** `6 sources · 2 cited`, or just the source count when the answer cites none. */
 export function describeSources(strings: ChatStrings, citations: readonly Citation[]): string {
   const sources = pluralize(strings.sources.count, citations.length)
   const citedCount = citations.filter((citation) => citation.cited).length
@@ -50,7 +46,6 @@ export function describeSources(strings: ChatStrings, citations: readonly Citati
   return interpolate(strings.sources.summary, { sources, cited })
 }
 
-/** What the answer placeholder says before the first token: searching, then reading sources. */
 export function describeProgress(strings: ChatStrings, citations: readonly Citation[]): string {
   if (citations.length === 0) return strings.message.searching
   return pluralize(strings.message.reading, citations.length)
@@ -61,11 +56,10 @@ export function describeUsage(strings: ChatStrings, usage: MessageUsage): string
   return interpolate(template, { tokens: formatNumber(usage.totalTokens) })
 }
 
-export function isFinishNoteReason(reason: FinishReason | undefined): reason is FinishNoteReason {
+function isFinishNoteReason(reason: FinishReason | undefined): reason is FinishNoteReason {
   return reason !== undefined && FINISH_NOTE_REASONS.has(reason)
 }
 
-/** Why an answer ended early, or null when it simply finished. */
 export function describeFinish(
   strings: ChatStrings,
   reason: FinishReason | undefined
@@ -84,10 +78,7 @@ export function describeIndexing(
   }
 }
 
-/**
- * The thread's heading: the conversation's title, "New chat" before one exists, and null while
- * a saved conversation loads (a placeholder beats flashing "Untitled").
- */
+/** Null while a saved conversation loads: a placeholder beats flashing "Untitled". */
 export function describeThreadTitle(
   strings: ChatStrings,
   view: ThreadView,
@@ -99,19 +90,8 @@ export function describeThreadTitle(
   return title ?? strings.untitled
 }
 
-/** The scope picker's summary: every document, or how many are picked. */
 export function describeScope(strings: ChatStrings, selectedCount: number): string {
   return selectedCount === 0 ? strings.scope.all : pluralize(strings.scope.selected, selectedCount)
-}
-
-/** `just now`, `3 hours ago`; a clock running slightly ahead also reads as just now. */
-export function formatConversationTime(
-  strings: ChatStrings,
-  updatedAt: string,
-  now: number
-): string {
-  if (now - Date.parse(updatedAt) < JUST_NOW_MS) return strings.list.justNow
-  return formatRelativeTime(updatedAt, new Date(now))
 }
 
 export function describeCharacterCount(strings: ChatStrings, length: number): string {

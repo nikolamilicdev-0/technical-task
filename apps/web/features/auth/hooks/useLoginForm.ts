@@ -11,7 +11,6 @@ import { loginSchema } from '@/features/auth/schema'
 import { authService } from '@/features/auth/services/auth-service'
 import type { LoginValues } from '@/features/auth/types'
 
-/** Sign-in form state; on success returns the user to `next` (validated) or the documents. */
 export function useLoginForm(next: string | undefined) {
   const strings = getAuthStrings(useT())
   const resolver = useZodResolver(loginSchema)

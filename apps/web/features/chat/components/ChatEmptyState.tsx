@@ -9,13 +9,10 @@ import { getChatStrings } from '@/features/chat/lib/chat-strings'
 const PROMPT_COLUMNS = { base: 1, sm: 2 } as const
 
 interface ChatEmptyStateProps {
-  /** False once the documents have loaded and there are none to ask about. */
   hasDocuments: boolean
-  /** Puts an example question into the composer. */
   onPickPrompt: (prompt: string) => void
 }
 
-/** A new chat: example questions to start from, or the way to add a first document. */
 export function ChatEmptyState({ hasDocuments, onPickPrompt }: ChatEmptyStateProps) {
   const strings = getChatStrings(useT())
 

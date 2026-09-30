@@ -14,7 +14,6 @@ interface DocumentTagsFieldProps {
   control: Control<DocumentFormValues, unknown, CreateDocumentInput>
 }
 
-/** The form's tags, labelled and described like the other fields. */
 export function DocumentTagsField({ control }: DocumentTagsFieldProps) {
   const strings = getDocumentsStrings(useT())
   // Destructured here: the compiler lint would treat the whole `field` object as a ref.

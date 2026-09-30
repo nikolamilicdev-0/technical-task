@@ -3,14 +3,14 @@ import { Grid } from '@kb/ui'
 
 import { useNow } from '@/core/hooks/useNow'
 import { DocumentCard } from '@/features/documents/components/DocumentCard'
-import { DOCUMENT_GRID_COLUMNS, RELATIVE_TIME_REFRESH_MS } from '@/features/documents/constants'
+import { DOCUMENT_GRID_COLUMNS } from '@/features/documents/constants'
 
 interface DocumentsGridProps {
   documents: readonly DocumentSummary[]
 }
 
 export function DocumentsGrid({ documents }: DocumentsGridProps) {
-  const now = useNow(RELATIVE_TIME_REFRESH_MS)
+  const now = useNow()
   const cards = documents.map((document) => (
     <DocumentCard key={document.id} document={document} now={now} />
   ))

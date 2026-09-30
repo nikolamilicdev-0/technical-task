@@ -7,7 +7,6 @@ import { UsageSkeleton } from '@/features/usage/components/UsageSkeleton'
 import { getUsageStrings } from '@/features/usage/lib/usage-strings'
 
 interface UsageBodyProps {
-  /** The route's loading state: the same skeleton the client shows while it fetches. */
   loading?: boolean
 }
 

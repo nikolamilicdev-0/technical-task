@@ -12,7 +12,7 @@ import { useSignupForm } from '@/features/auth/hooks/useSignupForm'
 import { getAuthStrings } from '@/features/auth/lib/auth-strings'
 
 interface SignupFormClientProps {
-  /** Server-rendered heading and footer, hidden once the confirmation state takes over. */
+  /** Server-rendered, and hidden once the confirmation state takes over. */
   header: ReactNode
   footer: ReactNode
 }

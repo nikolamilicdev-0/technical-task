@@ -8,10 +8,7 @@ interface StreamStatusProps {
   status: ChatStreamStatus
 }
 
-/**
- * Announces the answer's progress to screen readers. Its text changes with the status only,
- * never per token; a failure is announced by the error row instead.
- */
+/** Changes with the status only, never per token; the error row announces a failure. */
 export function StreamStatus({ status }: StreamStatusProps) {
   const strings = getChatStrings(useT())
   return (

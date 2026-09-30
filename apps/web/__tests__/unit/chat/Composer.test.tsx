@@ -71,7 +71,11 @@ describe('Composer', () => {
     const { user, onSubmit, field } = setup()
     await user.type(field, '   {Enter}')
     expect(onSubmit).not.toHaveBeenCalled()
-    expect(screen.getByRole('button', { name: composer.send })).toBeDisabled()
+
+    const send = screen.getByRole('button', { name: composer.send })
+    expect(send).toHaveAttribute('aria-disabled', 'true')
+    await user.click(send)
+    expect(onSubmit).not.toHaveBeenCalled()
   })
 
   it('offers Stop instead of Send while the answer streams', async () => {
@@ -80,6 +84,7 @@ describe('Composer', () => {
 
     await user.click(screen.getByRole('button', { name: composer.stop }))
     expect(onStop).toHaveBeenCalledOnce()
+    expect(field).toHaveFocus()
 
     await user.type(field, '{Enter}')
     expect(onSubmit).not.toHaveBeenCalled()

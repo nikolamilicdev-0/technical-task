@@ -10,12 +10,10 @@ import { getUsageStrings } from '@/features/usage/lib/usage-strings'
 
 interface UsageStatTilesProps {
   totals: UsageTotals
-  /** The period the totals cover, as the summary echoes it. */
   from: string
   to: string
 }
 
-/** Total, prompt and completion tokens plus requests, as one strip of labelled figures. */
 export function UsageStatTiles({ totals, from, to }: UsageStatTilesProps) {
   const strings = getUsageStrings(useT())
 

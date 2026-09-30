@@ -51,7 +51,6 @@ export type FlexProps<TElement extends FlexElement = 'div'> = {
 } & Omit<ComponentPropsWithRef<TElement>, 'as'> &
   VariantProps<typeof flexVariants>
 
-/** Flexbox layout; `className` only carries what the props cannot express. */
 export function Flex<TElement extends FlexElement = 'div'>({
   as,
   direction,

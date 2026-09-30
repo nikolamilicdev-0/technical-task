@@ -122,6 +122,27 @@ describe('ConversationListClient', () => {
     expect(listedTitles()).toContainEqual(expect.stringMatching(/Setting up the CLI/))
   })
 
+  it('starts every rename from the stored title, dropping a cancelled edit and its error', async () => {
+    const { user } = setup()
+    const openRename = () =>
+      user.click(screen.getByRole('button', { name: 'Rename “Setting up the CLI”' }))
+
+    await openRename()
+    const field = await screen.findByRole('textbox', { name: en.chat.rename.field })
+    await user.clear(field)
+    await user.click(screen.getByRole('button', { name: en.chat.rename.submit }))
+    expect(await screen.findByText(en.validation.required)).toBeInTheDocument()
+    await user.type(field, 'Half-typed')
+    await user.click(screen.getByRole('button', { name: en.common.cancel }))
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+
+    await openRename()
+    const reopened = await screen.findByRole('textbox', { name: en.chat.rename.field })
+    expect(reopened).toHaveValue('Setting up the CLI')
+    expect(screen.queryByText(en.validation.required)).not.toBeInTheDocument()
+    expect(service.rename).not.toHaveBeenCalled()
+  })
+
   it('says so when there are no conversations yet', () => {
     setup(buildConversationList([]))
     expect(screen.getByText(en.chat.list.empty.title)).toBeInTheDocument()

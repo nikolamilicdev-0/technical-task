@@ -12,12 +12,10 @@ const PARSE_BASE = 'http://same-origin.invalid'
 
 export interface AuthRedirectInput {
   pathname: string
-  /** The raw query string including `?`, or an empty string. */
   search: string
   isAuthenticated: boolean
 }
 
-/** Where the proxy sends a request (a same-site path), or null to let it through. */
 export function resolveAuthRedirect({
   pathname,
   search,
@@ -32,15 +30,14 @@ export function resolveAuthRedirect({
   return buildLoginPath({ next: `${pathname}${search}` })
 }
 
-export function isProtectedPath(pathname: string): boolean {
+function isProtectedPath(pathname: string): boolean {
   return PROTECTED_PREFIXES.some((prefix) => isPathWithin(pathname, prefix))
 }
 
-export function isAuthRoute(pathname: string): boolean {
+function isAuthRoute(pathname: string): boolean {
   return AUTH_ROUTES.includes(pathname)
 }
 
-/** Login URL that returns the user to `next` afterwards and can explain why they landed there. */
 export function buildLoginPath(params: { next?: string; reason?: string } = {}): string {
   const query = new URLSearchParams()
   if (params.next) query.set(AUTH_SEARCH_PARAMS.next, params.next)
@@ -49,10 +46,7 @@ export function buildLoginPath(params: { next?: string; reason?: string } = {}):
   return queryString ? `${routes.login}?${queryString}` : routes.login
 }
 
-/**
- * Accepts only same-site paths, so `?next=` cannot become an open redirect; anything else
- * (other hosts, `//host`, `/\host`, auth pages) falls back to the default signed-in page.
- */
+/** Same-site paths only, so `?next=` cannot become an open redirect (`//host`, `/\host`). */
 export function getSafeNextPath(next: string | null | undefined): string {
   if (!next?.startsWith('/')) return DEFAULT_AUTHENTICATED_ROUTE
   const url = new URL(next, PARSE_BASE)

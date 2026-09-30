@@ -14,7 +14,6 @@ import { UploadDocumentDialog } from '@/features/documents/components/UploadDocu
 import { useDocumentsList } from '@/features/documents/hooks/useDocumentsList'
 import { describeListCount, getDocumentsStrings } from '@/features/documents/lib/documents-strings'
 
-/** The documents page below its header: loading, error, empty, filtered and full states. */
 export function DocumentsListClient() {
   const t = useT()
   const strings = getDocumentsStrings(t)

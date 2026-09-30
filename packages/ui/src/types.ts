@@ -2,7 +2,6 @@ import type { ComponentType, ReactNode } from 'react'
 
 export type Breakpoint = 'base' | 'sm' | 'md' | 'lg' | 'xl'
 
-/** One value for every breakpoint, or a mobile-first map such as `{ base: 1, md: 3 }`. */
 export type Responsive<TValue> = TValue | Partial<Record<Breakpoint, TValue>>
 
 export type ResponsiveClassMap<TValue extends PropertyKey> = Record<
@@ -18,7 +17,6 @@ export type GridColumns = 1 | 2 | 3 | 4 | 5 | 6 | 12
 
 export type GridSpan = GridColumns | 'full'
 
-/** Any icon component that accepts a class name, such as a lucide-react icon. */
 export type IconComponent = ComponentType<{
   className?: string
   'aria-hidden'?: boolean | 'true' | 'false'

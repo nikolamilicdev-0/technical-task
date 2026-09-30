@@ -15,7 +15,6 @@ export interface EmptyStateProps {
   className?: string
 }
 
-/** Designed empty, error and not-found moments: an icon, what happened and what to do next. */
 export function EmptyState({
   title,
   icon: Icon,

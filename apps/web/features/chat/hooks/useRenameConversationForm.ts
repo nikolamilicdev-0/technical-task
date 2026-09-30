@@ -6,14 +6,10 @@ import { applyFieldErrors, getServerError, setServerError } from '@/core/api/for
 import { getErrorMessage } from '@/core/api/get-error-message'
 import { useZodResolver } from '@/core/forms/useZodResolver'
 import { useT } from '@/core/i18n/useT'
-import { RENAME_FORM_FIELDS } from '@/features/chat/constants'
+import { RENAME_DEFAULT_VALUES, RENAME_FORM_FIELDS } from '@/features/chat/constants'
 import { useRenameConversation } from '@/features/chat/hooks/useConversationMutations'
 import type { ConversationTarget, RenameConversationValues } from '@/features/chat/types'
 
-/**
- * The rename form for `target`, validated with the API's own schema; it starts from the stored
- * title (empty for an untitled conversation). `focusTitle` selects it, ready to be replaced.
- */
 export function useRenameConversationForm(
   target: ConversationTarget | null,
   onRenamed: () => void
@@ -23,10 +19,15 @@ export function useRenameConversationForm(
   const resolver = useZodResolver(updateConversationSchema)
   const form = useForm<RenameConversationValues, unknown, UpdateConversationInput>({
     resolver,
-    values: { title: target?.title ?? '' },
+    defaultValues: RENAME_DEFAULT_VALUES,
   })
 
-  const focusTitle = () => form.setFocus('title', { shouldSelect: true })
+  // Each opening starts from the stored title, dropping a cancelled edit and its errors;
+  // `keepFieldsRef` keeps the input registered, so it can be focused right away.
+  const startEditing = () => {
+    form.reset({ title: target?.title ?? '' }, { keepFieldsRef: true })
+    form.setFocus('title', { shouldSelect: true })
+  }
 
   const submit = form.handleSubmit(async (input) => {
     if (!target) return
@@ -39,5 +40,5 @@ export function useRenameConversationForm(
     }
   })
 
-  return { form, submit, focusTitle, serverError: getServerError(form.formState.errors) }
+  return { form, submit, startEditing, serverError: getServerError(form.formState.errors) }
 }

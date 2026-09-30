@@ -9,7 +9,6 @@ const DEFAULT_EVENT = 'message'
 const NUL = '\u0000'
 const DIGITS = /^\d+$/
 
-/** Parser state across lines: the frame being built plus the stream-level id and retry. */
 interface FrameState {
   event: string
   data: string[]
@@ -22,10 +21,8 @@ interface LineSplit {
   rest: string
 }
 
-/**
- * Reads a `text/event-stream` body by the HTML standard's rules. One leniency: a final frame the
- * stream ends without its blank line is still delivered, as nothing else could complete it.
- */
+// The HTML standard's event-stream rules, with one leniency: a final frame the stream ends
+// without its blank line is still delivered.
 export async function* parseSse(
   stream: ReadableStream<Uint8Array>
 ): AsyncGenerator<SseMessage, void, undefined> {
@@ -56,7 +53,7 @@ export async function* parseSse(
   }
 }
 
-/** Complete lines and the unfinished rest; a chunk-final CR waits in case an LF follows. */
+/** A chunk-final CR waits for the next chunk, in case an LF follows it. */
 function splitLines(buffer: string, final: boolean): LineSplit {
   const lines: string[] = []
   let start = 0
@@ -71,7 +68,6 @@ function splitLines(buffer: string, final: boolean): LineSplit {
   return { lines, rest: final ? '' : rest }
 }
 
-/** Applies one line; a blank line completes the frame and may yield a message. */
 function processLine(state: FrameState, line: string): SseMessage | null {
   if (line === '') return dispatch(state)
   if (line.startsWith(FIELD_SEPARATOR)) return null
@@ -101,7 +97,6 @@ function applyField(state: FrameState, field: string, value: string): void {
   }
 }
 
-/** Ends the frame; one without data lines is dropped, as the standard requires. */
 function dispatch(state: FrameState): SseMessage | null {
   const { event, data, lastEventId, retry } = state
   state.event = ''

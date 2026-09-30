@@ -14,16 +14,13 @@ import type { SourceFocusRequest } from '@/features/chat/types'
 const SOURCE_COLUMNS = { base: 1, xl: 2 } as const
 
 interface SourcesListProps {
-  /** Referenced by the answer's citation chips (`aria-controls`). */
   id: string
   citations: readonly Citation[]
   open: boolean
   onOpenChange: (open: boolean) => void
-  /** The source a chip asked for: it is scrolled to, highlighted and focused. */
   focusRequest: SourceFocusRequest | null
 }
 
-/** The passages an answer was written from, collapsed behind a summary until asked for. */
 export function SourcesList({ id, citations, open, onOpenChange, focusRequest }: SourcesListProps) {
   const strings = getChatStrings(useT())
   const listRef = useRef<HTMLOListElement>(null)

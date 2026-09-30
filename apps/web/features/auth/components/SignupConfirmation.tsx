@@ -1,5 +1,3 @@
-'use client'
-
 import { Button, EmptyState } from '@kb/ui'
 import Link from 'next/link'
 
@@ -9,7 +7,6 @@ import { useT } from '@/core/i18n/useT'
 import { icons } from '@/core/icons'
 import { getAuthStrings } from '@/features/auth/lib/auth-strings'
 
-/** Shown instead of the form when the project requires email confirmation. */
 export function SignupConfirmation({ email }: { email: string }) {
   const { confirmation } = getAuthStrings(useT())
   const description = interpolate(confirmation.description, { email })

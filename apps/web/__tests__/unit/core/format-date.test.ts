@@ -1,25 +1,22 @@
 import { describe, expect, it } from 'vitest'
 
-import { formatDate, formatDateTime, formatDay, formatRelativeTime } from '@/core/utils/format-date'
+import {
+  formatDateTime,
+  formatDay,
+  formatRecentTime,
+  formatRelativeTime,
+} from '@/core/utils/format-date'
 
 // ICU separates the time and AM/PM with a narrow no-break space; compare plain spaces.
 const normalizeSpaces = (value: string): string => value.replace(/\s/g, ' ')
 
-describe('formatDate', () => {
-  it('formats the calendar day in the given time zone', () => {
-    expect(formatDate('2026-09-29T23:30:00Z', 'en', 'UTC')).toBe('Sep 29, 2026')
-    expect(formatDate('2026-09-29T23:30:00Z', 'en', 'Asia/Tokyo')).toBe('Sep 30, 2026')
-  })
-
-  it('accepts Date objects', () => {
-    expect(formatDate(new Date('2026-01-05T08:00:00Z'), 'en', 'UTC')).toBe('Jan 5, 2026')
-  })
-})
-
 describe('formatDateTime', () => {
-  it('adds a short time', () => {
+  it('shows the day and a short time in the given time zone', () => {
     expect(normalizeSpaces(formatDateTime('2026-09-29T21:05:00Z', 'en', 'UTC'))).toBe(
       'Sep 29, 2026, 9:05 PM'
+    )
+    expect(normalizeSpaces(formatDateTime('2026-09-29T21:05:00Z', 'en', 'Asia/Tokyo'))).toBe(
+      'Sep 30, 2026, 6:05 AM'
     )
   })
 })
@@ -45,5 +42,18 @@ describe('formatRelativeTime', () => {
     ['2026-09-29T14:00:00Z', 'in 2 hours'],
   ])('describes %s relative to noon', (value, expected) => {
     expect(formatRelativeTime(value, now)).toBe(expected)
+  })
+})
+
+describe('formatRecentTime', () => {
+  const now = Date.parse('2026-09-30T12:00:00.000Z')
+
+  it('reads the last minute, and a clock running slightly ahead, as just now', () => {
+    expect(formatRecentTime('2026-09-30T11:59:30.000Z', now, 'just now')).toBe('just now')
+    expect(formatRecentTime('2026-09-30T12:00:05.000Z', now, 'just now')).toBe('just now')
+  })
+
+  it('describes older times relatively', () => {
+    expect(formatRecentTime('2026-09-30T09:00:00.000Z', now, 'just now')).toBe('3 hours ago')
   })
 })

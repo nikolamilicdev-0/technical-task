@@ -16,14 +16,12 @@ export const routes = {
   usage: '/usage',
 } as const
 
-/** Signed-in areas: each prefix also covers its nested routes. */
 export const PROTECTED_PREFIXES: readonly string[] = [
   routes.documents.list,
   routes.chat.index,
   routes.usage,
 ]
 
-/** Pages a signed-in user is sent away from. */
 export const AUTH_ROUTES: readonly string[] = [routes.login, routes.signup]
 
 export const DEFAULT_AUTHENTICATED_ROUTE = routes.documents.list

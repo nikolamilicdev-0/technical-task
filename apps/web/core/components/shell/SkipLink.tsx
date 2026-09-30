@@ -5,7 +5,6 @@ interface SkipLinkProps {
   label: string
 }
 
-/** First focusable element: lets keyboard users jump past the navigation. */
 export function SkipLink({ targetId, label }: SkipLinkProps) {
   const href = `#${targetId}`
   // Parked above the viewport rather than `sr-only`, so it keeps the button's box when shown.

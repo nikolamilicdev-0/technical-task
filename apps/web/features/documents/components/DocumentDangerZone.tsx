@@ -15,7 +15,6 @@ interface DocumentDangerZoneProps {
   document: Pick<Document, 'id' | 'title'>
 }
 
-/** Deleting, behind a confirmation; the list is shown again once the document is gone. */
 export function DocumentDangerZone({ document }: DocumentDangerZoneProps) {
   const strings = getDocumentsStrings(useT())
   const router = useRouter()

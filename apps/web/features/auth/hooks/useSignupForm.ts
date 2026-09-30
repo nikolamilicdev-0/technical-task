@@ -12,10 +12,6 @@ import { signupSchema } from '@/features/auth/schema'
 import { authService } from '@/features/auth/services/auth-service'
 import type { SignupResult, SignupValues } from '@/features/auth/types'
 
-/**
- * Sign-up form state. Without email confirmation the user is signed in and redirected; with it,
- * `confirmationEmail` is set so the form can switch to the "check your inbox" state.
- */
 export function useSignupForm() {
   const strings = getAuthStrings(useT())
   const resolver = useZodResolver(signupSchema)

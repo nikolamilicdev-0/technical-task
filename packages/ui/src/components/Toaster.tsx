@@ -25,9 +25,7 @@ const TOAST_CLASS_NAMES = {
 } as const satisfies ToastClassnames
 
 export interface ToasterProps {
-  /** Accessible name of the notification region. */
   label: string
-  /** Accessible name of each toast's close button. */
   closeLabel: string
   position?: SonnerToasterProps['position']
 }

@@ -23,7 +23,6 @@ export type ContainerProps<TElement extends ContainerElement = 'div'> = {
 } & Omit<ComponentPropsWithRef<TElement>, 'as'> &
   VariantProps<typeof containerVariants>
 
-/** Centred, width-capped page column with responsive inline padding. */
 export function Container<TElement extends ContainerElement = 'div'>({
   as,
   size,

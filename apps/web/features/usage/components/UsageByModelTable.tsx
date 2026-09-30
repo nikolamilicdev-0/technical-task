@@ -23,7 +23,6 @@ const CELL =
 const NUMERIC_CELL = cn(CELL, 'text-end tabular-nums')
 const COUNT_COLUMNS: ReadonlySet<UsageModelColumnKey> = new Set(USAGE_MODEL_COUNT_KEYS)
 
-/** Tokens and requests per provider, model and kind; it scrolls sideways on narrow screens. */
 export function UsageByModelTable({ models }: UsageByModelTableProps) {
   const strings = getUsageStrings(useT())
   const headingId = useId()

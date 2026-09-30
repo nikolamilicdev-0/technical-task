@@ -212,7 +212,6 @@
   },
   "chat": {
     "title": "Chat",
-    "description": "Ask questions and get answers grounded in your documents.",
     "conversationMetaTitle": "Conversation",
     "newChat": "New chat",
     "untitled": "Untitled conversation",

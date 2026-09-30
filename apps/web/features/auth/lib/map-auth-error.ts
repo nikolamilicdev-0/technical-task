@@ -4,7 +4,6 @@ import type { AuthErrorKind } from '@/features/auth/types'
 
 const TOO_MANY_REQUESTS_STATUS = 429
 
-// Supabase Auth error codes (auth-js ErrorCode) mapped to the copy we show for them.
 const KIND_BY_CODE: Readonly<Partial<Record<string, AuthErrorKind>>> = {
   invalid_credentials: 'invalidCredentials',
   email_not_confirmed: 'emailNotConfirmed',
@@ -17,7 +16,6 @@ const KIND_BY_CODE: Readonly<Partial<Record<string, AuthErrorKind>>> = {
   email_provider_disabled: 'signupDisabled',
 }
 
-/** Classifies a Supabase Auth failure; unrecognised errors fall back to generic copy. */
 export function mapAuthError(error: unknown): AuthErrorKind {
   if (!isAuthError(error)) return 'unknown'
   if (isAuthRetryableFetchError(error)) return 'network'

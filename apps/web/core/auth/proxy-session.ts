@@ -10,10 +10,7 @@ function applyHeaders(response: NextResponse, headers: HeaderMap): void {
   Object.entries(headers).forEach(([key, value]) => response.headers.set(key, value))
 }
 
-/**
- * Refreshes the Supabase session cookies on every request, then applies the auth redirects.
- * Redirects carry the refreshed cookies too, so a rotated refresh token is never dropped.
- */
+/** Redirects carry the refreshed cookies too, so a rotated refresh token is never dropped. */
 export async function updateSession(request: NextRequest): Promise<NextResponse> {
   const env = getPublicEnv()
   let response = NextResponse.next({ request })

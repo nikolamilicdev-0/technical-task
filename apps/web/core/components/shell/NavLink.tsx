@@ -10,7 +10,6 @@ import type { NavItem } from '@/core/types'
 
 interface NavLinkProps {
   item: NavItem
-  /** Lets a drawer close itself once a destination is picked. */
   onNavigate?: () => void
 }
 

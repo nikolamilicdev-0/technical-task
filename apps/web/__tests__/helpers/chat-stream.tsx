@@ -17,6 +17,7 @@ import {
 } from '@/__tests__/fixtures/chat'
 import { CONVERSATIONS_LIST_PARAMS } from '@/features/chat/constants'
 import { useChatStream } from '@/features/chat/hooks/useChatStream'
+import { useConversation } from '@/features/chat/hooks/useConversation'
 import { conversationsKeys } from '@/features/chat/lib/conversations-keys'
 import { usageKeys } from '@/features/usage/lib/usage-keys'
 
@@ -107,15 +108,20 @@ export function requestBody(fetchMock: FetchMock, call: number): unknown {
 interface RenderChatStreamOptions {
   conversationId?: string | null
   history?: Message[]
+  /** Mounts the conversation query as the thread does, so an invalidation can refetch it. */
+  observeDetail?: boolean
 }
 
-/** The hook over a cache holding the conversation, the list and a usage query to invalidate. */
 export function renderChatStream({
   conversationId = CONVERSATION_ID,
   history = [],
+  observeDetail = false,
 }: RenderChatStreamOptions = {}) {
   const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+    defaultOptions: {
+      queries: { retry: false, staleTime: Infinity },
+      mutations: { retry: false },
+    },
   })
   if (conversationId) {
     queryClient.setQueryData(
@@ -129,7 +135,13 @@ export function renderChatStream({
   const wrapper = ({ children }: { children: ReactNode }) => (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   )
-  const hook = renderHook(() => useChatStream(conversationId, onConversationCreated), { wrapper })
+  const hook = renderHook(
+    () => {
+      useConversation(observeDetail ? conversationId : null, { streaming: false })
+      return useChatStream(conversationId, onConversationCreated)
+    },
+    { wrapper }
+  )
   const detail = (id = conversationId ?? '') =>
     queryClient.getQueryData<ConversationDetail>(conversationsKeys.detail(id))
   const isInvalidated = (key: QueryKey) => queryClient.getQueryState(key)?.isInvalidated

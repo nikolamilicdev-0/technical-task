@@ -1,17 +1,13 @@
 import { useCallback, useState } from 'react'
 
 interface ChatSessionState {
-  /** Remount key of the thread: a new one abandons the old thread and its answer. */
   key: number
   conversationId: string | null
   /** A conversation the session created, until the URL shows it. */
   adopting: string | null
 }
 
-/**
- * Ties the thread to the URL: a conversation the session created is adopted in place, while
- * any other change (new chat, another conversation, back and forward) starts a fresh session.
- */
+/** Adopts a conversation it created in place; any other URL change starts a fresh session. */
 export function useChatSession(urlConversationId: string | null) {
   const [session, setSession] = useState<ChatSessionState>({
     key: 0,

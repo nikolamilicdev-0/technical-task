@@ -13,17 +13,23 @@ describe('getIndexingRefetchInterval', () => {
   it.each(['pending', 'processing'] as const)(
     'polls every 3 s while a document is %s',
     (status) => {
-      expect(getIndexingRefetchInterval([withStatus('ready'), withStatus(status)])).toBe(3_000)
+      const documents = [withStatus('ready'), withStatus(status)]
+      expect(getIndexingRefetchInterval(documents, 'success')).toBe(3_000)
     }
   )
 
   it('stops once every document is ready or failed', () => {
-    expect(getIndexingRefetchInterval([withStatus('ready'), withStatus('failed')])).toBe(false)
+    const documents = [withStatus('ready'), withStatus('failed')]
+    expect(getIndexingRefetchInterval(documents, 'success')).toBe(false)
   })
 
   it('does not poll without documents', () => {
-    expect(getIndexingRefetchInterval(undefined)).toBe(false)
-    expect(getIndexingRefetchInterval([])).toBe(false)
+    expect(getIndexingRefetchInterval(undefined, 'pending')).toBe(false)
+    expect(getIndexingRefetchInterval([], 'success')).toBe(false)
+  })
+
+  it('stops polling after a failed fetch, even while cached documents are indexing', () => {
+    expect(getIndexingRefetchInterval([withStatus('processing')], 'error')).toBe(false)
   })
 })
 

@@ -1,6 +1,5 @@
 import type { ConversationsListParams } from '@/features/chat/types'
 
-/** React Query keys: invalidating `lists()` or `details()` covers every list or conversation. */
 export const conversationsKeys = {
   all: ['conversations'] as const,
   lists: () => [...conversationsKeys.all, 'list'] as const,

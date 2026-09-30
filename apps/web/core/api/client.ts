@@ -49,7 +49,6 @@ function validate<TData>(body: unknown, schema: z.ZodType<TData> | undefined, st
   return result.data
 }
 
-/** Typed JSON client for the Nest API: Bearer auth, contracts errors, one retry after a 401. */
 export function createApiClient({
   baseUrl,
   getAccessToken,
@@ -59,7 +58,6 @@ export function createApiClient({
   const buildUrl = (path: string, query?: QueryParams): string =>
     `${baseUrl}${API_PREFIX}${path}${toQueryString(query)}`
 
-  // Runs a call with the current token; on 401 refreshes once and replays it with the new token.
   async function withSession<TResult extends { status: number }>(
     run: (token: string | null) => Promise<TResult>
   ): Promise<TResult> {

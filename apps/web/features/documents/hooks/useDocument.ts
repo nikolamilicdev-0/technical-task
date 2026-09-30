@@ -4,12 +4,11 @@ import { documentsKeys } from '@/features/documents/lib/documents-keys'
 import { getIndexingRefetchInterval } from '@/features/documents/lib/get-refetch-interval'
 import { documentsService } from '@/features/documents/services/documents-service'
 
-/** One document with its content; polls until it has been indexed. */
 export function useDocument(id: string) {
   return useQuery({
     queryKey: documentsKeys.detail(id),
     queryFn: ({ signal }) => documentsService.get(id, signal),
-    refetchInterval: (query) =>
-      getIndexingRefetchInterval(query.state.data ? [query.state.data] : undefined),
+    refetchInterval: ({ state }) =>
+      getIndexingRefetchInterval(state.data ? [state.data] : undefined, state.status),
   })
 }

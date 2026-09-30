@@ -81,7 +81,6 @@ export type TextProps<TElement extends TextElement = 'p'> = {
 } & Omit<ComponentPropsWithRef<TElement>, 'as'> &
   VariantProps<typeof textVariants>
 
-/** All user-facing copy goes through Text: the variant picks size and the semantic element. */
 export function Text<TElement extends TextElement = 'p'>({
   as,
   variant,

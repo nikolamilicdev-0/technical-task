@@ -3,17 +3,14 @@ import type { ChatUsage, ConversationDetail, Message, MessageUsage } from '@kb/c
 import { markCited } from '@/features/chat/lib/citations'
 import type { StreamResult } from '@/features/chat/types'
 
-/** Stream usage as a stored message carries it (the model is a field of its own). */
 export function toMessageUsage(usage: ChatUsage | null): MessageUsage | undefined {
   if (!usage) return undefined
   const { promptTokens, completionTokens, totalTokens, estimated } = usage
   return { promptTokens, completionTokens, totalTokens, estimated }
 }
 
-/**
- * The exchange a settled stream leaves, shaped like the stored rows. Without `done` a partial
- * answer is kept as `aborted`, and only when text arrived, exactly as the API persists it.
- */
+// Mirrors what the API persists: without `done`, a partial answer is kept as `aborted`, and only
+// when text arrived.
 function toExchangeMessages(conversationId: string, result: StreamResult): Message[] {
   const { state, done, placeholderIds, settledAt } = result
   const question = state.pendingUserMessage
@@ -42,10 +39,7 @@ function toExchangeMessages(conversationId: string, result: StreamResult): Messa
   return [questionMessage, answer]
 }
 
-/**
- * Cache updater for a conversation's detail: appends the exchange (replacing copies a refetch
- * brought in), names an untitled conversation after its first question and bumps its activity.
- */
+/** Replaces copies a refetch already brought in, so the exchange is never listed twice. */
 export function appendExchange(
   detail: ConversationDetail | undefined,
   result: StreamResult

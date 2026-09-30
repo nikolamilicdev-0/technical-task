@@ -13,13 +13,10 @@ import type { DocumentFormValues } from '@/features/documents/types'
 
 interface UseDocumentFormOptions {
   defaultValues: DocumentFormValues
-  /** Rejects with an ApiError when the API refuses the values. */
   onSubmit: (values: CreateDocumentInput) => Promise<unknown>
-  /** Edit mode: once saved, the submitted values become the clean state. */
   resetOnSuccess: boolean
 }
 
-/** Create and edit form state: the contracts schema validates, API field errors land on fields. */
 export function useDocumentForm({
   defaultValues,
   onSubmit,

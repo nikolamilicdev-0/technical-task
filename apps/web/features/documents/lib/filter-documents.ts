@@ -10,10 +10,7 @@ function toSearchText(text: string): string {
   return text.normalize('NFD').replace(COMBINING_MARKS, '').toLocaleLowerCase(DEFAULT_LOCALE)
 }
 
-/**
- * Documents whose title contains the search text and that carry any of the selected tags. An empty
- * search or an empty tag selection does not narrow the list.
- */
+/** Tags match any selected one; an empty search or tag selection does not narrow the list. */
 export function filterDocuments<TDocument extends Pick<DocumentSummary, 'title' | 'tags'>>(
   documents: readonly TDocument[],
   { search, tags }: DocumentsFilter

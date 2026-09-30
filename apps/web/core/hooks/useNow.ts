@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 
-/** The current time in epoch ms, refreshed every `refreshMs` so relative times stay current. */
-export function useNow(refreshMs: number): number {
+const RELATIVE_TIME_REFRESH_MS = 60_000
+
+export function useNow(refreshMs: number = RELATIVE_TIME_REFRESH_MS): number {
   const [now, setNow] = useState(() => Date.now())
 
   useEffect(() => {

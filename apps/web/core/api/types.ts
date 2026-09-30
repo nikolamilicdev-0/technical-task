@@ -1,7 +1,6 @@
 import type { ErrorCode } from '@kb/contracts'
 import type { z } from 'zod'
 
-/** Error copy (`messages/en.json` → `errors`); codes without copy fall back to the server text. */
 export interface ErrorMessages {
   network: string
   unknown: string
@@ -17,7 +16,6 @@ export type QueryParams = Readonly<Record<string, QueryValue | readonly QueryVal
 
 export interface RequestOptions<TData> {
   method?: HttpMethod
-  /** Serialised as JSON. */
   body?: unknown
   query?: QueryParams
   /** Validates the response; without it the JSON is trusted as `TData`. */
@@ -34,13 +32,11 @@ export interface UploadOptions<TData> {
   formData: FormData
   schema?: z.ZodType<TData>
   signal?: AbortSignal
-  /** Upload progress as a 0–1 fraction. */
   onProgress?: (fraction: number) => void
 }
 
 export interface ApiClient {
   request<TData>(path: string, options?: RequestOptions<TData>): Promise<TData>
-  /** POSTs with `Accept: text/event-stream` and returns the open response for the SSE reader. */
   stream(path: string, options: StreamOptions): Promise<Response>
   upload<TData>(path: string, options: UploadOptions<TData>): Promise<TData>
 }

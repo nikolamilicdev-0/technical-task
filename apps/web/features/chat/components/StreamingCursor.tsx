@@ -1,4 +1,3 @@
-/** A block cursor after the text that is still arriving; decorative, drawn with CSS only. */
 export function StreamingCursor() {
   return (
     <span

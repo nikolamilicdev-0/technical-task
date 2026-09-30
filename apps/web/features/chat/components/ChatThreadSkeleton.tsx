@@ -3,11 +3,9 @@ import { Container, Flex, Skeleton, VisuallyHidden } from '@kb/ui'
 import { MessagesSkeleton } from '@/features/chat/components/MessagesSkeleton'
 
 interface ChatThreadSkeletonProps {
-  /** Announced to screen readers while the conversation loads. */
   label: string
 }
 
-/** The whole thread frame (title bar, messages, composer) for the route's loading state. */
 export function ChatThreadSkeleton({ label }: ChatThreadSkeletonProps) {
   return (
     <Flex direction="column" role="status" className="min-h-0 flex-1">

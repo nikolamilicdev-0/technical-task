@@ -12,13 +12,10 @@ const PERCENT = 100
 
 interface SourceCardProps {
   citation: Citation
-  /** The source's score as a 0–1 share of the answer's best one. */
   relevance: number
-  /** Opened from its chip in the answer. */
   highlighted: boolean
 }
 
-/** One retrieved passage: its number, document, section, excerpt and whether the answer cites it. */
 export function SourceCard({ citation, relevance, highlighted }: SourceCardProps) {
   const strings = getChatStrings(useT())
   const section = sectionPath(citation)

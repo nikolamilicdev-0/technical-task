@@ -7,7 +7,6 @@ import { computeBarWidths } from '@/features/usage/lib/compute-bar-widths'
 import { describeEstimated } from '@/features/usage/lib/usage-strings'
 import type { UsageDayRow, UsageStrings, UsageTile } from '@/features/usage/types'
 
-/** The totals strip; the token total says how many of its requests were estimated. */
 export function toUsageTiles(strings: UsageStrings, totals: UsageTotals): UsageTile[] {
   return USAGE_TILE_KEYS.map((key) => ({
     key,
@@ -17,7 +16,6 @@ export function toUsageTiles(strings: UsageStrings, totals: UsageTotals): UsageT
   }))
 }
 
-/** Days with usage, newest first, each bar sized against the busiest day. */
 export function toUsageDayRows(days: readonly UsageByDay[]): UsageDayRow[] {
   const newestFirst = [...days].sort((left, right) => right.day.localeCompare(left.day))
   const widths = computeBarWidths(newestFirst.map((day) => day.totalTokens))

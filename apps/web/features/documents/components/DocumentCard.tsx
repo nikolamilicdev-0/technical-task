@@ -17,7 +17,6 @@ const STRETCHED_LINK_CLASSES =
 
 interface DocumentCardProps {
   document: DocumentSummary
-  /** Shared clock for the relative "updated" time. */
   now: number
 }
 

@@ -8,11 +8,9 @@ import { MobileConversationsButton } from '@/features/chat/components/MobileConv
 import { getChatStrings } from '@/features/chat/lib/chat-strings'
 
 interface ChatThreadHeaderProps {
-  /** Null while the conversation loads: a placeholder holds its place. */
   title: string | null
 }
 
-/** The thread's title bar; below `lg` it also holds the conversations drawer and new chat. */
 export function ChatThreadHeader({ title }: ChatThreadHeaderProps) {
   const strings = getChatStrings(useT())
   const NewChatIcon = icons.newChat

@@ -6,7 +6,6 @@ import { DocumentPageShell } from '@/features/documents/components/DocumentPageS
 import { getDocumentsStrings } from '@/features/documents/lib/documents-strings'
 
 interface DocumentCreateBodyProps {
-  /** The route's loading state: the real header over a form placeholder. */
   loading?: boolean
 }
 

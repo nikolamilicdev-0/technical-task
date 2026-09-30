@@ -10,7 +10,6 @@ import type { ConversationTarget } from '@/features/chat/types'
 
 interface RenameConversationDialogProps {
   open: boolean
-  /** The conversation being renamed; kept while the dialog animates closed. */
   target: ConversationTarget | null
   onClose: () => void
   onCloseAutoFocus: (event: Event) => void
@@ -25,7 +24,7 @@ export function RenameConversationDialog({
   const t = useT()
   const strings = getChatStrings(t)
   const formId = useId()
-  const { form, submit, focusTitle, serverError } = useRenameConversationForm(target, onClose)
+  const { form, submit, startEditing, serverError } = useRenameConversationForm(target, onClose)
   const { errors, isSubmitting } = form.formState
 
   const handleOpenChange = (nextOpen: boolean) => {
@@ -34,7 +33,7 @@ export function RenameConversationDialog({
   // The title field, not the close button, is where a rename starts.
   const focusField = (event: Event) => {
     event.preventDefault()
-    focusTitle()
+    startEditing()
   }
   const errorNotice = serverError ? (
     <Callout tone="error" icon={icons.error} role="alert">

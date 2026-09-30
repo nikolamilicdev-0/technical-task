@@ -31,13 +31,10 @@ interface ComposerProps {
   onStop: () => void
   status: ChatStreamStatus
   textareaRef: RefObject<HTMLTextAreaElement | null>
-  /** Holds sending back, e.g. while the conversation is still loading. */
   disabled?: boolean
-  /** Controls at the start of the toolbar, such as the document scope. */
   tools?: ReactNode
 }
 
-/** The question field: Enter sends, Shift+Enter adds a line, Stop ends an answer early. */
 export function Composer({
   value,
   onChange,
@@ -71,6 +68,10 @@ export function Composer({
     if (canSubmit) onSubmit()
     textareaRef.current?.focus()
   }
+  const stop = () => {
+    onStop()
+    textareaRef.current?.focus()
+  }
 
   const counter = showCounter ? (
     <Text
@@ -82,19 +83,25 @@ export function Composer({
       {describeCharacterCount(strings, value.length)}
     </Text>
   ) : null
-  // Stop waits for the API to store the question, so a stopped answer always has one to follow.
+  // Stop waits until the API has stored the question. Stop and Send share one DOM button, so
+  // Send is only aria-disabled: a focused Stop keeps its focus when the answer ends.
   const action = receiving ? (
     <Button
       variant="outline"
       size="icon"
       aria-label={strings.composer.stop}
-      onClick={onStop}
+      onClick={stop}
       disabled={status === 'connecting'}
     >
       <StopIcon aria-hidden className="fill-current" />
     </Button>
   ) : (
-    <Button type="submit" size="icon" aria-label={strings.composer.send} disabled={!canSubmit}>
+    <Button
+      type="submit"
+      size="icon"
+      aria-label={strings.composer.send}
+      aria-disabled={!canSubmit || undefined}
+    >
       <SendIcon aria-hidden />
     </Button>
   )

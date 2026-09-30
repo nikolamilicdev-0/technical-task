@@ -6,7 +6,6 @@ const SERVER_ERROR_NAME = 'server'
 const SERVER_ERROR_TYPE = 'server'
 const FIELD_PATH_SEPARATOR = '.'
 
-/** Where errors that belong to no single field live: `formState.errors.root.server`. */
 export const SERVER_ERROR_KEY = `root.${SERVER_ERROR_NAME}` as const
 
 export function setServerError<TFieldValues extends FieldValues>(
@@ -31,10 +30,8 @@ function matchField<TFieldValues extends FieldValues>(
   )
 }
 
-/**
- * Shows API field errors on the matching form fields (`tags.0` lands on `tags`, first message
- * wins); errors for unknown fields go to the root. Returns whether anything was shown.
- */
+// `tags.0` lands on `tags` and a field's first message wins; paths no field matches go to the
+// root error. Returns whether anything was shown.
 export function applyFieldErrors<TFieldValues extends FieldValues>(
   error: ApiError,
   setError: UseFormSetError<TFieldValues>,

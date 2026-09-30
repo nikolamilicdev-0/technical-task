@@ -3,7 +3,6 @@ import type { DocumentSummary } from '@kb/contracts'
 import type { IndexingSummary } from '@/features/chat/types'
 import { isIndexing } from '@/features/documents/lib/get-refetch-interval'
 
-/** Which of the loaded documents chat can answer from, and which it cannot use yet or at all. */
 export function getIndexingSummary(
   documents: readonly DocumentSummary[] | undefined
 ): IndexingSummary {

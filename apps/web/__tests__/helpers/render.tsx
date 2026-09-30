@@ -13,7 +13,6 @@ function Providers({ children }: { children: ReactNode }) {
   )
 }
 
-/** Renders with the app's copy and tooltip context, as the real providers supply them. */
 export function renderWithProviders(ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) {
   return render(ui, { wrapper: Providers, ...options })
 }

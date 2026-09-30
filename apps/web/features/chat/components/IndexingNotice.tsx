@@ -11,7 +11,6 @@ interface IndexingNoticeProps {
   summary: IndexingSummary
 }
 
-/** Says which documents answers cannot use yet (still indexing) or at all (indexing failed). */
 export function IndexingNotice({ summary }: IndexingNoticeProps) {
   const strings = getChatStrings(useT())
   const copy = describeIndexing(strings, summary)

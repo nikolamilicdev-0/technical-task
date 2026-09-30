@@ -8,7 +8,6 @@ import { getDocumentsStrings } from '@/features/documents/lib/documents-strings'
 
 interface DocumentStatusBadgeProps {
   status: EmbeddingStatus
-  /** Why indexing failed; a failed badge shows it in a tooltip. */
   error?: string | null
   className?: string
 }
