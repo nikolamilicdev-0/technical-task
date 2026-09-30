@@ -4,6 +4,7 @@ import {
   splitKeepingSeparators,
   splitSentences,
 } from '../../../../../src/modules/ingestion/chunking/sentences.js'
+import { LINEAR_TIME_BUDGET_MS, timed } from '../../../../fixtures/timing.js'
 
 const texts = (text: string): string[] => splitSentences(text).map((piece) => piece.text)
 const rejoin = (text: string): string =>
@@ -40,6 +41,17 @@ describe('splitSentences', () => {
       '- second item',
       '| a | b |',
     ])
+  })
+
+  it('splits text with long runs of blanks and closing brackets in linear time', () => {
+    const brackets = ')'.repeat(100_000)
+    const blanks = ' '.repeat(100_000)
+    const text = `One.${blanks}Two${brackets} three.\t\n${blanks}Four.`
+
+    const { value, ms } = timed(() => splitSentences(text))
+
+    expect(value.map((piece) => piece.text)).toEqual(['One.', `Two${brackets} three.`, 'Four.'])
+    expect(ms).toBeLessThan(LINEAR_TIME_BUDGET_MS)
   })
 
   it('keeps each separator so that the pieces join back into the text', () => {

@@ -19,6 +19,8 @@ const CHUNK: ChunkUpsert = {
   embedding: '[0.1,0.2]',
 }
 const FAILURE = { message: 'upstream timeout', details: '', hint: '', code: '' }
+const CHUNK_HASHES = ['b'.repeat(64), 'c'.repeat(64)]
+const CLAIM = { id: TEST_DOCUMENT_ID, contentHash: HASH, attempt: 3 }
 
 describe('IngestionRepository', () => {
   it('claims with the batch size, stale window and attempt limit, mapping rows', async () => {
@@ -123,36 +125,46 @@ describe('IngestionRepository', () => {
     await expect(
       repository.upsertChunks(db, TEST_DOCUMENT_ID, HASH, SIGNATURE, [CHUNK])
     ).resolves.toBe(false)
-    await expect(repository.finalize(db, TEST_DOCUMENT_ID, HASH, SIGNATURE)).resolves.toBeNull()
+    await expect(
+      repository.finalize(db, TEST_DOCUMENT_ID, HASH, SIGNATURE, CHUNK_HASHES)
+    ).resolves.toBeNull()
   })
 
-  it('finalizes with the content hash and signature, returning the chunk count', async () => {
+  it('finalizes the run’s chunk set under the content hash and signature', async () => {
     const { db, queries } = fakeDatabase({ data: 14 })
 
-    await expect(repository.finalize(db, TEST_DOCUMENT_ID, HASH, SIGNATURE)).resolves.toBe(14)
+    await expect(
+      repository.finalize(db, TEST_DOCUMENT_ID, HASH, SIGNATURE, CHUNK_HASHES)
+    ).resolves.toBe(14)
     expect(queries[0]).toEqual([
       {
         method: 'rpc',
         args: [
           'finalize_document_ingestion',
-          { p_document_id: TEST_DOCUMENT_ID, p_content_hash: HASH, p_embedding_model: SIGNATURE },
+          {
+            p_document_id: TEST_DOCUMENT_ID,
+            p_content_hash: HASH,
+            p_embedding_model: SIGNATURE,
+            p_chunk_hashes: CHUNK_HASHES,
+          },
         ],
       },
     ])
   })
 
-  it('marks a failure with a retry delay, or without one for good', async () => {
+  it('marks a failure of one claim with a retry delay, or without one for good', async () => {
     const { db, queries } = fakeDatabase({}, {})
 
-    await repository.markFailed(db, TEST_DOCUMENT_ID, 'Rate limited', 60)
-    await repository.markFailed(db, TEST_DOCUMENT_ID, 'Bad key', null)
+    await repository.markFailed(db, CLAIM, 'Rate limited', 60)
+    await repository.markFailed(db, CLAIM, 'Bad key', null)
 
+    const claim = { p_document_id: TEST_DOCUMENT_ID, p_content_hash: HASH, p_attempt: 3 }
     expect(queries.map((calls) => calls[0]?.args)).toEqual([
       [
         'mark_document_ingestion_failed',
-        { p_document_id: TEST_DOCUMENT_ID, p_error: 'Rate limited', p_retry_in_seconds: 60 },
+        { ...claim, p_error: 'Rate limited', p_retry_in_seconds: 60 },
       ],
-      ['mark_document_ingestion_failed', { p_document_id: TEST_DOCUMENT_ID, p_error: 'Bad key' }],
+      ['mark_document_ingestion_failed', { ...claim, p_error: 'Bad key' }],
     ])
   })
 

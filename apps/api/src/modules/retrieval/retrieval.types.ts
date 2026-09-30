@@ -41,7 +41,7 @@ export interface FusionOptions {
 export interface RetrievalRequest {
   readonly query: string
   readonly embedding: readonly number[]
-  /** Restricts the search to these documents; unset searches every ready document. */
+  /** Restricts the search to these documents; unset searches all of the caller's documents. */
   readonly documentIds?: readonly string[]
 }
 

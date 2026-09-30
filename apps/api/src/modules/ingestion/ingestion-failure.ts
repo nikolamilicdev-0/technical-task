@@ -1,5 +1,6 @@
 import { AiProviderError } from '@kb/ai'
 
+import { VectorDimensionError } from '../../common/utils/vector.js'
 import { DatabaseRequestError } from '../../database/database-error.js'
 import { INGESTION_MESSAGES } from './ingestion.constants.js'
 import type { IngestionFailure } from './ingestion.types.js'
@@ -9,9 +10,8 @@ import type { IngestionFailure } from './ingestion.types.js'
 const NOT_NULL_VIOLATION = '23502'
 
 /**
- * Sorts a failed run: provider errors keep their actionable message and retry when transient,
- * database errors retry when they got no answer, a 5xx or a vanished vector, and a vector the
- * column cannot hold (`toStoredVector`) is permanent.
+ * Provider errors keep their message and retry when transient; database errors retry when transient
+ * or on a vanished vector; an embedding the column cannot hold fails for good; the rest is a bug.
  */
 export function classifyIngestionFailure(error: unknown): IngestionFailure {
   if (error instanceof AiProviderError) {
@@ -19,7 +19,7 @@ export function classifyIngestionFailure(error: unknown): IngestionFailure {
     return { message: error.message, retryable: error.retryable, retryAfterSeconds, expected: true }
   }
   if (error instanceof DatabaseRequestError) return classifyDatabaseFailure(error)
-  if (error instanceof RangeError) {
+  if (error instanceof VectorDimensionError) {
     return { message: error.message, retryable: false, expected: true }
   }
   return { message: INGESTION_MESSAGES.unexpected, retryable: false, expected: false }

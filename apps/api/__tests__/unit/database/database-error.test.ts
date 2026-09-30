@@ -38,9 +38,12 @@ describe('DatabaseRequestError', () => {
 
   it.each([
     ['no answer at all', 0, true],
+    ['a timed-out request', 408, true],
+    ['a rate-limited request', 429, true],
     ['a server error', 500, true],
     ['an unavailable database', 503, true],
     ['a rejected request', 400, false],
+    ['a forbidden request', 403, false],
     ['a conflict', 409, false],
   ])('is transient for %s (status %s): %s', (_, status, transient) => {
     expect(new DatabaseRequestError(FAILURE as PostgrestError, status).transient).toBe(transient)

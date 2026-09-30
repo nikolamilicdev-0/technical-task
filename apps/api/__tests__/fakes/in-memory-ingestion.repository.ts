@@ -7,11 +7,12 @@ import type {
   ChunkUpsert,
   ClaimedDocument,
   ClaimOptions,
+  ClaimReference,
 } from '../../src/modules/ingestion/ingestion.types.js'
 
 type IngestionStore = Pick<IngestionRepository, keyof IngestionRepository>
 
-interface StoredChunk {
+export interface StoredChunk {
   readonly contentHash: string
   readonly documentContentHash: string
   readonly embedding: string
@@ -20,6 +21,7 @@ interface StoredChunk {
 
 export interface RecordedFailure {
   readonly documentId: string
+  readonly attempt: number
   readonly message: string
   readonly retryInSeconds: number | null
 }
@@ -30,9 +32,15 @@ const NOT_NULL_VIOLATION = {
   hint: '',
   code: '23502',
 }
+const CARDINALITY_VIOLATION = {
+  message: 'ON CONFLICT DO UPDATE command cannot affect row a second time',
+  details: '',
+  hint: '',
+  code: '21000',
+}
 const BAD_REQUEST_STATUS = 400
 
-/** The ingestion SQL functions over maps, with their stale-content and vector-reuse rules. */
+/** The ingestion SQL functions over maps, with their stale-content, claim and reuse rules. */
 export class InMemoryIngestionRepository implements IngestionStore {
   /** Current `content_hash` per document; a different one makes a run stale. */
   readonly contentHashes = new Map<string, string>()
@@ -63,6 +71,9 @@ export class InMemoryIngestionRepository implements IngestionStore {
     rows: readonly ChunkUpsert[]
   ): Promise<boolean> {
     if (this.contentHashes.get(documentId) !== contentHash) return false
+    if (new Set(rows.map((row) => row.contentHash)).size < rows.length) {
+      throw new DatabaseRequestError(new PostgrestError(CARDINALITY_VIOLATION), BAD_REQUEST_STATUS)
+    }
     this.upserts.push([...rows])
     const stored = this.chunks.get(documentId) ?? []
     const updated = rows.map((row): StoredChunk => {
@@ -87,11 +98,16 @@ export class InMemoryIngestionRepository implements IngestionStore {
     _db: DatabaseClient,
     documentId: string,
     contentHash: string,
-    signature: string
+    signature: string,
+    chunkHashes: readonly string[]
   ): Promise<number | null> {
     if (this.contentHashes.get(documentId) !== contentHash) return null
+    const published = new Set(chunkHashes)
     const current = (this.chunks.get(documentId) ?? []).filter(
-      (chunk) => chunk.documentContentHash === contentHash && chunk.model === signature
+      (chunk) =>
+        chunk.documentContentHash === contentHash &&
+        chunk.model === signature &&
+        published.has(chunk.contentHash)
     )
     this.chunks.set(documentId, current)
     this.finalized.push(documentId)
@@ -100,11 +116,12 @@ export class InMemoryIngestionRepository implements IngestionStore {
 
   async markFailed(
     _db: DatabaseClient,
-    documentId: string,
+    claim: ClaimReference,
     message: string,
     retryInSeconds: number | null
   ): Promise<void> {
-    this.failures.push({ documentId, message, retryInSeconds })
+    if (this.contentHashes.get(claim.id) !== claim.contentHash) return
+    this.failures.push({ documentId: claim.id, attempt: claim.attempt, message, retryInSeconds })
   }
 
   async requeueForModel(_db: DatabaseClient, _signature: string): Promise<number> {

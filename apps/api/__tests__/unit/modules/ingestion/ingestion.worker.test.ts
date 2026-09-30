@@ -54,9 +54,9 @@ function document(id: string): ClaimedDocument {
 
 type HeldCall = 'requeue' | 'claim' | 'process'
 
-/** Claims scripted batches (then nothing) and processes instantly unless a call is held. */
+/** Claims scripted batches or failures (then nothing) and processes instantly unless held. */
 class ScriptedQueue {
-  readonly batches: ClaimedDocument[][] = []
+  readonly batches: (ClaimedDocument[] | Error)[] = []
   readonly requeuedFor: string[] = []
   readonly claimed: ClaimOptions[] = []
   readonly processed: string[] = []
@@ -82,7 +82,9 @@ class ScriptedQueue {
   async claimPending(_db: DatabaseClient, options: ClaimOptions): Promise<ClaimedDocument[]> {
     this.claimed.push(options)
     await this.#pass('claim')
-    return this.batches.shift() ?? []
+    const batch = this.batches.shift() ?? []
+    if (batch instanceof Error) throw batch
+    return batch
   }
 
   async process(claimed: ClaimedDocument): Promise<IngestionOutcome> {
@@ -104,12 +106,14 @@ interface StartOptions {
   readonly env?: Record<string, string>
   readonly aiStatus?: AiStatus
   readonly batches?: ClaimedDocument[][]
+  readonly requeueFailure?: Error
 }
 
 /** Boots the worker and returns once its boot drain is over, so every test starts from there. */
 async function start(options: StartOptions = {}) {
   const queue = new ScriptedQueue()
   queue.batches.push(...(options.batches ?? []))
+  queue.requeueFailure = options.requeueFailure
   // Holding the boot drain keeps it from ending inside init(), which would make wake() start another.
   const boot = queue.hold('requeue')
   const scheduler = new SchedulerRegistry()
@@ -167,7 +171,7 @@ describe('IngestionWorker', () => {
     await drain
 
     expect(queue.claimed).toHaveLength(3)
-    expect(queue.requeuedFor).toHaveLength(2)
+    expect(queue.requeuedFor).toHaveLength(1)
   })
 
   it('wakes when a document asks for ingestion', async () => {
@@ -214,17 +218,39 @@ describe('IngestionWorker', () => {
     warn.mockRestore()
   })
 
-  it('survives a failed sweep and drains again on the next wake', async () => {
-    const { worker, queue } = await start()
-    queue.requeueFailure = new Error('database down')
+  it('still claims when re-queuing other models fails, and retries that later', async () => {
+    const warn = vi.spyOn(Logger.prototype, 'warn')
+    const { worker, queue } = await start({
+      requeueFailure: new Error('database down'),
+      batches: [[document('a')]],
+    })
 
+    expect(queue.processed).toEqual(['a'])
+    expect(queue.requeuedFor).toEqual([])
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('database down'))
     await worker.wake()
     await worker.wake()
 
-    expect(queue.claimed).toHaveLength(2)
+    expect(queue.requeuedFor).toEqual(['fake-embedding#8'])
+    expect(queue.claimed).toHaveLength(4)
+    warn.mockRestore()
   })
 
-  it('finishes the claimed batch when destroyed, then claims nothing more', async () => {
+  it('logs a claim that fails mid-drain and drains again on the next wake', async () => {
+    const error = vi.spyOn(Logger.prototype, 'error')
+    const { worker, queue } = await start()
+    queue.batches.push([document('a')], new Error('database down'), [document('b')])
+
+    await worker.wake()
+    expect(queue.processed).toEqual(['a'])
+    expect(error).toHaveBeenCalledWith(expect.stringContaining('database down'))
+    await worker.wake()
+
+    expect(queue.processed).toEqual(['a', 'b'])
+    error.mockRestore()
+  })
+
+  it('finishes the document in progress when destroyed, then does nothing more', async () => {
     const { worker, queue } = await start()
     const held = queue.hold('process')
     queue.batches.push([document('a'), document('b')], [document('c')])
@@ -237,7 +263,7 @@ describe('IngestionWorker', () => {
     await Promise.all([drain, destroyed])
     await worker.wake()
 
-    expect(queue.processed).toEqual(['a', 'b'])
+    expect(queue.processed).toEqual(['a'])
     expect(queue.claimed).toHaveLength(claimsBefore + 1)
   })
 })

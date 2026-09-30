@@ -9,6 +9,16 @@ export const CHUNK_MIN_TAIL_TOKENS = 60
 /** Joins the document title and the headings above a passage: `Title › Setup › Linux`. */
 export const HEADING_SEPARATOR = ' › '
 
+/** A longer heading is cut to this many characters in the breadcrumb, ending in `…`. */
+export const MAX_HEADING_LENGTH = 80
+export const TRUNCATION_MARK = '…'
+
+/** A longer breadcrumb loses its outermost headings; the title always stays. */
+export const MAX_BREADCRUMB_TOKENS = 64
+
+/** Normalization cuts a longer run of spaces and tabs inside a line to this length. */
+export const MAX_BLANK_RUN_LENGTH = 64
+
 /** A document that splits into more chunks fails for good: too slow and costly to embed. */
 export const MAX_CHUNKS_PER_DOCUMENT = 1000
 

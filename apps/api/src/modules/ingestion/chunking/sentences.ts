@@ -1,7 +1,8 @@
 import type { TextPiece } from './chunker.types.js'
 
-// Whitespace after `.`, `!`, `?` or `…` (closing quotes and brackets may follow), or a line break.
-const SENTENCE_BOUNDARY = /((?<=[.!?…]["'’”)\]]*)\s+|\s*\n\s*)/
+// Whitespace after `.`, `!`, `?` or `…` (closing quotes and brackets may follow), or a line break;
+// tried only where a whitespace run starts, so neither branch rescans a long run.
+const SENTENCE_BOUNDARY = /((?<!\s)(?=\s)(?:(?<=[.!?…]["'’”)\]]*)\s+|\s*\n\s*))/
 
 /** Sentences of prose, and its lines, so that lists and tables split between rows. */
 export function splitSentences(text: string): TextPiece[] {

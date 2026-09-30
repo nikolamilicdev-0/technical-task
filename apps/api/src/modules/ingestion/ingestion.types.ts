@@ -18,6 +18,9 @@ export interface ClaimedDocument {
   readonly attempt: number
 }
 
+/** The claim a failure is recorded against; a newer claim or content version is left alone. */
+export type ClaimReference = Pick<ClaimedDocument, 'id' | 'contentHash' | 'attempt'>
+
 /** What every step of indexing one claimed document works with. */
 export interface IndexingRun {
   /** The service-role client: the worker writes chunks no user may write. */

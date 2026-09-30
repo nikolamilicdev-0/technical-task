@@ -24,7 +24,7 @@ export class RetrievalRepository {
     return data.map(fromVectorHit)
   }
 
-  /** Full-text matches (`websearch_to_tsquery`), best `ts_rank_cd` first. */
+  /** Full-text matches of any query term, best `ts_rank_cd` first (DEC-024). */
   async searchKeyword(db: DatabaseClient, search: KeywordSearch): Promise<CandidateChunk[]> {
     const { data, error, status } = await db.rpc(
       DATABASE_FUNCTIONS.searchChunksKeyword,

@@ -11,6 +11,9 @@ import { APP_CONFIG } from '../../../src/config/config.constants.js'
 import { AppConfigModule } from '../../../src/config/config.module.js'
 import { buildTestConfig, TEST_OPENAI_KEY } from '../../fixtures.js'
 
+// Compiling the module builds the cl100k rank table, which can take seconds on a loaded CI runner.
+const MODULE_COMPILE_TIMEOUT_MS = 30_000
+
 async function compileWith(env: Record<string, string>) {
   const moduleRef = await Test.createTestingModule({ imports: [AppConfigModule, AiModule] })
     .overrideProvider(APP_CONFIG)
@@ -24,7 +27,7 @@ async function compileWith(env: Record<string, string>) {
   }
 }
 
-describe('AiModule', () => {
+describe('AiModule', { timeout: MODULE_COMPILE_TIMEOUT_MS }, () => {
   beforeAll(() => {
     Logger.overrideLogger(false)
   })

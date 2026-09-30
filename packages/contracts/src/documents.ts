@@ -70,7 +70,7 @@ export const updateDocumentSchema = z
 export type UpdateDocumentInput = z.infer<typeof updateDocumentSchema>
 
 export const listDocumentsQuerySchema = paginationQuerySchema.extend({
-  search: z.string().trim().min(1).max(DOCUMENT_TITLE_MAX).optional(),
+  search: withoutNul(z.string().trim().min(1).max(DOCUMENT_TITLE_MAX)).optional(),
   tag: tagSchema.optional(),
   status: embeddingStatusSchema.optional(),
 })

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { splitMarkdownSections } from '../../../../../src/modules/ingestion/chunking/markdown-sections.js'
+import { LINEAR_TIME_BUDGET_MS, timed } from '../../../../fixtures/timing.js'
 
 const lines = (...text: string[]): string => text.join('\n')
 
@@ -72,5 +73,26 @@ describe('splitMarkdownSections', () => {
     expect(splitMarkdownSections(lines('# Guide', '', '## Setup', 'Install it.'))).toEqual([
       { headingPath: ['Guide', 'Setup'], body: 'Install it.' },
     ])
+  })
+
+  it('keeps the text of a heading that nothing, not even a deeper heading, follows', () => {
+    const markdown = lines('# Guide', '## Setup', '## Usage', 'Run it.', '### Flags', '#', '# End')
+
+    expect(splitMarkdownSections(markdown)).toEqual([
+      { headingPath: ['Guide', 'Setup'], body: 'Setup' },
+      { headingPath: ['Guide', 'Usage'], body: 'Run it.' },
+      { headingPath: ['Guide', 'Usage', 'Flags'], body: 'Flags' },
+      { headingPath: ['End'], body: 'End' },
+    ])
+  })
+
+  it('parses a heading holding long runs of blanks and hashes in linear time', () => {
+    const text = `a${' '.repeat(100_000)}b`
+    const markdown = lines(`# ${text}  `, 'x', `## c ${'#'.repeat(100_000)}`, 'y')
+
+    const { value, ms } = timed(() => splitMarkdownSections(markdown))
+
+    expect(value.map((section) => section.headingPath)).toEqual([[text], [text, 'c']])
+    expect(ms).toBeLessThan(LINEAR_TIME_BUDGET_MS)
   })
 })

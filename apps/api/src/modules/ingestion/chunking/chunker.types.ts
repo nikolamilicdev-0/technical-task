@@ -77,8 +77,8 @@ export interface PackedChunk {
   readonly carried: number
 }
 
-/** A chunk's text and headings, before the breadcrumb and the hash are derived. */
+/** A chunk's text and breadcrumb, before the embedding input and the hash are derived. */
 export interface ChunkDraft {
-  readonly headingPath: readonly string[]
+  readonly headingPath: string
   readonly content: string
 }

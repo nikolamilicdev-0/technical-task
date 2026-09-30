@@ -53,6 +53,11 @@ export class IngestionService {
 
   /** Never throws: a failure is recorded on the document, with a retry when one may help. */
   async process(document: ClaimedDocument): Promise<IngestionOutcome> {
+    // Only a stale claim gets past the limit: every earlier run died midway, so this one would too.
+    if (document.attempt > this.#maxAttempts) {
+      const message = INGESTION_MESSAGES.attemptsExhausted(this.#maxAttempts)
+      return this.#fail(document, { message, retryable: false, expected: true })
+    }
     try {
       const chunks = chunkDocument(document, this.counter)
       if (chunks.length > MAX_CHUNKS_PER_DOCUMENT) {
@@ -80,7 +85,8 @@ export class IngestionService {
     }
     const kept = reused.map((chunk) => toChunkUpsert(chunk, null))
     if (!(await this.#store(run, kept))) return this.#stale(run)
-    const chunkCount = await this.repository.finalize(db, id, contentHash, signature)
+    const hashes = chunks.map((chunk) => chunk.contentHash)
+    const chunkCount = await this.repository.finalize(db, id, contentHash, signature, hashes)
     if (chunkCount === null) return this.#stale(run)
     this.#logger.log(
       `Indexed document ${id} (attempt ${attempt}): ${chunkCount} chunks, ` +
@@ -117,10 +123,11 @@ export class IngestionService {
     return true
   }
 
-  // The documents trigger has already queued the new version, so there is nothing to record.
+  // An edit (re-queued by the documents trigger), a deletion or a newer claim superseded the run.
   #stale({ document }: IndexingRun): IngestionOutcome {
     this.#logger.log(
-      `Document ${document.id} changed while it was indexed; its new version is queued`
+      `Document ${document.id} changed, was deleted or was claimed again while it was indexed; ` +
+        'this run is dropped'
     )
     return STALE
   }
@@ -138,7 +145,7 @@ export class IngestionService {
     else this.#logger.error(`${line}: ${detail}`, cause instanceof Error ? cause.stack : undefined)
     try {
       const db = this.clients.serviceRole()
-      await this.repository.markFailed(db, document.id, failure.message, retryInSeconds)
+      await this.repository.markFailed(db, document, failure.message, retryInSeconds)
     } catch (error) {
       // The claim then goes stale and is taken again after INGESTION_STALE_AFTER_MINUTES.
       this.#logger.error(`Could not record the failure of ${document.id}: ${describeError(error)}`)

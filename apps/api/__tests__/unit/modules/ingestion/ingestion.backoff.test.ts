@@ -4,6 +4,7 @@ import {
   nextRetryInSeconds,
   retryDelaySeconds,
 } from '../../../../src/modules/ingestion/ingestion.backoff.js'
+import { MAX_RETRY_IN_SECONDS } from '../../../../src/modules/ingestion/ingestion.constants.js'
 
 describe('retryDelaySeconds', () => {
   it('starts at 30 seconds and doubles with every attempt', () => {
@@ -32,4 +33,13 @@ describe('nextRetryInSeconds', () => {
     expect(nextRetryInSeconds({ retryable: true, retryAfterSeconds: 90 }, 1, 5)).toBe(90)
     expect(nextRetryInSeconds({ retryable: true, retryAfterSeconds: 12.5 }, 2, 5)).toBe(60)
   })
+
+  it.each([1e12, Number.POSITIVE_INFINITY])(
+    'caps a Retry-After of %s seconds to what a Postgres integer holds, still retrying',
+    (retryAfterSeconds) => {
+      expect(nextRetryInSeconds({ retryable: true, retryAfterSeconds }, 1, 5)).toBe(
+        MAX_RETRY_IN_SECONDS
+      )
+    }
+  )
 })

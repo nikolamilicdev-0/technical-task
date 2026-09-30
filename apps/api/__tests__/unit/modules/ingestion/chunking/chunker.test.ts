@@ -11,9 +11,13 @@ import {
   CHUNK_MIN_TAIL_TOKENS,
   CHUNK_OVERLAP_TOKENS,
   CHUNK_TARGET_TOKENS,
+  MAX_BLANK_RUN_LENGTH,
+  MAX_BREADCRUMB_TOKENS,
+  MAX_HEADING_LENGTH,
 } from '../../../../../src/modules/ingestion/chunking/chunker.constants.js'
 import type { DocumentChunk } from '../../../../../src/modules/ingestion/chunking/chunker.types.js'
 import { buildHandbook, paragraph, sentence } from '../../../../fixtures/markdown.js'
+import { LINEAR_TIME_BUDGET_MS, timed } from '../../../../fixtures/timing.js'
 
 const counter = new TokenCounter()
 const HEADING_LINE = /^ {0,3}#{1,6}\s/m
@@ -229,10 +233,84 @@ describe('chunkDocument', () => {
   })
 })
 
+describe('chunkDocument on hostile input', () => {
+  it('chunks a line holding 40,000 spaces in linear time and within the budget', () => {
+    const content = `Intro${' '.repeat(40_000)}text. ${paragraph(1, 60)}`
+
+    const { value: chunks, ms } = timed(() => chunk(content))
+
+    expect(ms).toBeLessThan(LINEAR_TIME_BUDGET_MS)
+    expect(chunks.length).toBeGreaterThan(1)
+    for (const { tokenCount } of chunks) expect(tokenCount).toBeLessThanOrEqual(CHUNK_MAX_TOKENS)
+  })
+
+  it('keeps every chunk of a run of real U+FFFD characters within the maximum', () => {
+    const options = { targetTokens: 40, maxTokens: 50, overlapTokens: 5, minTailTokens: 6 }
+    const content = `x ${'\uFFFD'.repeat(600)} y`
+
+    const chunks = chunkDocument({ title: 'Guide', content }, counter, options)
+
+    expect(chunks.length).toBeGreaterThan(1)
+    for (const { tokenCount } of chunks) expect(tokenCount).toBeLessThanOrEqual(options.maxTokens)
+  })
+
+  it('turns an outline of headings alone into one chunk per heading', () => {
+    const headings = Array.from({ length: 300 }, (_, index) => `Heading ${index} about things`)
+
+    const chunks = chunk(headings.map((heading) => `## ${heading}`).join('\n'))
+
+    expect(chunks.map((chunk) => chunk.content)).toEqual(headings)
+    expect(chunks[0]?.headingPath).toBe(`Guide › ${headings[0]}`)
+  })
+
+  it('cuts an overlong heading in the breadcrumb, ending it with an ellipsis', () => {
+    const heading = Array.from({ length: 6_000 }, (_, index) => `word${index}`).join(' ')
+    const cut = `${heading.slice(0, MAX_HEADING_LENGTH - 1).trimEnd()}…`
+
+    const chunks = chunk(blocks(`# ${heading}`, paragraph(1, 60)))
+
+    expect(chunks.length).toBeGreaterThan(1)
+    for (const { headingPath } of chunks) expect(headingPath).toBe(`Guide › ${cut}`)
+  })
+
+  it('drops the outermost headings of a breadcrumb over its budget, keeping the title', () => {
+    const headings = Array.from({ length: 6 }, (_, level) => sentence(level))
+    const lines = headings.map((heading, level) => `${'#'.repeat(level + 1)} ${heading}`)
+
+    const [first] = chunk(blocks(...lines, paragraph(1, 40)))
+    const breadcrumb = first?.headingPath ?? ''
+
+    expect(counter.count(breadcrumb)).toBeLessThanOrEqual(MAX_BREADCRUMB_TOKENS)
+    expect(breadcrumb.startsWith('Guide › ')).toBe(true)
+    expect(breadcrumb.endsWith(headings[5] ?? '')).toBe(true)
+    expect(breadcrumb).not.toContain(headings[0])
+  })
+})
+
 describe('normalizeMarkdown', () => {
   it('unifies line breaks, drops trailing spaces, keeps one blank line in a row and trims', () => {
     expect(normalizeMarkdown('\n  # Title  \r\n\r\n\r\n\rBody\t\n\n\n\n  indented\n\n')).toBe(
       '# Title\n\nBody\n\n  indented'
     )
+  })
+
+  it('cuts a run of 400,000 spaces inside a line in linear time', () => {
+    const { value, ms } = timed(() => normalizeMarkdown(`a${' '.repeat(400_000)}b`))
+
+    expect(value).toBe(`a${' '.repeat(MAX_BLANK_RUN_LENGTH)}b`)
+    expect(ms).toBeLessThan(LINEAR_TIME_BUDGET_MS)
+  })
+
+  it('drops 400,000 trailing spaces in linear time', () => {
+    const { value, ms } = timed(() => normalizeMarkdown(`a${' \t'.repeat(200_000)}\nb`))
+
+    expect(value).toBe('a\nb')
+    expect(ms).toBeLessThan(LINEAR_TIME_BUDGET_MS)
+  })
+
+  it('keeps indentation up to the cap', () => {
+    const code = `\`\`\`py\n${' '.repeat(MAX_BLANK_RUN_LENGTH)}return value\n\`\`\``
+
+    expect(normalizeMarkdown(code)).toBe(code)
   })
 })

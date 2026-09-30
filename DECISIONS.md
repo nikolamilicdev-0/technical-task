@@ -137,3 +137,91 @@ Append-only log of architectural decisions. To change one, add a new entry that 
 **Why** Gemini speaks the OpenAI wire protocol, so the existing adapter serves it (DEC-003). `gemini-embedding-001` returns 3072 values natively, more than the `vector(1536)` column holds (DEC-014); Google truncates to the requested size without re-normalising, which is harmless because retrieval compares by cosine. "Thinking" Gemini Flash models count their reasoning tokens against `max_completion_tokens`, so a tight `RAG_MAX_ANSWER_TOKENS` can end an answer early.
 
 **How to apply** Set `AI_CHAT_PROVIDER=gemini` and `AI_CHAT_API_KEY`; embeddings follow chat unless `AI_EMBEDDING_*` says otherwise. Prefer the lite model, or raise `RAG_MAX_ANSWER_TOKENS` for thinking models. Never set `AI_EMBEDDING_DIMENSIONS` above 1536 without the column migration.
+
+## DEC-018 — Ingestion retry policy
+
+**Decision** `classifyIngestionFailure` sorts every failed run once. Transient provider errors (`rate_limited`, `timeout`, `connection`, `server`), database requests that got no answer, a 408, 429 or 5xx, and a reused vector that vanished mid-run (SQLSTATE 23502) retry after `max(30 s doubling per attempt up to 30 min, the provider's Retry-After capped to a Postgres integer)`. Everything else fails for good: authentication, invalid or unsupported requests, more than 1,000 chunks, an embedding the column cannot hold (`VectorDimensionError`), the last of `INGESTION_MAX_ATTEMPTS`, and a stale claim past that limit, which fails before chunking.
+
+**Why** Transient failures heal on their own, while permanent ones would spend provider quota on every sweep. The stale-claim branch of `claim_pending_documents` ignores the attempt limit, so without the pre-chunking check a document that kills the process mid-run would crash-loop forever. Only errors nothing anticipates (bugs, including a stray `RangeError`) are logged with their stack and stored as a generic message.
+
+**How to apply** A new failure kind gets a branch and a test in `classifyIngestionFailure`; never make a bare `RangeError` or `TypeError` retryable or user-visible. A terminal failure stores `next_attempt_at = infinity`, which the contract reports as `null`; users retry with `POST /api/documents/:id/reindex`.
+
+## DEC-019 — Chunker refinements and bounds on hostile input
+
+**Decision** DEC-006 gains these rules. A heading with no text and no deeper heading after it becomes a chunk of its own text. Breadcrumb headings are cut to 80 characters ending in `…`, and a breadcrumb over 64 tokens drops its outermost headings but never the title. A token window that still counts over 512 on its own is cut again with half the budget. Normalization caps runs of spaces and tabs at 64. Patterns that scan runs of blanks or punctuation start matching only at a run's first character, headings are parsed by slicing, and `TokenCounter` encodes any run of one character class longer than 32 code units in slices.
+
+**Why** An outline-only document used to publish with zero chunks, and one unbounded heading inflated every embedding input. js-tiktoken's byte-pair merge is quadratic in the length of a pre-tokenized piece (20,000 spaces took 32 s), and the worker shares the API's event loop, so a single upload could stall every request. Ordinary prose and code seldom hold 33 characters of one class in a row, so their counts stay exact; elsewhere a slice costs at most a token per cut.
+
+**How to apply** Keep new chunker regexes linear: anchor them at the start of a run and never put a lazy group before a greedy blank run. Every such change gets an adversarial test within `LINEAR_TIME_BUDGET_MS`. Known limit: js-tiktoken's pure-JS merge still costs up to about 20 µs per character per pass on unbroken CJK (about 2 µs on Latin letters). Chunking a 200,000-character unbroken CJK run therefore occupies the event loop for about 20 s; moving chunking into a worker thread is the follow-up.
+
+## DEC-020 — Usage metering
+
+**Decision** Every provider call becomes one `usage_events` row. Ingestion records an `embedding` row per batch, chat records one for the query embedding, a completed rewrite records `query_rewrite`, and every stored answer records `chat`. `UsageRecorder.record()` is fire-and-forget through the service-role client; pending inserts are flushed before shutdown, and a failed insert is logged and dropped. When the provider reports no usage (Gemini's OpenAI-compatible embeddings send none), cl100k estimates it and flags the row `estimated`.
+
+**Why** Metering must never slow down or fail the request it measures. Usage rows are system-written: users read their own but cannot insert (DEC-004). A flagged estimate serves the summary better than a missing row, and `estimatedRequests` keeps the estimate visible.
+
+**How to apply** Record right after each provider call through `meterUsage(result.usage, estimate)` and never await it on a request path. A rewrite that timed out is not metered, because no answer arrived.
+
+## DEC-021 — Reindex semantics
+
+**Decision** `POST /api/documents/:id/reindex` and `POST /api/documents/reindex-all` run the definer function `requeue_documents` through the caller's RLS client. It re-queues the caller's documents that are not being processed, resets their attempts and returns `{ queued }`; the worker is woken only when something was queued. A document mid-run is skipped rather than interrupted (`{ queued: 0 }`), and a document the caller cannot see is a 404. Unchanged content reuses every stored vector by chunk hash, so only chunks whose text, breadcrumb or embedding signature changed are embedded again.
+
+**Why** Users hold no update rights on the bookkeeping columns (DEC-005), and the definer function checks ownership in the same statement. Interrupting a run would race its finalize, and hash reuse keeps a reindex cheap; the chunk-set guard of DEC-023 removes what an older chunker left behind.
+
+**How to apply** There is no force flag. To embed unchanged content anew, change the embedding model or its dimensions, which changes the signature (DEC-014). A title change re-embeds every chunk, because the title opens each breadcrumb. Each route allows 3 requests per minute per user.
+
+## DEC-022 — Ingestion worker lifecycle
+
+**Decision** `IngestionWorker` starts only when `INGESTION_WORKER_ENABLED` is true and AI is configured. It drains the queue on boot, on every `document.ingestion.requested` event, after a reindex and on a sweep every `INGESTION_SWEEP_INTERVAL_MS`. Only one drain runs at a time: wakes during it coalesce into one more pass, and a pass that claimed rows asks for another. Documents are processed one at a time. `requeue_documents_for_model` runs once per process, and until it succeeds each later drain retries it without holding up claims. On shutdown the worker stops claiming and waits only for the document in progress.
+
+**Why** An in-process worker needs no extra service (DEC-005), and processing one document at a time bounds provider concurrency. The embedding signature is fixed at boot, so one re-queue per process is enough. Stopping between documents keeps SIGTERM fast; the rest of a claimed batch is claimed again once its claim goes stale (`INGESTION_STALE_AFTER_MINUTES`).
+
+**How to apply** Never await ingestion on a request path: emit `DOCUMENT_INGESTION_REQUESTED` or call `wake()`. A failed drain is logged, and the next wake starts afresh.
+
+## DEC-023 — Finalize and failure guards
+
+**Decision** `finalize_document_ingestion` takes the run's chunk hashes and deletes every stored chunk of the document outside that set, besides chunks of other content versions or models. The published set is therefore exactly what the run produced. `mark_document_ingestion_failed` takes the claim's content hash and attempt, and changes the row only while that claim is current: `processing`, the same hash and the same `ingestion_attempts`.
+
+**Why** When the content hash was unchanged, a retuned chunker left the old chunks in place, causing duplicates, an inflated `chunk_count` and colliding `chunk_index` values. A run whose claim went stale could also fail late and mark a newer claim or a newer content version as failed, discarding that work.
+
+**How to apply** `20260929101000_ingestion_guards.sql` drops the old signatures, so ship it together with the API release that passes the new arguments; an older API can no longer finalize or record failures. The repository always sends every guard, and the in-memory fake mirrors them.
+
+## DEC-024 — Search by content consistency and any query term (amends DEC-007)
+
+**Decision** `match_chunks` and `search_chunks_keyword` return a chunk while its `document_content_hash` equals the document's current `content_hash`, whatever `embedding_status` the document has. Keyword search ORs the query's English lexemes (`to_tsvector`, quoted and joined with `|`) and falls back to `websearch_to_tsquery` when there are none. `ts_rank_cd` then ranks chunks by the terms and occurrences they match.
+
+**Why** Filtering on `embedding_status = 'ready'` hid a document's still-valid chunks as soon as it was re-queued, so reindex-all emptied the library until the queue drained. The hash filter still hides chunks of text that an edit removed. DEC-007's `websearch_to_tsquery` ANDs every word, so a rewritten follow-up such as "Nimbus Pro plan pricing" found nothing unless one chunk held all four words.
+
+**How to apply** A document that is partly re-indexed, or that failed midway, contributes the chunks already stored for its current content; that is intended. `ts_rank_cd` has no IDF, so Reciprocal Rank Fusion stays the arbiter (DEC-007): tune `RAG_KEYWORD_K` and `RAG_RRF_K`, not the query syntax.
+
+## DEC-025 — Config-driven rate-limit buckets
+
+**Decision** A route whose limit comes from the environment opts in with `@RateLimitBucket(name)`. `UserThrottlerGuard` then replaces the default throttler's limit with the bucket's configured value: `chat` reads `RATE_LIMIT_CHAT_PER_MINUTE`, and every other route uses `RATE_LIMIT_DEFAULT_PER_MINUTE`. Counting is per user and per route over one minute. Fixed product limits, 10 uploads and 3 reindex requests per minute, stay literal `@Throttle` values.
+
+**Why** `@Throttle` arguments are fixed when the decorator runs, before the DI-time configuration exists (DEC-016), so the guard resolves configured limits at request time. The guard runs after `AuthGuard`: it tracks users rather than IP addresses and never counts a 401.
+
+**How to apply** A new configurable limit adds a bucket name, its environment variable and one entry in the guard's bucket map. Counters live in process memory, so each API instance allows the full limit. A 429 carries both the `Retry-After` header and `retryAfter` in the body.
+
+## DEC-026 — Chat stream rules
+
+**Decision** `POST /api/conversations/:id/messages` stores the question first, then streams `meta`, `sources`, `delta…`, `usage` and `done`. `sources` lists exactly the passages placed in the prompt, after `RAG_CONTEXT_TOKEN_BUDGET` dropped whole ones, and `done` follows only the persisted answer. An aborted or failed stream stores its partial answer (`finish_reason` `aborted` or `error`) only if a token arrived, so nothing is stored before the first token. Every stored answer is metered, and is estimated when the provider sent no usage.
+
+**Why** Citation markers index `sources`, so the list must match the prompt, and `done` promises a persisted message (DEC-008). A partial answer is still what the user saw, whereas an empty assistant row would be noise. Metering every stored answer keeps usage honest for cancelled streams too.
+
+**How to apply** Add an event to `chatSseEventSchemas` first, and never emit `done` before the answer is stored. The SSE writer always drains the generator, so persistence runs after a client disconnects. A failure inside the stream becomes an `error` event carrying the JSON error mapping, and a comment every 15 s keeps proxies from closing an idle stream.
+
+## DEC-027 — Citation.score semantics
+
+**Decision** `Citation.score` is the Reciprocal Rank Fusion score in hybrid mode: Σ 1/(k + rank), at most 2/(k + 1), or about 0.033 with `RAG_RRF_K` = 60. In vector mode it is the cosine similarity. It orders one message's citations; it is not a probability, and scores from the two modes are not comparable.
+
+**Why** A fused rank has no calibrated similarity, and reporting the cosine of a chunk that only keyword search found would mislead. Exposing the signal that actually selected the passage keeps the interface honest.
+
+**How to apply** Show a score only relative to the other citations of the same message, never as a percentage. The mode is stored in `metadata.retrieval.mode` but is not part of the contract yet; a client that needs the absolute scale must wait until it is.
+
+## DEC-028 — Query-rewrite policy
+
+**Decision** When `RAG_QUERY_REWRITE` is on and the conversation has history, the chat model first rewrites the question into a standalone search query. It sees the last 6 messages, each cut to 300 tokens, and has 256 output tokens and 4 seconds. The first line of its answer, stripped of labels and quotes and capped at 4,000 code points, drives both vector and keyword search. The answer prompt keeps the user's own question. Any error, a timeout or an empty rewrite falls back to the raw question.
+
+**Why** A follow-up such as "and the price?" retrieves nothing on its own. A bounded, best-effort rewrite fixes that without letting a slow or failing model hold up the answer. Answering the original question means a poor rewrite can change only what is retrieved, never what is asked.
+
+**How to apply** The rewrite is metered as `query_rewrite` and stored in `metadata.retrieval.rewrittenQuery`. Set `RAG_QUERY_REWRITE=false` for providers where the extra call is too slow or too costly.

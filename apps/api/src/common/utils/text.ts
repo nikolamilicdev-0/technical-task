@@ -1,5 +1,7 @@
 const HIGH_SURROGATE_MIN = 0xd800
 const HIGH_SURROGATE_MAX = 0xdbff
+const LOW_SURROGATE_MIN = 0xdc00
+const LOW_SURROGATE_MAX = 0xdfff
 
 /** Length in Unicode code points, the unit of Postgres `char_length`. */
 export function countCodePoints(text: string): number {
@@ -26,6 +28,18 @@ export function truncateUtf16(text: string, maxLength: number): string {
   const last = text.charCodeAt(maxLength - 1)
   const splitsPair = last >= HIGH_SURROGATE_MIN && last <= HIGH_SURROGATE_MAX
   return text.slice(0, splitsPair ? maxLength - 1 : maxLength)
+}
+
+/** True when `index` falls between the two halves of a surrogate pair. */
+export function splitsSurrogatePair(text: string, index: number): boolean {
+  const before = text.charCodeAt(index - 1)
+  const after = text.charCodeAt(index)
+  return (
+    before >= HIGH_SURROGATE_MIN &&
+    before <= HIGH_SURROGATE_MAX &&
+    after >= LOW_SURROGATE_MIN &&
+    after <= LOW_SURROGATE_MAX
+  )
 }
 
 // Postgres `text` cannot store U+0000: a value holding one fails its request with a 500.

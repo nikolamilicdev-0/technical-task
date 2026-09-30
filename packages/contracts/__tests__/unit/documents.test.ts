@@ -132,6 +132,7 @@ describe('listDocumentsQuerySchema', () => {
     ['a fractional limit', { limit: '2.5' }, 'limit'],
     ['a negative offset', { offset: '-1' }, 'offset'],
     ['a blank search term', { search: '  ' }, 'search'],
+    ['a NUL in the search term', { search: 'ra\u0000g' }, 'search'],
     ['an unknown status', { status: 'done' }, 'status'],
     ['a NUL in the tag filter', { tag: 'o\u0000ps' }, 'tag'],
   ])('rejects %s', (_, input, path) => {

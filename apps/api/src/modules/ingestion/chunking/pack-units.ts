@@ -10,9 +10,8 @@ export function toChunkUnit(piece: TextPiece, counter: TokenCounting): ChunkUnit
 }
 
 /**
- * Greedily packs one section's units into chunks of at most `targetTokens` (a larger unit stands
- * alone), opens each chunk with up to `overlapTokens` of the previous one's trailing units, and
- * folds a tiny last chunk into the one before when the result fits in `maxTokens`.
+ * Packs a section's units greedily into chunks of `targetTokens` (a bigger unit stands alone), each
+ * opening with up to `overlapTokens` of the last; a tiny tail joins the chunk before if it fits.
  */
 export function packUnits(
   units: readonly ChunkUnit[],

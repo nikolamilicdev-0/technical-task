@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { toStoredVector } from '../../../../src/common/utils/vector.js'
+import { toStoredVector, VectorDimensionError } from '../../../../src/common/utils/vector.js'
 import { VECTOR_DIMENSIONS } from '../../../../src/database/database.constants.js'
 
 function parseLiteral(literal: string): number[] {
@@ -27,12 +27,18 @@ describe('toStoredVector', () => {
 
   it('rejects an embedding larger than the column, naming the setting to change', () => {
     expect(() => toStoredVector([1, 2, 3], 2)).toThrow(/3 dimensions.*AI_EMBEDDING_DIMENSIONS/)
+    expect(() => toStoredVector([1, 2, 3], 2)).toThrow(VectorDimensionError)
   })
 
-  it.each([[[]], [[0.1, Number.NaN]], [[Number.POSITIVE_INFINITY]]])(
-    'rejects the unstorable embedding %o',
+  it('rejects an empty embedding as a dimension problem', () => {
+    expect(() => toStoredVector([], 4)).toThrow(VectorDimensionError)
+  })
+
+  it.each([[[0.1, Number.NaN]], [[Number.POSITIVE_INFINITY]]])(
+    'rejects the non-finite embedding %o, which is no dimension problem',
     (embedding) => {
       expect(() => toStoredVector(embedding, 4)).toThrow(RangeError)
+      expect(() => toStoredVector(embedding, 4)).not.toThrow(VectorDimensionError)
     }
   )
 })

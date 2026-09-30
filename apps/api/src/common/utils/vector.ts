@@ -1,13 +1,18 @@
 import { VECTOR_DIMENSIONS } from '../../database/database.constants.js'
 
+/** An embedding the `vector` column cannot hold: empty, or wider than the column. */
+export class VectorDimensionError extends RangeError {
+  override readonly name = 'VectorDimensionError'
+}
+
 /** The pgvector text literal for `document_chunks.embedding`, validated and zero-padded (DEC-014). */
 export function toStoredVector(
   embedding: readonly number[],
   dimensions: number = VECTOR_DIMENSIONS
 ): string {
-  if (embedding.length === 0) throw new RangeError('Cannot store an empty embedding')
+  if (embedding.length === 0) throw new VectorDimensionError('Cannot store an empty embedding')
   if (embedding.length > dimensions) {
-    throw new RangeError(
+    throw new VectorDimensionError(
       `The embedding has ${embedding.length} dimensions but the column holds ${dimensions}; ` +
         `set AI_EMBEDDING_DIMENSIONS to at most ${dimensions} or migrate the column`
     )

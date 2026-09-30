@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import {
   containsNul,
   countCodePoints,
+  splitsSurrogatePair,
   takeCodePoints,
   truncateUtf16,
 } from '../../../../src/common/utils/text.js'
@@ -41,6 +42,25 @@ describe('truncateUtf16', () => {
   it('never keeps half of a surrogate pair', () => {
     expect(truncateUtf16(`ab${GLOBE}`, 3)).toBe('ab')
     expect(truncateUtf16(`ab${GLOBE}`, 4)).toBe(`ab${GLOBE}`)
+  })
+})
+
+describe('splitsSurrogatePair', () => {
+  it('is true only between the two halves of a pair', () => {
+    const text = `a${GLOBE}b`
+
+    expect([0, 1, 2, 3, 4].map((index) => splitsSurrogatePair(text, index))).toEqual([
+      false,
+      false,
+      true,
+      false,
+      false,
+    ])
+  })
+
+  it('is false outside the text', () => {
+    expect(splitsSurrogatePair(GLOBE, -1)).toBe(false)
+    expect(splitsSurrogatePair(GLOBE, 5)).toBe(false)
   })
 })
 

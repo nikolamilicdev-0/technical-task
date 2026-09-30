@@ -18,6 +18,7 @@ import type { DatabaseClient } from '../../../../src/database/database-client.ty
 import { DatabaseRequestError } from '../../../../src/database/database-error.js'
 import { SupabaseClientFactory } from '../../../../src/database/supabase-client.factory.js'
 import { chunkDocument } from '../../../../src/modules/ingestion/chunking/chunker.js'
+import { DEFAULT_CHUNKING_OPTIONS } from '../../../../src/modules/ingestion/chunking/chunker.constants.js'
 import { INGESTION_MESSAGES } from '../../../../src/modules/ingestion/ingestion.constants.js'
 import { IngestionRepository } from '../../../../src/modules/ingestion/ingestion.repository.js'
 import { IngestionService } from '../../../../src/modules/ingestion/ingestion.service.js'
@@ -27,7 +28,7 @@ import type { UsageEvent } from '../../../../src/modules/usage/usage.types.js'
 import { InMemoryIngestionRepository } from '../../../fakes/in-memory-ingestion.repository.js'
 import { buildTestConfig, TEST_OPENAI_KEY, TEST_USER } from '../../../fixtures.js'
 import { TEST_DOCUMENT_ID } from '../../../fixtures/documents.js'
-import { buildHandbook } from '../../../fixtures/markdown.js'
+import { buildHandbook, paragraph } from '../../../fixtures/markdown.js'
 
 const counter = new TokenCounter()
 const SERVICE_DB = { role: 'service_role' } as unknown as DatabaseClient
@@ -187,6 +188,32 @@ describe('IngestionService', () => {
     expect(nullRows).toHaveLength(editedChunks.length - changed.length)
   })
 
+  it('publishes only the current chunk set after a retuned chunker split the text', async () => {
+    const { service, repository, embedding } = await setup()
+    const options = {
+      ...DEFAULT_CHUNKING_OPTIONS,
+      targetTokens: DEFAULT_CHUNKING_OPTIONS.targetTokens / 2,
+    }
+    const retuned = chunkDocument(claimed(), counter, options)
+    repository.chunks.set(
+      TEST_DOCUMENT_ID,
+      retuned.map((chunk) => ({
+        contentHash: chunk.contentHash,
+        documentContentHash: VERSION,
+        embedding: '[0]',
+        model: embedding.signature,
+      }))
+    )
+    const current = new Set(chunkDocument(claimed(), counter).map((chunk) => chunk.contentHash))
+
+    const outcome = await service.process(claimed())
+
+    expect(retuned.some((chunk) => !current.has(chunk.contentHash))).toBe(true)
+    expect(outcome).toMatchObject({ status: 'ready', chunkCount: current.size })
+    const stored = repository.chunks.get(TEST_DOCUMENT_ID) ?? []
+    expect(new Set(stored.map((chunk) => chunk.contentHash))).toEqual(current)
+  })
+
   it('resumes a retry from the vectors stored before a rate limit cut the run short', async () => {
     const { service, repository, embedding } = await setup(new QuotaLimitedEmbeddingModel())
     const chunks = chunkDocument(claimed(), counter)
@@ -251,7 +278,12 @@ describe('IngestionService', () => {
       retryInSeconds: 60,
     })
     expect(repository.failures).toEqual([
-      { documentId: TEST_DOCUMENT_ID, message: 'Fake rate limit reached', retryInSeconds: 60 },
+      {
+        documentId: TEST_DOCUMENT_ID,
+        attempt: 2,
+        message: 'Fake rate limit reached',
+        retryInSeconds: 60,
+      },
     ])
   })
 
@@ -264,6 +296,33 @@ describe('IngestionService', () => {
     expect(outcome).toMatchObject({ status: 'failed', retryInSeconds: null })
   })
 
+  it('fails for good without chunking once a stale claim runs past the last attempt', async () => {
+    const { service, repository, embedding } = await setup()
+    const count = vi.spyOn(counter, 'count')
+    const message = INGESTION_MESSAGES.attemptsExhausted(MAX_ATTEMPTS)
+
+    const outcome = await service.process(claimed({ attempt: MAX_ATTEMPTS + 1 }))
+
+    expect(outcome).toEqual({ status: 'failed', message, retryInSeconds: null })
+    expect(count).not.toHaveBeenCalled()
+    expect(embedding.requests).toEqual([])
+    expect(repository.failures).toEqual([
+      { documentId: TEST_DOCUMENT_ID, attempt: MAX_ATTEMPTS + 1, message, retryInSeconds: null },
+    ])
+    count.mockRestore()
+  })
+
+  it('records a failure against its own claim, leaving an edited version alone', async () => {
+    const failure = new AiProviderError('server', 'Fake outage', { provider: 'fake' })
+    const { service, repository } = await setup(new FakeEmbeddingModel({ failures: [failure] }))
+    repository.contentHashes.set(TEST_DOCUMENT_ID, EDITED_VERSION)
+
+    const outcome = await service.process(claimed())
+
+    expect(outcome).toMatchObject({ status: 'failed', message: 'Fake outage' })
+    expect(repository.failures).toEqual([])
+  })
+
   it.each<AiErrorCode>(['authentication', 'invalid_request', 'unsupported'])(
     'fails for good after a %s provider error',
     async (code) => {
@@ -273,7 +332,7 @@ describe('IngestionService', () => {
       await service.process(claimed())
 
       expect(repository.failures).toEqual([
-        { documentId: TEST_DOCUMENT_ID, message: `Fake ${code}`, retryInSeconds: null },
+        { documentId: TEST_DOCUMENT_ID, attempt: 1, message: `Fake ${code}`, retryInSeconds: null },
       ])
     }
   )
@@ -317,7 +376,9 @@ describe('IngestionService', () => {
 
     await service.process(claimed())
 
-    expect(repository.failures).toEqual([{ documentId: TEST_DOCUMENT_ID, message, retryInSeconds }])
+    expect(repository.failures).toEqual([
+      { documentId: TEST_DOCUMENT_ID, attempt: 1, message, retryInSeconds },
+    ])
   })
 
   it('logs an unexpected error with its stack and stores only a generic message', async () => {
@@ -341,6 +402,18 @@ describe('IngestionService', () => {
     vi.spyOn(repository, 'markFailed').mockRejectedValueOnce(new Error('database down'))
 
     await expect(service.process(claimed())).resolves.toMatchObject({ status: 'failed' })
+  })
+
+  it('never sends a chunk hash twice in one batch, even for a repeated passage', async () => {
+    const { service, repository } = await setup()
+    const answer = paragraph(1, 20)
+    const faq = ['## FAQ', answer, '## FAQ', answer, '## Other', paragraph(100, 30)].join('\n\n')
+
+    const outcome = await service.process(claimed({ content: faq }))
+
+    expect(outcome).toMatchObject({ status: 'ready' })
+    const hashes = repository.upserts.flat().map((row) => row.contentHash)
+    expect(new Set(hashes).size).toBe(hashes.length)
   })
 
   it('publishes a blank document with no chunks without calling the provider', async () => {

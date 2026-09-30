@@ -5,11 +5,16 @@ import { DATABASE_FUNCTIONS, DATABASE_RELATIONS } from '../../database/database.
 import { DatabaseRequestError } from '../../database/database-error.js'
 import { STALE_CONTENT_RESULT } from './ingestion.constants.js'
 import { toChunkPayload, toClaimedDocument } from './ingestion.mapper.js'
-import type { ChunkUpsert, ClaimedDocument, ClaimOptions } from './ingestion.types.js'
+import type {
+  ChunkUpsert,
+  ClaimedDocument,
+  ClaimOptions,
+  ClaimReference,
+} from './ingestion.types.js'
 
 /**
- * The ingestion SQL functions (DEC-005). The worker passes the service-role client and scopes
- * every call by document id; the requeue and existence calls take the caller's RLS client.
+ * The ingestion queue (DEC-005): the worker's calls take the service-role client, while
+ * `requeueDocuments` and `documentExists` take the caller's RLS client.
  */
 @Injectable()
 export class IngestionRepository {
@@ -58,31 +63,38 @@ export class IngestionRepository {
     return data !== STALE_CONTENT_RESULT
   }
 
-  /** Drops chunks of older versions and marks the document ready; null once the content changed. */
+  /**
+   * Publishes exactly `chunkHashes`, dropping every other stored chunk of the document, and marks
+   * it ready; null once the content changed or the run lost its claim.
+   */
   async finalize(
     db: DatabaseClient,
     documentId: string,
     contentHash: string,
-    signature: string
+    signature: string,
+    chunkHashes: readonly string[]
   ): Promise<number | null> {
     const { data, error, status } = await db.rpc(DATABASE_FUNCTIONS.finalizeDocumentIngestion, {
       p_document_id: documentId,
       p_content_hash: contentHash,
       p_embedding_model: signature,
+      p_chunk_hashes: [...chunkHashes],
     })
     if (error) throw new DatabaseRequestError(error, status)
     return data === STALE_CONTENT_RESULT ? null : data
   }
 
-  /** Records a failed run; without `retryInSeconds` no automatic retry is scheduled. */
+  /** Records a failed run of `claim`; without `retryInSeconds` no automatic retry is scheduled. */
   async markFailed(
     db: DatabaseClient,
-    documentId: string,
+    claim: ClaimReference,
     message: string,
     retryInSeconds: number | null
   ): Promise<void> {
     const { error, status } = await db.rpc(DATABASE_FUNCTIONS.markDocumentIngestionFailed, {
-      p_document_id: documentId,
+      p_document_id: claim.id,
+      p_content_hash: claim.contentHash,
+      p_attempt: claim.attempt,
       p_error: message,
       ...(retryInSeconds === null ? {} : { p_retry_in_seconds: retryInSeconds }),
     })

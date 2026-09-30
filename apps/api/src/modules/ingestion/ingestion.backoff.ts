@@ -1,4 +1,8 @@
-import { RETRY_BASE_DELAY_SECONDS, RETRY_MAX_DELAY_SECONDS } from './ingestion.constants.js'
+import {
+  MAX_RETRY_IN_SECONDS,
+  RETRY_BASE_DELAY_SECONDS,
+  RETRY_MAX_DELAY_SECONDS,
+} from './ingestion.constants.js'
 import type { IngestionFailure } from './ingestion.types.js'
 
 /** Seconds to wait after failed attempt `attempt` (from 1): 30, 60, 120, … at most 1800. */
@@ -17,5 +21,6 @@ export function nextRetryInSeconds(
   maxAttempts: number
 ): number | null {
   if (!retryable || attempt >= maxAttempts) return null
-  return Math.max(retryDelaySeconds(attempt), Math.ceil(retryAfterSeconds))
+  const requested = Math.min(Math.ceil(retryAfterSeconds), MAX_RETRY_IN_SECONDS)
+  return Math.max(retryDelaySeconds(attempt), requested)
 }

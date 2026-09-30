@@ -26,6 +26,7 @@ export class IngestionWorker implements OnModuleInit, OnModuleDestroy {
   #running = false
   #draining = false
   #wakeRequested = false
+  #requeuedOtherModels = false
   #drain: Promise<void> = Promise.resolve()
 
   constructor(
@@ -59,7 +60,7 @@ export class IngestionWorker implements OnModuleInit, OnModuleDestroy {
     void this.wake()
   }
 
-  /** Stops claiming; resolves once the documents already claimed are processed. */
+  /** Stops claiming; resolves once the document being processed is done. */
   async onModuleDestroy(): Promise<void> {
     this.#running = false
     if (this.scheduler.doesExist('interval', INGESTION_SWEEP_INTERVAL)) {
@@ -100,19 +101,31 @@ export class IngestionWorker implements OnModuleInit, OnModuleDestroy {
     }
   }
 
+  // Once per process, as the signature is fixed at boot; a failure is retried by the next drain and
+  // never holds up the claims.
   async #requeueOtherModels(db: DatabaseClient): Promise<void> {
+    if (this.#requeuedOtherModels) return
     const { signature } = this.embedding
-    const requeued = await this.repository.requeueForModel(db, signature)
-    if (requeued > 0) {
-      this.#logger.log(
-        `Re-queued documents embedded under another model than ${signature}: ${requeued}`
-      )
+    try {
+      const requeued = await this.repository.requeueForModel(db, signature)
+      this.#requeuedOtherModels = true
+      if (requeued > 0) {
+        this.#logger.log(
+          `Re-queued documents embedded under another model than ${signature}: ${requeued}`
+        )
+      }
+    } catch (error) {
+      this.#logger.warn(`Could not re-queue documents of other models: ${describeError(error)}`)
     }
   }
 
+  // On shutdown the rest of the batch keeps its claim, which goes stale and is claimed again.
   async #processBatch(db: DatabaseClient): Promise<number> {
     const documents = await this.repository.claimPending(db, this.#settings)
-    for (const document of documents) await this.ingestion.process(document)
+    for (const document of documents) {
+      if (!this.#running) break
+      await this.ingestion.process(document)
+    }
     return documents.length
   }
 }

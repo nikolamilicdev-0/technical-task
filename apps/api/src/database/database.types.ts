@@ -363,11 +363,22 @@ export type Database = {
       }
       embedding_column_dimensions: { Args: Record<PropertyKey, never>; Returns: number }
       finalize_document_ingestion: {
-        Args: { p_content_hash: string; p_document_id: string; p_embedding_model: string }
+        Args: {
+          p_chunk_hashes: string[]
+          p_content_hash: string
+          p_document_id: string
+          p_embedding_model: string
+        }
         Returns: number
       }
       mark_document_ingestion_failed: {
-        Args: { p_document_id: string; p_error: string; p_retry_in_seconds?: number }
+        Args: {
+          p_attempt: number
+          p_content_hash: string
+          p_document_id: string
+          p_error: string
+          p_retry_in_seconds?: number
+        }
         Returns: undefined
       }
       match_chunks: {
