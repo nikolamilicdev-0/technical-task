@@ -9,7 +9,6 @@ const summaryResultSchema = usageSummarySchema.extend({
   to: timestampColumn,
 })
 
-/** Validates the `usage_summary` jsonb against the contract. */
 export function toUsageSummary(result: Json): UsageSummary {
   return summaryResultSchema.parse(result)
 }

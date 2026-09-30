@@ -95,6 +95,11 @@ describe('envSchema', () => {
     ['a similarity outside the cosine range', { RAG_MIN_SIMILARITY: '2' }, 'RAG_MIN_SIMILARITY'],
     ['a fractional batch size', { INGESTION_BATCH_SIZE: '2.5' }, 'INGESTION_BATCH_SIZE'],
     [
+      'a sweep interval no Node timer can hold',
+      { INGESTION_SWEEP_INTERVAL_MS: '3000000000' },
+      'INGESTION_SWEEP_INTERVAL_MS',
+    ],
+    [
       'a flag that is not boolean',
       { INGESTION_WORKER_ENABLED: 'sometimes' },
       'INGESTION_WORKER_ENABLED',

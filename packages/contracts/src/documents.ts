@@ -18,7 +18,18 @@ export const documentSourceTypeSchema = z.enum(DOCUMENT_SOURCE_TYPES)
 export type DocumentSourceType = z.infer<typeof documentSourceTypeSchema>
 
 export const documentTitleSchema = withoutNul(z.string().trim().min(1).max(DOCUMENT_TITLE_MAX))
-export const documentContentSchema = withoutNul(z.string().min(1).max(DOCUMENT_CONTENT_MAX))
+export const BLANK_CONTENT_MESSAGE = 'Must contain more than whitespace'
+
+export const documentContentSchema = withoutNul(
+  z
+    .string()
+    .min(1)
+    .max(DOCUMENT_CONTENT_MAX)
+    .refine((content) => content.trim() !== '', {
+      message: BLANK_CONTENT_MESSAGE,
+      when: ({ issues }) => issues.length === 0,
+    })
+)
 export const tagSchema = withoutNul(z.string().trim().min(1).max(TAG_MAX_LENGTH))
 export const tagsSchema = z
   .array(tagSchema)

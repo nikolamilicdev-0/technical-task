@@ -26,7 +26,6 @@ function normalizeEnvValue(value: unknown): unknown {
   return trimmed === '' ? undefined : trimmed
 }
 
-/** Blank values count as unset, so `KEY=` falls back to the default. */
 function optionalEnv<TSchema extends z.ZodType>(schema: TSchema) {
   return z.preprocess(normalizeEnvValue, schema.optional())
 }
@@ -37,7 +36,6 @@ const optionalNumber = optionalEnv(z.coerce.number())
 const optionalFlag = optionalEnv(z.stringbool())
 const optionalHeaders = optionalEnv(headersJsonSchema)
 
-/** The `AI_*` environment variables, decoded; `aiConfigFromEnv` validates them as a whole. */
 export const aiEnvSchema = z.object({
   AI_CHAT_PROVIDER: optionalProvider,
   AI_CHAT_API_KEY: optionalText,
@@ -62,7 +60,6 @@ export const aiEnvSchema = z.object({
 })
 export type AiEnv = z.output<typeof aiEnvSchema>
 
-/** The environment variable behind every `AiConfig` field. */
 export const AI_ENV_NAMES = {
   chat: {
     provider: 'AI_CHAT_PROVIDER',
@@ -110,7 +107,7 @@ function toEnvIssue(issue: z.core.$ZodIssue): z.core.$ZodIssue {
   return name === undefined ? issue : { ...issue, path: [name] }
 }
 
-/** Builds and validates `AiConfig`; throws a ZodError whose issue paths are variable names. */
+/** Throws a ZodError whose issue paths are the variable names. */
 export function aiConfigFromEnv(env: AiEnv): AiConfig {
   const input = {
     chat: {

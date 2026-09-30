@@ -4,6 +4,7 @@ import {
   containsNul,
   countCodePoints,
   splitsSurrogatePair,
+  stripNul,
   takeCodePoints,
   truncateUtf16,
 } from '../../../../src/common/utils/text.js'
@@ -70,5 +71,12 @@ describe('containsNul', () => {
     expect(containsNul('\u0000')).toBe(true)
     expect(containsNul('plain \\0 text')).toBe(false)
     expect(containsNul('')).toBe(false)
+  })
+})
+
+describe('stripNul', () => {
+  it('removes every U+0000 and leaves the rest untouched', () => {
+    expect(stripNul('\u0000a\u0000b\u0000')).toBe('ab')
+    expect(stripNul(`${GLOBE} \\0 text`)).toBe(`${GLOBE} \\0 text`)
   })
 })

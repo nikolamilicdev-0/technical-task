@@ -16,7 +16,6 @@ export const SERVED_CHAT_MODEL = 'gpt-4o-mini-2024-07-18'
 
 export const USAGE: CompletionUsage = { prompt_tokens: 12, completion_tokens: 5, total_tokens: 17 }
 
-/** A streamed chunk carrying one choice. */
 export function contentChunk(
   content: string | null,
   finishReason: FinishReasonValue = null
@@ -58,7 +57,6 @@ export function buildCompletion(
   }
 }
 
-/** Embedding response listing `vectors` under the given indices (input order by default). */
 export function buildEmbeddingResponse(
   vectors: number[][],
   indices: number[] = vectors.map((_, index) => index)
@@ -108,7 +106,6 @@ export function buildEmbeddingEndpoint(
   }
 }
 
-/** A valid config: OpenAI for both models unless the sections say otherwise. */
 export function buildAiConfig(
   chat: AiConfigInput['chat'] = {},
   embedding: AiConfigInput['embedding'] = {},
@@ -123,7 +120,6 @@ export async function collect<TItem>(items: AsyncIterable<TItem>): Promise<TItem
   return collected
 }
 
-/** Runs `action` and returns the `AiProviderError` it must throw. */
 export async function captureAiError(action: () => Promise<unknown>): Promise<AiProviderError> {
   try {
     await action()
@@ -134,7 +130,6 @@ export async function captureAiError(action: () => Promise<unknown>): Promise<Ai
   throw new Error('Expected an AiProviderError')
 }
 
-/** Runs `action` and returns the `AiProviderError` it must throw synchronously. */
 export function captureAiErrorSync(action: () => unknown): AiProviderError {
   try {
     action()

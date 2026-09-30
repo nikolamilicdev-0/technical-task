@@ -1,4 +1,3 @@
-/** Every provider profile shipped; `custom` covers any other OpenAI-compatible server. */
 export const PROVIDER_IDS = [
   'openai',
   'groq',

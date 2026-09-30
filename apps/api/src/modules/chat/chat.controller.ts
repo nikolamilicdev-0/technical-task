@@ -20,7 +20,6 @@ export class ChatController {
     private readonly sse: SseWriter
   ) {}
 
-  /** Streams the answer as SSE when the client accepts `text/event-stream`, else a `ChatResult`. */
   @Post(CONVERSATION_MESSAGES_ROUTE)
   @RateLimitBucket('chat')
   async send(
@@ -34,7 +33,6 @@ export class ChatController {
     const run = await this.chat.prepare(user, conversationId, input)
     if (acceptsEventStream(accept)) return this.sse.stream(response, run.events(signal))
     const result = await collectChatResult(run.events(signal))
-    // No result: the client left mid-answer, so there is no one to answer.
     if (result === null) response.end()
     else response.status(HttpStatus.OK).json(result)
   }

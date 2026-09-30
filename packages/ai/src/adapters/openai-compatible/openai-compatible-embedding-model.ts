@@ -15,7 +15,6 @@ import type { ResolvedEmbeddingEndpoint } from '../../providers/resolve-endpoint
 import { toEmbeddingParams, toTokenUsage } from './mappers.js'
 import type { OpenAiLikeClient } from './openai-like-client.types.js'
 
-/** `EmbeddingModel` over any OpenAI-compatible `/embeddings` endpoint. */
 export class OpenAiCompatibleEmbeddingModel implements EmbeddingModel {
   readonly provider: string
   readonly model: string
@@ -40,8 +39,10 @@ export class OpenAiCompatibleEmbeddingModel implements EmbeddingModel {
     const inputProblem = findEmbeddingInputProblem(texts)
     if (inputProblem !== undefined) throw this.#error('invalid_request', inputProblem)
     const response = await this.#request(texts, signal)
+    // The SDK types `data` as required, yet a compatible server can answer 2xx without it.
+    const vectors = this.#readVectors(response.data ?? [], texts.length)
     return {
-      ...this.#readVectors(response.data, texts.length),
+      ...vectors,
       usage: response.usage === undefined ? undefined : toTokenUsage(response.usage),
       model: response.model || this.model,
     }

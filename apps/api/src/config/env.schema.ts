@@ -8,6 +8,7 @@ import {
   LOG_LEVELS,
   PORT_MAX,
   RETRIEVAL_MODES,
+  TIMER_DELAY_MAX_MS,
 } from './config.constants.js'
 
 // Without a scheme, `localhost:54321` would parse as a URL whose protocol is `localhost:`.
@@ -19,7 +20,6 @@ function normalizeEnvValue(value: unknown): unknown {
   return trimmed === '' ? undefined : trimmed
 }
 
-/** Blank values count as unset, so `KEY=` falls back to the default (the same rule as `@kb/ai`). */
 function envVar<TSchema extends z.ZodType>(schema: TSchema) {
   return z.preprocess(normalizeEnvValue, schema)
 }
@@ -29,7 +29,6 @@ const requiredText = z.string().min(1)
 const positiveInt = z.coerce.number().int().positive()
 const flag = z.stringbool()
 
-/** Variables the API reads itself; `@kb/ai` owns and decodes the `AI_*` ones. */
 export const apiEnvShape = {
   API_PORT: envVar(z.coerce.number().int().min(1).max(PORT_MAX).default(ENV_DEFAULTS.API_PORT)),
   // CORS compares origins exactly, so a trailing slash or path must not survive.
@@ -58,7 +57,7 @@ export const apiEnvShape = {
   RAG_MAX_ANSWER_TOKENS: envVar(positiveInt.default(ENV_DEFAULTS.RAG_MAX_ANSWER_TOKENS)),
   INGESTION_WORKER_ENABLED: envVar(flag.default(ENV_DEFAULTS.INGESTION_WORKER_ENABLED)),
   INGESTION_SWEEP_INTERVAL_MS: envVar(
-    positiveInt.default(ENV_DEFAULTS.INGESTION_SWEEP_INTERVAL_MS)
+    positiveInt.max(TIMER_DELAY_MAX_MS).default(ENV_DEFAULTS.INGESTION_SWEEP_INTERVAL_MS)
   ),
   INGESTION_BATCH_SIZE: envVar(positiveInt.default(ENV_DEFAULTS.INGESTION_BATCH_SIZE)),
   INGESTION_STALE_AFTER_MINUTES: envVar(
@@ -71,6 +70,5 @@ export const apiEnvShape = {
   RATE_LIMIT_CHAT_PER_MINUTE: envVar(positiveInt.default(ENV_DEFAULTS.RATE_LIMIT_CHAT_PER_MINUTE)),
 }
 
-/** Every variable the API process reads; unknown variables are ignored. */
 export const envSchema = z.object({ ...apiEnvShape, ...aiEnvSchema.shape })
 export type Env = z.output<typeof envSchema>

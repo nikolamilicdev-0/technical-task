@@ -1,6 +1,5 @@
 import { splitsSurrogatePair } from '../common/utils/text.js'
 
-/** Longest run of one character class that the token counter encodes in one piece. */
 export const MAX_ENCODED_RUN_LENGTH = 32
 
 // cl100k keeps a run of whitespace, letters or other symbols in one piece (digits come in threes),
@@ -12,7 +11,6 @@ const LONG_RUN = new RegExp(
   'gu'
 )
 
-/** Cuts every longer run every MAX_ENCODED_RUN_LENGTH code units; the slices join into `text`. */
 export function sliceLongRuns(text: string): string[] {
   const slices: string[] = []
   let start = 0

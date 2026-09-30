@@ -8,13 +8,9 @@ import { MESSAGE_COLUMNS } from './chat.constants.js'
 import type { MessageInsertRow } from './chat.types.js'
 import { toMessage } from './messages.mapper.js'
 
-/**
- * Messages through the caller's client. They are immutable and go with their conversation;
- * RLS only lets the caller add them to conversations of their own.
- */
+/** Messages are immutable; RLS only lets the caller add them to conversations of their own. */
 @Injectable()
 export class MessagesRepository {
-  /** The whole conversation, oldest first; empty when the caller cannot see it. */
   async listByConversation(db: DatabaseClient, conversationId: string): Promise<Message[]> {
     const { data, error, status } = await db
       .from(DATABASE_RELATIONS.messages)
@@ -39,7 +35,6 @@ export class MessagesRepository {
     return data.map(toMessage).reverse()
   }
 
-  /** Stores a message; a trigger bumps the conversation's `updated_at`. */
   async insert(db: DatabaseClient, row: MessageInsertRow): Promise<Message> {
     const { data, error, status } = await db
       .from(DATABASE_RELATIONS.messages)

@@ -91,7 +91,6 @@ class FakeEmbeddings {
   }
 }
 
-/** Scripted stand-in for the OpenAI SDK client that records every call. */
 export class FakeOpenAiClient implements OpenAiLikeClient {
   readonly chat: { readonly completions: FakeChatCompletions }
   readonly embeddings: FakeEmbeddings

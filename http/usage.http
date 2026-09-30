@@ -1,7 +1,4 @@
-# Usage walkthrough for the VS Code REST Client extension (humao.rest-client).
-# Start the API (`pnpm dev:api`); chatting or indexing first gives the summary something to show.
-# Export the same variables as for documents.http:
-#   SUPABASE_PUBLISHABLE_KEY   KB_EMAIL   KB_PASSWORD
+# Usage walkthrough for the VS Code REST Client; http/README.md lists the variables to export.
 
 @baseUrl = http://localhost:4000/api
 @supabaseUrl = http://127.0.0.1:54321

@@ -67,7 +67,7 @@ describe('aiEnvSchema', () => {
   })
 
   it.each([
-    ['an unknown provider', { AI_CHAT_PROVIDER: 'anthropic' }, 'AI_CHAT_PROVIDER'],
+    ['an unknown provider', { AI_CHAT_PROVIDER: 'mistral' }, 'AI_CHAT_PROVIDER'],
     ['a non-numeric timeout', { AI_CHAT_TIMEOUT_MS: 'soon' }, 'AI_CHAT_TIMEOUT_MS'],
     ['a non-boolean flag', { AI_CHAT_STREAM_USAGE: 'sometimes' }, 'AI_CHAT_STREAM_USAGE'],
     ['headers that are not JSON', { AI_CHAT_HEADERS_JSON: 'X-Team: kb' }, 'AI_CHAT_HEADERS_JSON'],
@@ -263,6 +263,11 @@ describe('aiConfigFromEnv', () => {
       'AI_EMBEDDING_BASE_URL',
     ],
     ['a negative timeout', { AI_CHAT_TIMEOUT_MS: '-5' }, 'AI_CHAT_TIMEOUT_MS'],
+    [
+      'a timeout no Node timer can hold',
+      { AI_EMBEDDING_TIMEOUT_MS: '3000000000' },
+      'AI_EMBEDDING_TIMEOUT_MS',
+    ],
     ['fractional retries', { AI_EMBEDDING_MAX_RETRIES: '1.5' }, 'AI_EMBEDDING_MAX_RETRIES'],
     ['a temperature above 2', { AI_CHAT_TEMPERATURE: '2.5' }, 'AI_CHAT_TEMPERATURE'],
     ['fractional dimensions', { AI_EMBEDDING_DIMENSIONS: '76.8' }, 'AI_EMBEDDING_DIMENSIONS'],

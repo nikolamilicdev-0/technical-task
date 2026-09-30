@@ -11,15 +11,15 @@ const EMBEDDING_TIMEOUT_MS_DEFAULT = 30_000
 const MAX_RETRIES_DEFAULT = 2
 const EMBEDDING_BATCH_SIZE_DEFAULT = 32
 const TEMPERATURE_MAX = 2
+// The SDK arms a Node timer, which runs after 1 ms for any longer delay.
+const TIMEOUT_MS_MAX = 2_147_483_647
 // Without a scheme, `localhost:11434/v1` would parse as a URL whose protocol is `localhost:`.
 const HTTP_URL_PROTOCOL = /^https?$/
 
 const EMBEDDING_PROVIDER_IDS = PROVIDER_IDS.filter((id) => PROVIDER_PROFILES[id].supportsEmbeddings)
 
-/** Accepted provider ids. */
 export const providerIdSchema = z.enum(PROVIDER_IDS)
 
-/** Extra request headers: header name to value. */
 export const headersSchema = z.record(
   z.string().min(1),
   z.string(),
@@ -28,7 +28,7 @@ export const headersSchema = z.record(
 
 const textSchema = z.string().min(1)
 const httpUrlSchema = z.url({ protocol: HTTP_URL_PROTOCOL, error: 'Expected an http(s) URL' })
-const timeoutMsSchema = z.number().int().positive()
+const timeoutMsSchema = z.number().int().positive().max(TIMEOUT_MS_MAX)
 const maxRetriesSchema = z.number().int().nonnegative().default(MAX_RETRIES_DEFAULT)
 
 const connectionShape = {
@@ -62,7 +62,6 @@ interface ProfileIssue {
   message: string
 }
 
-// Unset embedding connection settings follow chat's when both sides use the same provider.
 function inheritEmbeddingConnection({ chat, embedding, app }: z.output<typeof configShapeSchema>) {
   const provider = embedding.provider ?? chat.provider
   const source = provider === chat.provider ? chat : undefined
@@ -132,7 +131,6 @@ function findModelIssues(
   return [{ path: [kind, 'model'], message }]
 }
 
-/** Nested AI configuration, validated against the provider profiles. */
 export const aiConfigSchema = configShapeSchema
   .transform(inheritEmbeddingConnection)
   .superRefine((config, ctx) => {

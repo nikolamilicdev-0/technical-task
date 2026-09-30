@@ -5,7 +5,6 @@ import type { DocumentChunk } from './chunking/chunker.types.js'
 
 type Functions = Database['public']['Functions']
 
-/** A `claim_pending_documents` row. */
 export type ClaimedDocumentRow = Functions['claim_pending_documents']['Returns'][number]
 
 /** A document the worker claimed; `attempt` is 1 on the first run since it was queued. */
@@ -18,19 +17,15 @@ export interface ClaimedDocument {
   readonly attempt: number
 }
 
-/** The claim a failure is recorded against; a newer claim or content version is left alone. */
 export type ClaimReference = Pick<ClaimedDocument, 'id' | 'contentHash' | 'attempt'>
 
-/** What every step of indexing one claimed document works with. */
 export interface IndexingRun {
   /** The service-role client: the worker writes chunks no user may write. */
   readonly db: DatabaseClient
   readonly document: ClaimedDocument
-  /** The embedding model signature the chunks are stored under (DEC-014). */
   readonly signature: string
 }
 
-/** How many documents one claim takes, when a claim goes stale and when retries stop. */
 export type ClaimOptions = Pick<
   IngestionSettings,
   'batchSize' | 'staleAfterMinutes' | 'maxAttempts'
@@ -41,7 +36,6 @@ export type ChunkUpsert = Omit<DocumentChunk, 'embeddingInput'> & {
   readonly embedding: string | null
 }
 
-/** One element of the `p_chunks` array of `upsert_document_chunks`. */
 export type ChunkPayload = {
   chunk_index: number
   content: string
@@ -51,18 +45,15 @@ export type ChunkPayload = {
   embedding: string | null
 }
 
-/** Why a run failed, and whether another attempt may succeed. */
 export interface IngestionFailure {
   /** Stored in `documents.embedding_error`: says what went wrong without internals. */
   readonly message: string
   readonly retryable: boolean
-  /** The provider's own hint; an automatic retry never comes sooner. */
   readonly retryAfterSeconds?: number
   /** False for errors nothing anticipates (bugs), which are logged with their stack. */
   readonly expected: boolean
 }
 
-/** How processing one claimed document ended. */
 export type IngestionOutcome =
   | {
       readonly status: 'ready'

@@ -1,4 +1,3 @@
-/** DI token of the validated `AppConfig`. */
 export const APP_CONFIG = Symbol('APP_CONFIG')
 
 /** Nest log levels from least to most verbose; `LOG_LEVEL` enables its own and every one before it. */
@@ -7,10 +6,11 @@ export const LOG_LEVELS = ['fatal', 'error', 'warn', 'log', 'debug', 'verbose'] 
 export const RETRIEVAL_MODES = ['hybrid', 'vector'] as const
 
 export const PORT_MAX = 65_535
+// Node runs a timer with a longer delay after 1 ms instead.
+export const TIMER_DELAY_MAX_MS = 2_147_483_647
 export const COSINE_SIMILARITY_MIN = -1
 export const COSINE_SIMILARITY_MAX = 1
 
-/** Used when a variable is unset or blank; `.env.example` documents the same values. */
 export const ENV_DEFAULTS = {
   API_PORT: 4000,
   WEB_ORIGIN: 'http://localhost:3000',

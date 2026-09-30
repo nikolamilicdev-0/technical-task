@@ -23,7 +23,6 @@ const CLIENT_ERROR_CODES: ReadonlyMap<number, ErrorCode> = new Map([
 ])
 const FALLBACK_CLIENT_ERROR_CODE: ErrorCode = 'invalid_payload'
 
-/** Maps anything thrown while serving a request onto the shared error shape (pure). */
 export function mapErrorToResponse(error: unknown): ErrorResponse {
   if (error instanceof ApiHttpException) return respond(error.body)
   if (error instanceof AiProviderError) return fromAiProviderError(error)
@@ -41,7 +40,6 @@ function generic(code: ErrorCode, details: ApiErrorDetails = {}): ErrorResponse 
   return respond({ code, messages: [DEFAULT_ERROR_MESSAGES[code]], ...details })
 }
 
-// Transient failures (rate limits, timeouts, outages) are worth retrying; the rest are not.
 function fromAiProviderError(error: AiProviderError): ErrorResponse {
   if (!error.retryable) return generic('ai_provider_error')
   const retryAfter = toRetryAfter(error.details.retryAfterSeconds)

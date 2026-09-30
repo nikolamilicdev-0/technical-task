@@ -40,7 +40,6 @@ const CARDINALITY_VIOLATION = {
 }
 const BAD_REQUEST_STATUS = 400
 
-/** The ingestion SQL functions over maps, with their stale-content, claim and reuse rules. */
 export class InMemoryIngestionRepository implements IngestionStore {
   /** Current `content_hash` per document; a different one makes a run stale. */
   readonly contentHashes = new Map<string, string>()

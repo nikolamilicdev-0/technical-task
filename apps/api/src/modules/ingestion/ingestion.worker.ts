@@ -15,10 +15,7 @@ import { DOCUMENT_INGESTION_REQUESTED } from './ingestion.events.js'
 import { IngestionRepository } from './ingestion.repository.js'
 import { IngestionService } from './ingestion.service.js'
 
-/**
- * Drains the Postgres-backed queue (DEC-005): on boot, on every ingestion request and on a sweep
- * that also catches retries and stale claims. Wakes during a drain coalesce into one more pass.
- */
+/** Wakes that arrive during a drain coalesce into one more pass (DEC-022). */
 @Injectable()
 export class IngestionWorker implements OnModuleInit, OnModuleDestroy {
   readonly #logger = new Logger(IngestionWorker.name)
@@ -74,7 +71,6 @@ export class IngestionWorker implements OnModuleInit, OnModuleDestroy {
     void this.wake()
   }
 
-  /** Starts a drain, or asks the running one for another pass; resolves when it has finished. */
   wake(): Promise<void> {
     if (!this.#running) return this.#drain
     this.#wakeRequested = true

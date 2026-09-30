@@ -4,7 +4,6 @@ import type { ProviderProfile } from './provider-profiles.types.js'
 // gemini-embedding-001 returns 3072 values natively; 1536 fits the vector(1536) column (DEC-014).
 const GEMINI_EMBEDDING_DIMENSIONS = 1536
 
-/** Built-in knowledge per provider; every value here can be overridden through `AiConfig`. */
 export const PROVIDER_PROFILES: Readonly<Record<ProviderId, ProviderProfile>> = {
   openai: {
     id: 'openai',

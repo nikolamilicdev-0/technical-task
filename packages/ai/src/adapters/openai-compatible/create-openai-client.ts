@@ -2,7 +2,6 @@ import { OpenAI } from 'openai'
 
 import type { CreateOpenAiClient } from './openai-like-client.types.js'
 
-/** Builds the real SDK client; retries and the request timeout are the SDK's own. */
 export const createOpenAiClient: CreateOpenAiClient = (endpoint) =>
   new OpenAI({
     baseURL: endpoint.baseUrl,

@@ -8,12 +8,10 @@ import type { CreateEmbeddingResponse, EmbeddingCreateParams } from 'openai/reso
 
 import type { ResolvedEndpoint } from '../../providers/resolve-endpoint.types.js'
 
-/** Per-call options the adapters pass to the SDK. */
 export interface OpenAiRequestOptions {
   signal?: AbortSignal
 }
 
-/** The slice of the OpenAI SDK client the adapters call; tests substitute fakes for it. */
 export interface OpenAiLikeClient {
   readonly chat: {
     readonly completions: {
@@ -35,5 +33,4 @@ export interface OpenAiLikeClient {
   }
 }
 
-/** Opens an SDK client for one resolved endpoint. */
 export type CreateOpenAiClient = (endpoint: ResolvedEndpoint) => OpenAiLikeClient

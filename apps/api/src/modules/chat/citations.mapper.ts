@@ -8,7 +8,6 @@ import { parseCitations } from './citation-parser.js'
 
 const WHITESPACE_RUN = /\s+/g
 
-/** The prompt's sources as citations: `index` is the `[n]` the model sees, none cited yet. */
 export function toCitations(sources: readonly RetrievedChunk[], mode: RetrievalMode): Citation[] {
   return sources.map((source, position) => ({
     index: position + 1,
@@ -23,13 +22,11 @@ export function toCitations(sources: readonly RetrievedChunk[], mode: RetrievalM
   }))
 }
 
-/** Flags the citations the answer's `[n]` markers refer to. */
 export function markCited(citations: readonly Citation[], answer: string): Citation[] {
   const cited = new Set(parseCitations(answer, citations.length))
   return citations.map((citation) => ({ ...citation, cited: cited.has(citation.index) }))
 }
 
-/** The start of a chunk on one line, cut like a document preview. */
 export function toExcerpt(content: string): string {
   return takeCodePoints(content.replace(WHITESPACE_RUN, ' ').trim(), CITATION_EXCERPT_LENGTH)
 }

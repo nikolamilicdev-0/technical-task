@@ -13,7 +13,6 @@ function throttlerOptions({ rateLimit }: AppConfig): ThrottlerModuleOptions {
   }
 }
 
-/** Throttler storage and limits (in memory, per process); UserThrottlerGuard is global in AppModule. */
 @Module({
   imports: [ThrottlerModule.forRootAsync({ inject: [APP_CONFIG], useFactory: throttlerOptions })],
 })

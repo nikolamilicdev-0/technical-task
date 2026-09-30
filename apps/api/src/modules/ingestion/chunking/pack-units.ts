@@ -4,15 +4,10 @@ import type { ChunkingOptions, ChunkUnit, PackedChunk, TextPiece } from './chunk
 // Tokens merge only across the join, so a unit's opening characters decide what its separator adds.
 const JOIN_PROBE_LENGTH = 32
 
-/** A piece with its token count and the tokens its separator adds in front of it. */
 export function toChunkUnit(piece: TextPiece, counter: TokenCounting): ChunkUnit {
   return { ...piece, tokens: counter.count(piece.text), joinTokens: joinTokens(piece, counter) }
 }
 
-/**
- * Packs a section's units greedily into chunks of `targetTokens` (a bigger unit stands alone), each
- * opening with up to `overlapTokens` of the last; a tiny tail joins the chunk before if it fits.
- */
 export function packUnits(
   units: readonly ChunkUnit[],
   options: ChunkingOptions,
@@ -37,7 +32,6 @@ export function packUnits(
   return mergeTinyTail(chunks, options, counter).map((chunk) => joinUnits(chunk.units))
 }
 
-/** The units' text with each unit's own separator in front of every unit but the first. */
 export function joinUnits(units: readonly ChunkUnit[]): string {
   return units.map((unit, index) => (index === 0 ? unit.text : unit.separator + unit.text)).join('')
 }

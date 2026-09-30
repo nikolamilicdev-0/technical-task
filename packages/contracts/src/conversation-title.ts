@@ -3,7 +3,6 @@ import { CONVERSATION_TITLE_DERIVED_MAX } from './limits.js'
 const LINE_BREAK = /\r\n|\r|\n/
 const WHITESPACE_RUN = /\s+/g
 
-/** First line of the message, whitespace collapsed, cut at a word boundary; null when blank. */
 export function deriveConversationTitle(text: string): string | null {
   const [firstLine = ''] = text.trim().split(LINE_BREAK, 1)
   const title = firstLine.replace(WHITESPACE_RUN, ' ').trim()

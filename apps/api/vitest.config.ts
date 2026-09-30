@@ -7,5 +7,8 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['__tests__/unit/**/*.test.ts'],
+    // Booting AppModule builds the cl100k rank table, which is slow on small CI runners.
+    testTimeout: 20_000,
+    hookTimeout: 20_000,
   },
 })

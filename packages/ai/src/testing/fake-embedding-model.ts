@@ -20,13 +20,11 @@ const HASH_ALGORITHM = 'sha256'
 const BYTES_PER_VALUE = 4
 const UINT32_MAX = 0xffff_ffff
 
-/** Deterministic in-memory `EmbeddingModel`: equal texts get equal unit vectors. */
 export class FakeEmbeddingModel implements EmbeddingModel {
   readonly provider: string
   readonly model: string
   readonly dimensions: number
   readonly signature: string
-  /** Every request received, in call order. */
   readonly requests: EmbeddingRequest[] = []
   readonly #failures: Error[]
   readonly #context: ProviderCallContext

@@ -61,11 +61,12 @@ describe('cleanRewrittenQuery', () => {
     ['a label', 'Standalone query: Pro plan pricing', 'Pro plan pricing'],
     ['a label and quotes', 'Query: “Pro plan pricing”', 'Pro plan pricing'],
     ['extra lines', '  Pro plan   pricing \nBecause the user asked…', 'Pro plan pricing'],
+    ['NUL characters', 'Pro\u0000 plan pricing\u0000', 'Pro plan pricing'],
   ])('reads %s', (_, text, query) => {
     expect(cleanRewrittenQuery(text)).toBe(query)
   })
 
-  it.each(['', '  \n ', '""'])('gives null for %o', (text) => {
+  it.each(['', '  \n ', '""', '\u0000'])('gives null for %o', (text) => {
     expect(cleanRewrittenQuery(text)).toBeNull()
   })
 

@@ -2,13 +2,11 @@ import type { CreateOpenAiClient } from '../adapters/openai-compatible/openai-li
 import type { ChatModel } from '../ports/chat-model.types.js'
 import type { EmbeddingModel } from '../ports/embedding-model.types.js'
 
-/** The two ports an application consumes. */
 export interface AiClients {
   readonly chat: ChatModel
   readonly embedding: EmbeddingModel
 }
 
-/** Seams for tests; production callers pass nothing. */
 export interface AiClientsDeps {
   readonly createOpenAiClient?: CreateOpenAiClient
 }

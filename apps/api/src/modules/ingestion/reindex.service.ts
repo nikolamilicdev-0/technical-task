@@ -7,7 +7,6 @@ import { DOCUMENT_NOT_FOUND_MESSAGE } from '../documents/documents.constants.js'
 import { IngestionRepository } from './ingestion.repository.js'
 import { IngestionWorker } from './ingestion.worker.js'
 
-/** Re-queues the caller's documents through their RLS client, then wakes the worker. */
 @Injectable()
 export class ReindexService {
   constructor(
@@ -24,7 +23,6 @@ export class ReindexService {
     return this.#queued(queued)
   }
 
-  /** Every document of the caller except those being indexed right now. */
   async reindexAll(user: UserContext): Promise<ReindexResult> {
     return this.#queued(await this.repository.requeueDocuments(user.db))
   }

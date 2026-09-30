@@ -17,7 +17,6 @@ export function toClaimedDocument(row: ClaimedDocumentRow): ClaimedDocument {
   }
 }
 
-/** A chunk to store; `embedding` is its pgvector literal, or null to reuse the stored vector. */
 export function toChunkUpsert(chunk: DocumentChunk, embedding: string | null): ChunkUpsert {
   const { embeddingInput: _embeddingInput, ...stored } = chunk
   return { ...stored, embedding }

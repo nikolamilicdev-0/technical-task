@@ -13,6 +13,7 @@ import { TokenCounter } from '../../ai/token-counter.js'
 import type { TokenCounting } from '../../ai/token-counter.types.js'
 import { describeError } from '../../common/errors/describe-error.js'
 import { elapsedMs } from '../../common/utils/elapsed.js'
+import { stripNul } from '../../common/utils/text.js'
 import type { AppConfig, RagSettings } from '../../config/app-config.types.js'
 import { APP_CONFIG } from '../../config/config.constants.js'
 import type { UserContext } from '../../database/user-context.types.js'
@@ -36,10 +37,6 @@ import { MessagesRepository } from './messages.repository.js'
 import { PromptBuilder } from './prompt-builder.js'
 import { QueryRewriter } from './query-rewriter.js'
 
-/**
- * Answers a question from the caller's documents: store the question, rewrite a follow-up,
- * retrieve, stream a grounded answer, then store it with its citation snapshot (DEC-007..009).
- */
 @Injectable()
 export class RagChatService {
   readonly #logger = new Logger(RagChatService.name)
@@ -60,7 +57,7 @@ export class RagChatService {
     this.#settings = config.rag
   }
 
-  /** Loads the conversation and its recent history; 404 before anything is stored or sent. */
+  /** Throws the 404 before anything is stored or sent. */
   async prepare(
     user: UserContext,
     conversationId: string,
@@ -186,9 +183,12 @@ export class RagChatService {
           const { finishReason, usage, model } = event
           return { ...progress(), status: 'finished', finishReason, usage, model }
         }
-        text += event.text
+        // Model output may hold U+0000, which Postgres cannot store; it goes before anyone sees it.
+        const delta = stripNul(event.text)
+        if (delta === '') continue
+        text += delta
         firstTokenMs ??= elapsedMs(runStartedAt)
-        yield { type: 'delta', text: event.text }
+        yield { type: 'delta', text: delta }
       }
       // The port promises a `done`; an adapter that skips it still leaves a usable answer.
       return { ...progress(), status: 'finished', finishReason: 'unknown', model: this.chat.model }

@@ -10,7 +10,6 @@ import type {
 
 type ConnectionConfig = AiConfig['chat'] | AiConfig['embedding']
 
-/** Applies the chat config over its provider profile; configured values always win. */
 export function resolveChatEndpoint(config: AiConfig): ResolvedChatEndpoint {
   const { chat, app } = config
   const profile = PROVIDER_PROFILES[chat.provider]
@@ -22,7 +21,6 @@ export function resolveChatEndpoint(config: AiConfig): ResolvedChatEndpoint {
   }
 }
 
-/** Applies the embedding config over its provider profile; configured values always win. */
 export function resolveEmbeddingEndpoint(config: AiConfig): ResolvedEmbeddingEndpoint {
   const { embedding, app } = config
   const profile = PROVIDER_PROFILES[embedding.provider]

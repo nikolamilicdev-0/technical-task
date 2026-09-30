@@ -4,15 +4,11 @@ import type { TextPiece } from './chunker.types.js'
 // tried only where a whitespace run starts, so neither branch rescans a long run.
 const SENTENCE_BOUNDARY = /((?<!\s)(?=\s)(?:(?<=[.!?…]["'’”)\]]*)\s+|\s*\n\s*))/
 
-/** Sentences of prose, and its lines, so that lists and tables split between rows. */
 export function splitSentences(text: string): TextPiece[] {
   return splitKeepingSeparators(text, SENTENCE_BOUNDARY)
 }
 
-/**
- * Splits at every match of `boundary`, whose whole pattern must be one capturing group; each piece
- * keeps the whitespace in front of it, so joining the pieces restores the text.
- */
+/** `boundary` must be one capturing group around its whole pattern. */
 export function splitKeepingSeparators(text: string, boundary: RegExp): TextPiece[] {
   const parts = text.split(boundary)
   const pieces: TextPiece[] = []

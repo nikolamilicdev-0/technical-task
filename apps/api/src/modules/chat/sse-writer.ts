@@ -6,13 +6,10 @@ import { SSE_HEARTBEAT, SSE_HEARTBEAT_INTERVAL_MS, SSE_RESPONSE_HEADERS } from '
 import { toChatErrorEvent } from './chat-errors.js'
 import { formatSseEvent } from './sse-format.js'
 
-/** Streams events as Server-Sent Events (DEC-008), unbuffered, with a heartbeat. */
 @Injectable()
 export class SseWriter {
-  /**
-   * Drains `events` to the end even once the client is gone, so the run can still store the
-   * partial answer. A failure after the headers went out ends the stream with an `error` frame.
-   */
+  // Drains the events even once the client is gone, so the run still stores the partial answer;
+  // a failure after the headers went out ends the stream with an `error` frame.
   async stream(response: Response, events: AsyncIterable<ChatSseEvent>): Promise<void> {
     response.status(HttpStatus.OK)
     for (const [name, value] of Object.entries(SSE_RESPONSE_HEADERS)) {

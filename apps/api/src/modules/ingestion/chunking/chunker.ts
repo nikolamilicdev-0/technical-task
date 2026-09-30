@@ -31,10 +31,6 @@ const TRAILING_WHITESPACE = /(?<![ \t])[ \t]+$/gm
 const LONG_BLANK_RUN = new RegExp(`(?<![ \\t])[ \\t]{${MAX_BLANK_RUN_LENGTH + 1},}`, 'g')
 const EXTRA_BLANK_LINES = /\n{3,}/g
 
-/**
- * Splits a Markdown document into passages for embedding (DEC-006): a chunk never spans a heading,
- * fenced code stays whole when it fits, and each chunk carries a `Title › Heading` breadcrumb.
- */
 export function chunkDocument(
   document: ChunkableDocument,
   counter: TokenCounting,
@@ -55,10 +51,6 @@ export function chunkDocument(
   return buildChunks(drafts, counter)
 }
 
-/**
- * `\n` line breaks, no trailing spaces, no run of spaces and tabs longer than MAX_BLANK_RUN_LENGTH,
- * at most one blank line in a row, no outer whitespace.
- */
 export function normalizeMarkdown(content: string): string {
   return content
     .replace(LINE_BREAK, '\n')
@@ -72,7 +64,6 @@ function sectionUnits(body: string, options: ChunkingOptions, counter: TokenCoun
   return splitBlocks(body).flatMap((block) => blockUnits(block, options, counter))
 }
 
-// A block that fits stays whole; a larger one splits into code lines or sentences first.
 function blockUnits(
   block: MarkdownBlock,
   options: ChunkingOptions,
@@ -101,7 +92,6 @@ function pieceUnits(
   return windows.flatMap((window) => pieceUnits(window, options, counter, Math.floor(budget / 2)))
 }
 
-// A window's leading whitespace moves into its separator, so no chunk starts with a space.
 function toWindowPiece(window: string): TextPiece {
   const text = window.trimStart()
   return { text, separator: window.slice(0, window.length - text.length) }

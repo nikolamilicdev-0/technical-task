@@ -5,7 +5,6 @@ import { splitKeepingSeparators } from './sentences.js'
 const BLANK_LINE = /^\s*$/
 const LINE_BREAKS = /(\n+)/
 
-/** Blank lines separate blocks; a fenced code block is one block, blank lines included. */
 export function splitBlocks(body: string): MarkdownBlock[] {
   const blocks: MarkdownBlock[] = []
   let lines: string[] = []
@@ -33,7 +32,6 @@ export function splitBlocks(body: string): MarkdownBlock[] {
   return blocks
 }
 
-/** The lines of a code block; blank lines stay in the separators, so joining restores the code. */
 export function splitCodeLines(code: string): TextPiece[] {
   return splitKeepingSeparators(code, LINE_BREAKS)
 }

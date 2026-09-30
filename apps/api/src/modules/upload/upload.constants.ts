@@ -5,7 +5,6 @@ import {
   MAX_UPLOAD_BYTES,
 } from '@kb/contracts'
 
-/** Multipart field that carries the file. */
 export const UPLOAD_FILE_FIELD = 'file'
 
 export const UPLOAD_RATE_LIMIT_PER_MINUTE = 10
@@ -24,7 +23,6 @@ export const UPLOAD_LIMITS = {
 // Browsers send UTF-8 filenames without naming a charset; multer would decode them as latin1.
 export const UPLOAD_FILENAME_CHARSET = 'utf8'
 
-/** Title of an upload whose filename leaves nothing to use. */
 export const UNTITLED_UPLOAD_TITLE = 'Untitled document'
 
 const CONTENT_MAX_TEXT = DOCUMENT_CONTENT_MAX.toLocaleString('en-US')

@@ -110,6 +110,16 @@ describe('OpenAiCompatibleChatModel', () => {
       expect(events.at(-1)).toMatchObject({ type: 'done', finishReason: 'length' })
     })
 
+    it('tolerates a chunk without choices, as some compatible servers send usage', async () => {
+      const bare = usageChunk()
+      Reflect.deleteProperty(bare, 'choices')
+      const { model } = setup({ chunks: [contentChunk('Hi', 'stop'), bare] })
+      expect(await collect(model.stream(REQUEST))).toEqual([
+        { type: 'delta', text: 'Hi' },
+        { type: 'done', finishReason: 'stop', usage: MAPPED_USAGE, model: SERVED_CHAT_MODEL },
+      ])
+    })
+
     it('throws aborted, not done, when the caller aborts after the first delta', async () => {
       const controller = new AbortController()
       const { model } = setup({

@@ -13,7 +13,6 @@ function toTagList(value: unknown): unknown {
   return tags.filter((tag) => blankAsMissing(tag) !== undefined)
 }
 
-/** The optional text parts next to the file, validated like the fields of a created document. */
 export const uploadFieldsSchema = z
   .object({
     title: z.preprocess(blankAsMissing, createDocumentSchema.shape.title.optional()),

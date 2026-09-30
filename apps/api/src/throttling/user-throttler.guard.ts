@@ -18,7 +18,6 @@ import { APP_CONFIG } from '../config/config.constants.js'
 import { MIN_RETRY_AFTER_SECONDS, RATE_LIMIT_BUCKET_KEY } from './throttling.constants.js'
 import type { RateLimitBucketName } from './throttling.types.js'
 
-/** Rate-limits per signed-in user, so it must run after the AuthGuard has identified them. */
 @Injectable()
 export class UserThrottlerGuard extends ThrottlerGuard {
   readonly #bucketLimits: Readonly<Record<RateLimitBucketName, number>>
@@ -37,7 +36,6 @@ export class UserThrottlerGuard extends ThrottlerGuard {
     return request.userContext?.userId ?? super.getTracker(request)
   }
 
-  // A `@RateLimitBucket` route swaps in its configured limit; window and counting stay the same.
   protected override async handleRequest(request: ThrottlerRequest): Promise<boolean> {
     const { context } = request
     const bucket = this.reflector.getAllAndOverride<RateLimitBucketName | undefined>(

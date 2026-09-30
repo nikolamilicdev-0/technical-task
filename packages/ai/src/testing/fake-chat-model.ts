@@ -14,11 +14,9 @@ const FAKE_CHAT_MODEL = 'fake-chat'
 const DEFAULT_REPLY: FakeChatReply = { text: 'This is a fake reply.' }
 const DEFAULT_CHUNK_SIZE = 8
 
-/** Deterministic in-memory `ChatModel`: scripted replies, recorded requests, abortable streams. */
 export class FakeChatModel implements ChatModel {
   readonly provider: string
   readonly model: string
-  /** Every request received, in call order. */
   readonly requests: ChatRequest[] = []
   readonly #replies: FakeChatReply[]
   readonly #defaultReply: FakeChatReply

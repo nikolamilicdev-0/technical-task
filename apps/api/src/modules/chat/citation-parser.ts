@@ -5,7 +5,6 @@ const MARKER_SEPARATOR = ','
 const FENCED_CODE = /(`{3,}|~{3,})[\s\S]*?(?:\1|$)/g
 const INLINE_CODE = /`[^`\n]*`/g
 
-/** The source numbers an answer cites, ascending and unique; numbers without a source are ignored. */
 export function parseCitations(text: string, sourceCount: number): number[] {
   const prose = text.replace(FENCED_CODE, '').replace(INLINE_CODE, '')
   const cited = new Set<number>()

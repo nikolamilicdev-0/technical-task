@@ -7,7 +7,6 @@ import { TextExtractionError } from './text-extraction.error.js'
 const utf8Decoder = new TextDecoder('utf-8', { fatal: true })
 const LINE_BREAKS = /\r\n?/g
 
-/** The file as UTF-8 text with `\n` line endings; binary content is rejected. */
 export async function extractPlainText(bytes: Uint8Array): Promise<string> {
   const text = decodeUtf8(bytes)
   // U+0000 only turns up in binary files.

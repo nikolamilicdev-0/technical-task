@@ -87,7 +87,6 @@ export const chatSseEventSchemas = {
   error: chatErrorEventSchema,
 } as const satisfies { [TType in ChatSseEventType]: z.ZodType<{ type: TType }> }
 
-/** Validates one SSE frame (`event:` name + `data:` JSON); unknown or malformed frames yield null. */
 export function parseChatSseEvent(name: string, json: string): ChatSseEvent | null {
   if (!isChatSseEventType(name)) return null
   const result = chatSseEventSchemas[name].safeParse(parseJson(json))

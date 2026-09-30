@@ -11,7 +11,6 @@ import { assignRequestId } from './common/http/request-id.middleware.js'
 import { logRequests } from './common/http/request-logging.middleware.js'
 import type { AppConfig } from './config/app-config.types.js'
 
-/** HTTP plumbing shared by main.ts and the pipeline tests; Express runs it in this order. */
 export function configureHttp(app: NestExpressApplication, config: AppConfig): void {
   app.use(assignRequestId, logRequests)
   app.enableCors({

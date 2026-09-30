@@ -12,7 +12,6 @@ import type {
 } from '../providers/resolve-endpoint.types.js'
 import type { AiClients, AiClientsDeps } from './create-ai-clients.types.js'
 
-/** Builds the chat and embedding ports described by a validated `AiConfig`. */
 export function createAiClients(config: AiConfig, deps: AiClientsDeps = {}): AiClients {
   const createClient = deps.createOpenAiClient ?? createOpenAiClient
   const chatEndpoint = resolveChatEndpoint(config)
@@ -28,8 +27,7 @@ function createChatModel(
   createClient: CreateOpenAiClient
 ): ChatModel {
   switch (endpoint.provider) {
-    // A provider with its own wire protocol (e.g. Anthropic) gets its own adapter class
-    // and `case` here; nothing outside this factory changes.
+    // A provider with its own wire protocol gets its own adapter class and `case` here.
     case 'openai':
     case 'groq':
     case 'together':

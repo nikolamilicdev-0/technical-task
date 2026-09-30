@@ -17,7 +17,7 @@ export class HealthController {
     return this.health.liveness()
   }
 
-  /** 503 while not ready, so load balancers and orchestrators can act on the status code alone. */
+  /** 503 while not ready, so a load balancer can act on the status code alone. */
   @Get(apiRoutes.healthReady)
   async readiness(@Res({ passthrough: true }) response: Response): Promise<Readiness> {
     const readiness = await this.health.readiness()

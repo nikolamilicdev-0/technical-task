@@ -11,17 +11,13 @@ export const CONVERSATION_COLUMNS = 'id, title, created_at, updated_at' as const
 export const MESSAGE_COLUMNS = `id, conversation_id, role, content, citations, model,
   finish_reason, prompt_tokens, completion_tokens, usage_estimated, created_at` as const
 
-/** Recent messages loaded for a new answer; the history token budget trims them further. */
 export const HISTORY_MESSAGE_LIMIT = 20
 
-/** Code points of chunk text a citation carries, like a document's content preview. */
 export const CITATION_EXCERPT_LENGTH = 240
 
-/** A rewrite slower than this is abandoned and the question is searched as asked. */
 export const QUERY_REWRITE_TIMEOUT_MS = 4_000
 /** Room for a one-line query, plus the reasoning tokens thinking models spend first. */
 export const QUERY_REWRITE_MAX_TOKENS = 256
-/** Messages of the conversation the rewrite sees, and how much of each. */
 export const QUERY_REWRITE_HISTORY_MESSAGES = 6
 export const QUERY_REWRITE_MESSAGE_MAX_TOKENS = 300
 

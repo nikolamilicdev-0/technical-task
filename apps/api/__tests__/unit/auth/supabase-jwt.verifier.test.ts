@@ -53,8 +53,11 @@ describe('SupabaseJwtVerifier', () => {
     await expect(verifier.verify(TOKEN)).resolves.toBeNull()
   })
 
-  it('throws when Supabase Auth cannot be reached, so callers do not see a 401', async () => {
-    const outage = new AuthRetryableFetchError('fetch failed', 0)
+  it.each([
+    ['cannot be reached', 0],
+    ['answers with a server error', 500],
+  ])('throws when Supabase Auth %s, so callers do not see a 401', async (_, status) => {
+    const outage = new AuthRetryableFetchError('Auth is unavailable', status)
     await expect(
       verifierReturning({ data: null, error: outage }).verifier.verify(TOKEN)
     ).rejects.toBe(outage)

@@ -1,11 +1,9 @@
 import { VECTOR_DIMENSIONS } from '../../database/database.constants.js'
 
-/** An embedding the `vector` column cannot hold: empty, or wider than the column. */
 export class VectorDimensionError extends RangeError {
   override readonly name = 'VectorDimensionError'
 }
 
-/** The pgvector text literal for `document_chunks.embedding`, validated and zero-padded (DEC-014). */
 export function toStoredVector(
   embedding: readonly number[],
   dimensions: number = VECTOR_DIMENSIONS

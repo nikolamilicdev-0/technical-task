@@ -1,6 +1,5 @@
-/** Token arithmetic that chunking and prompt budgets depend on; `TokenCounter` implements it. */
 export interface TokenCounting {
   count(text: string): number
-  /** Consecutive pieces of at most `maxTokens` tokens (one character is never cut) joining back into `text`. */
+  /** Pieces of at most `maxTokens` tokens that join back into `text`; no character is cut. */
   splitByTokens(text: string, maxTokens: number): string[]
 }

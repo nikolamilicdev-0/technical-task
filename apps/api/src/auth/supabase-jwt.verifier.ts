@@ -9,7 +9,8 @@ export class SupabaseJwtVerifier implements JwtVerifier {
 
   async verify(token: string): Promise<VerifiedUser | null> {
     const { data, error } = await this.auth.getClaims(token)
-    // Unreachable Auth is an outage, not a bad token: a 401 would make the web app sign users out.
+    // auth-js reports an unreachable or failing (5xx) Auth as retryable: an outage, not a bad
+    // token, and a 401 would make the web app sign users out.
     if (isAuthRetryableFetchError(error)) throw error
     return data === null ? null : toVerifiedUser(data.claims)
   }

@@ -4,10 +4,6 @@ const POSTGREST_LIKE_STAR = /\*/g
 const LIKE_ANY_CHARACTER = '_'
 const ARRAY_ELEMENT_SPECIAL_CHARACTERS = /["\\]/g
 
-/**
- * An `ilike` pattern matching `text` anywhere. `*` cannot stay literal through PostgREST,
- * so it matches any one character.
- */
 export function toContainsPattern(text: string): string {
   const escaped = text
     .replace(LIKE_SPECIAL_CHARACTERS, '\\$&')

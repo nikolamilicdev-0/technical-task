@@ -52,7 +52,6 @@ export function toDocumentSummary(row: DocumentSummaryRow): DocumentSummary {
   })
 }
 
-/** The full document; the preview fields are computed the way the summaries view computes them. */
 export function toDocument(row: DocumentRow): Document {
   const parsed = documentRowSchema.parse(row)
   const summary = toSummary(parsed, {
@@ -75,7 +74,6 @@ export function toDocumentInsert(
   }
 }
 
-/** Only the fields the patch names, so the others keep their stored values. */
 export function toDocumentUpdate(input: UpdateDocumentInput): DocumentUpdateRow {
   const row: DocumentUpdateRow = {}
   if (input.title !== undefined) row.title = input.title

@@ -12,7 +12,6 @@ import { QueryRewriter } from './query-rewriter.js'
 import { RagChatService } from './rag-chat.service.js'
 import { SseWriter } from './sse-writer.js'
 
-/** Conversations and the retrieval-augmented, streamed answers inside them. */
 @Module({
   imports: [RetrievalModule, UsageModule],
   controllers: [ConversationsController, ChatController],

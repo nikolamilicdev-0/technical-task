@@ -12,7 +12,6 @@ import { UNCONFIGURED_MODEL } from './ai.constants.js'
 
 type FailureFactory = () => AiProviderError
 
-/** Stand-in ports for an incomplete AI setup: the API boots, and every AI call fails with `problem`. */
 export function createUnconfiguredAiClients(problem: string): AiClients {
   const fail: FailureFactory = () =>
     new AiProviderError('unsupported', problem, { provider: UNCONFIGURED_MODEL })

@@ -18,7 +18,6 @@ export function buildConversation(overrides: Partial<Conversation> = {}): Conver
   }
 }
 
-/** A `conversations` row as PostgREST returns it for the API's select list. */
 export function buildConversationRow(overrides: Partial<ConversationRow> = {}): ConversationRow {
   return {
     id: TEST_CONVERSATION_ID,
@@ -56,7 +55,6 @@ export function buildMessage(overrides: Partial<Message> = {}): Message {
   }
 }
 
-/** A `messages` row of a question, as PostgREST returns it for the API's select list. */
 export function buildMessageRow(overrides: Partial<MessageRow> = {}): MessageRow {
   return {
     id: TEST_MESSAGE_ID,

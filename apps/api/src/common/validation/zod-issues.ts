@@ -2,12 +2,10 @@ import type { z } from 'zod'
 
 import type { GroupedIssues } from './validation.types.js'
 
-/** Dotted issue path such as `tags.0`; empty for the value itself. */
 export function formatIssuePath(path: readonly PropertyKey[]): string {
   return path.map(String).join('.')
 }
 
-/** Groups zod issues by field; `prefix` roots bare values, such as one route parameter, at a name. */
 export function groupIssues(
   issues: readonly z.core.$ZodIssue[],
   prefix: readonly PropertyKey[] = []

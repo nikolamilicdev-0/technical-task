@@ -1,4 +1,3 @@
-/** DI token of the `JwtVerifier` port. */
 export const JWT_VERIFIER = Symbol('JWT_VERIFIER')
 
 /** Only user sessions carry this role; the anon and service-role keys are rejected. */

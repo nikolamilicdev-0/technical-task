@@ -12,7 +12,6 @@ import { UPLOAD_FILE_FIELD, UPLOAD_MESSAGES } from './upload.constants.js'
 import { titleFromFilename } from './upload-title.js'
 import type { UploadedDocumentFile, UploadFields } from './upload.types.js'
 
-/** Turns an uploaded file into a document through the same create path as the editor. */
 @Injectable()
 export class UploadService {
   constructor(private readonly documents: DocumentsService) {}

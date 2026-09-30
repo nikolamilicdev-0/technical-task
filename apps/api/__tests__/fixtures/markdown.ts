@@ -5,15 +5,11 @@ export function sentence(seed: number, topic = 'ingestion'): string {
   return `Note ${seed} explains how the ${topic} process handles case ${seed} without surprises.`
 }
 
-/** `count` distinct sentences in one paragraph. */
 export function paragraph(firstSeed: number, count: number, topic?: string): string {
   return Array.from({ length: count }, (_, index) => sentence(firstSeed + index, topic)).join(' ')
 }
 
-/**
- * A handbook of about 2,000 words: nested headings, prose, a list, a table and a fenced code
- * block whose `#` comment must not become a heading.
- */
+/** About 2,000 words, with a fenced code block whose `#` comment must not become a heading. */
 export function buildHandbook(): string {
   const sections = TOPICS.map((topic, index) => {
     const seed = (index + 1) * 1_000

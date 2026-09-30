@@ -18,7 +18,6 @@ import { DOCUMENT_NOT_FOUND_MESSAGE, EDITOR_SOURCE } from './documents.constants
 import { DocumentsRepository } from './documents.repository.js'
 import type { DocumentSource } from './documents.types.js'
 
-/** Document CRUD for the caller; RLS turns other users' documents into 404s. */
 @Injectable()
 export class DocumentsService {
   constructor(

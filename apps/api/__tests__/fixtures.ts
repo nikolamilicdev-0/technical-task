@@ -18,13 +18,12 @@ export function buildTestConfig(env: Readonly<Record<string, string>> = {}): App
 
 export const TEST_USER = {
   id: '6f1c2a3b-4d5e-4f60-8a9b-0c1d2e3f4a5b',
-  email: 'phase4@example.com',
+  email: 'reader@example.com',
 } as const
 
 const ISSUED_AT = 1_790_000_000
 const LIFETIME_SECONDS = 3_600
 
-/** Claims of a Supabase user access token. */
 export function buildClaims(overrides: Partial<JwtPayload> = {}): JwtPayload {
   return {
     iss: 'http://127.0.0.1:54321/auth/v1',

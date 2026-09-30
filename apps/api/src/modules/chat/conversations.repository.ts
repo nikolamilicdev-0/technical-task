@@ -14,10 +14,9 @@ import { CONVERSATION_COLUMNS } from './chat.constants.js'
 import type { ConversationPage } from './chat.types.js'
 import { toConversation } from './conversations.mapper.js'
 
-/** Conversations through the caller's client: RLS limits every query to their own (DEC-004). */
 @Injectable()
 export class ConversationsRepository {
-  /** Most recently active first (a new message bumps `updated_at`), with the total count. */
+  /** Most recently active first: a trigger bumps `updated_at` with every new message. */
   async list(db: DatabaseClient, { limit, offset }: PaginationQuery): Promise<ConversationPage> {
     const { data, error, count, status } = await db
       .from(DATABASE_RELATIONS.conversations)
@@ -26,7 +25,6 @@ export class ConversationsRepository {
       // Rows updated in one transaction tie on updated_at; the id keeps pages from overlapping.
       .order('id', { ascending: true })
       .range(offset, offset + limit - 1)
-    // PostgREST answers an offset past the last row with 416 rather than an empty page.
     if (error?.code === POSTGREST_ERROR_CODES.rangeNotSatisfiable) {
       return { items: [], total: await this.#count(db) }
     }
@@ -54,7 +52,6 @@ export class ConversationsRepository {
     return toConversation(data)
   }
 
-  /** Null when the caller has no such conversation. */
   async update(
     db: DatabaseClient,
     id: string,
@@ -70,7 +67,6 @@ export class ConversationsRepository {
     return data === null ? null : toConversation(data)
   }
 
-  /** Names an untitled conversation; null when it already has a title (or is not visible). */
   async setTitleIfUntitled(
     db: DatabaseClient,
     id: string,
@@ -87,7 +83,6 @@ export class ConversationsRepository {
     return data === null ? null : toConversation(data)
   }
 
-  /** False when the caller has no such conversation; its messages go with it (cascade). */
   async delete(db: DatabaseClient, id: string): Promise<boolean> {
     const { data, error, status } = await db
       .from(DATABASE_RELATIONS.conversations)

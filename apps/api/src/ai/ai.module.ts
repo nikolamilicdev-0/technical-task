@@ -21,7 +21,6 @@ function provideAiStatus({ ai }: AppConfig): AiStatus {
   return ai.configured ? { configured: true } : { configured: false, problem: ai.problem }
 }
 
-/** Binds the chat and embedding ports; an incomplete AI setup binds failing stand-ins instead. */
 @Global()
 @Module({
   providers: [

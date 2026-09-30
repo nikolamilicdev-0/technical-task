@@ -22,10 +22,6 @@ import {
   SYSTEM_RULES,
 } from './prompt.constants.js'
 
-/**
- * The grounded prompt: rules and numbered sources as the system message, then as much recent
- * history as the budget allows, whole turns only, then the question.
- */
 @Injectable()
 export class PromptBuilder {
   readonly #budgets: PromptBudgets

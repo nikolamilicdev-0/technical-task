@@ -17,7 +17,6 @@ import type {
 
 const NO_HITS: readonly CandidateChunk[] = []
 
-/** Hybrid retrieval (DEC-007): vector and full-text search in parallel, fused with RRF. */
 @Injectable()
 export class RetrievalService {
   readonly #logger = new Logger(RetrievalService.name)
@@ -35,7 +34,6 @@ export class RetrievalService {
     return this.#settings.retrievalMode
   }
 
-  /** The caller's best chunks for the query, best first; vector mode skips full-text search. */
   async retrieve(
     user: UserContext,
     { query, embedding, documentIds }: RetrievalRequest

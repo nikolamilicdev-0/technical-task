@@ -11,10 +11,8 @@ import {
 } from './retrieval.mapper.js'
 import type { CandidateChunk, KeywordSearch, VectorSearch } from './retrieval.types.js'
 
-/** The search SQL functions through the caller's client: RLS limits them to their chunks (DEC-004). */
 @Injectable()
 export class RetrievalRepository {
-  /** Nearest chunks by cosine similarity, most similar first. */
   async matchChunks(db: DatabaseClient, search: VectorSearch): Promise<CandidateChunk[]> {
     const { data, error, status } = await db.rpc(
       DATABASE_FUNCTIONS.matchChunks,
@@ -24,7 +22,6 @@ export class RetrievalRepository {
     return data.map(fromVectorHit)
   }
 
-  /** Full-text matches of any query term, best `ts_rank_cd` first (DEC-024). */
   async searchKeyword(db: DatabaseClient, search: KeywordSearch): Promise<CandidateChunk[]> {
     const { data, error, status } = await db.rpc(
       DATABASE_FUNCTIONS.searchChunksKeyword,

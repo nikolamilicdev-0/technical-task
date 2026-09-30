@@ -10,7 +10,6 @@ function createJwtVerifier(clients: SupabaseClientFactory): JwtVerifier {
   return new SupabaseJwtVerifier(clients.anonymous().auth)
 }
 
-/** Provides the `JWT_VERIFIER` port; the AuthGuard itself is registered globally by AppModule. */
 @Module({
   providers: [
     { provide: JWT_VERIFIER, inject: [SupabaseClientFactory], useFactory: createJwtVerifier },

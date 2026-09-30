@@ -1,4 +1,5 @@
 import {
+  BLANK_CONTENT_MESSAGE,
   createDocumentSchema,
   DOCUMENT_CONTENT_MAX,
   DOCUMENT_TITLE_MAX,
@@ -64,6 +65,7 @@ describe('createDocumentSchema', () => {
     ['a blank title', { title: '   ', content: 'Body' }, 'title'],
     ['an overlong title', { title: 't'.repeat(DOCUMENT_TITLE_MAX + 1), content: 'Body' }, 'title'],
     ['empty content', { title: 'Guide', content: '' }, 'content'],
+    ['whitespace-only content', { title: 'Guide', content: ' \n\t\r\n ' }, 'content'],
     [
       'overlong content',
       { title: 'Guide', content: 'c'.repeat(DOCUMENT_CONTENT_MAX + 1) },
@@ -82,6 +84,14 @@ describe('createDocumentSchema', () => {
     ['a NUL in a tag', { title: 'Guide', content: 'Body', tags: ['o\u0000ps'] }, 'tags.0'],
   ])('rejects %s', (_, input, path) => {
     expect(issuePaths(createDocumentSchema, input)).toContain(path)
+  })
+
+  it('reports empty content once and blank content with its own message', () => {
+    const empty = createDocumentSchema.safeParse({ title: 'Guide', content: '' })
+    const blank = createDocumentSchema.safeParse({ title: 'Guide', content: '   ' })
+
+    expect(empty.error?.issues.map(({ code }) => code)).toEqual(['too_small'])
+    expect(blank.error?.issues.map(({ message }) => message)).toEqual([BLANK_CONTENT_MESSAGE])
   })
 })
 
@@ -103,6 +113,7 @@ describe('updateDocumentSchema', () => {
     ['a patch with only unknown keys', { embeddingStatus: 'ready' }, ''],
     ['a blank title', { title: ' ' }, 'title'],
     ['empty content', { content: '' }, 'content'],
+    ['whitespace-only content', { content: '\n\n' }, 'content'],
     ['a NUL in the content', { content: 'New\u0000body' }, 'content'],
   ])('rejects %s', (_, input, path) => {
     expect(issuePaths(updateDocumentSchema, input)).toContain(path)

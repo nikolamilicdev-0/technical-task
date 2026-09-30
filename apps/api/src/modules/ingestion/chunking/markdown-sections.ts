@@ -1,15 +1,11 @@
 import type { CodeFence, MarkdownHeading, MarkdownSection } from './chunker.types.js'
 import { fenceAfter } from './code-fences.js'
 
-// CommonMark ATX heading: at most three spaces, one to six `#`, then whitespace or the line end.
 const ATX_OPENING = /^ {0,3}(#{1,6})(?:[ \t]|$)/
 const HASH = '#'
 const BLANKS = new Set([' ', '\t'])
 
-/**
- * Cuts Markdown at its ATX headings outside fenced code, which move into the breadcrumb. A section
- * without text is dropped unless no deeper heading follows it: then its heading text is its body.
- */
+// An empty section is dropped unless no deeper heading follows; then its heading becomes its body.
 export function splitMarkdownSections(markdown: string): MarkdownSection[] {
   const sections: MarkdownSection[] = []
   const headings: MarkdownHeading[] = []

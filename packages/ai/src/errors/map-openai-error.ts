@@ -52,7 +52,6 @@ const ERROR_SUMMARIES: Record<SummarizedErrorCode, (context: ProviderCallContext
   unknown: ({ provider }) => `Unexpected error from ${provider}`,
 }
 
-/** Translates any failure of an OpenAI SDK call into an `AiProviderError` (pure given `now`). */
 export function mapOpenAiError(
   error: unknown,
   context: ProviderCallContext,

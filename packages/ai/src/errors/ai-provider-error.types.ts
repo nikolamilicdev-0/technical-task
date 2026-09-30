@@ -1,4 +1,3 @@
-/** Provider-neutral failure categories. */
 export type AiErrorCode =
   | 'authentication'
   | 'permission'
@@ -12,7 +11,6 @@ export type AiErrorCode =
   | 'unsupported'
   | 'unknown'
 
-/** Diagnostic context carried by every `AiProviderError`. */
 export interface AiProviderErrorDetails {
   readonly provider: string
   readonly model?: string
@@ -21,10 +19,8 @@ export interface AiProviderErrorDetails {
   readonly cause?: unknown
 }
 
-/** Which configured model a call served; picks the `AI_CHAT_*` or `AI_EMBEDDING_*` names in hints. */
 export type AiModelKind = 'chat' | 'embedding'
 
-/** Describes the provider call an error came from. */
 export interface ProviderCallContext {
   readonly kind: AiModelKind
   readonly provider: string

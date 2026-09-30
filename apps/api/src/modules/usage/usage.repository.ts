@@ -7,7 +7,6 @@ import { DatabaseRequestError } from '../../database/database-error.js'
 import { toUsageSummary } from './usage.mapper.js'
 import type { UsageWindow } from './usage.types.js'
 
-/** Reads metered usage through the caller's client; the function only sums their own events. */
 @Injectable()
 export class UsageRepository {
   async summary(db: DatabaseClient, { from, to, timezone }: UsageWindow): Promise<UsageSummary> {

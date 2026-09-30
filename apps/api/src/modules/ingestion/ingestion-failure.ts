@@ -9,10 +9,6 @@ import type { IngestionFailure } from './ingestion.types.js'
 // mid-run (a concurrent finalize), which the next attempt, reading stored hashes afresh, avoids.
 const NOT_NULL_VIOLATION = '23502'
 
-/**
- * Provider errors keep their message and retry when transient; database errors retry when transient
- * or on a vanished vector; an embedding the column cannot hold fails for good; the rest is a bug.
- */
 export function classifyIngestionFailure(error: unknown): IngestionFailure {
   if (error instanceof AiProviderError) {
     const { retryAfterSeconds } = error.details

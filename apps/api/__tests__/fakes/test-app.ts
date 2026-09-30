@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 
+import type { Type } from '@nestjs/common'
 import type { NestExpressApplication } from '@nestjs/platform-express'
 import { Test, type TestingModuleBuilder } from '@nestjs/testing'
 
@@ -13,18 +14,15 @@ import { buildTestConfig } from '../fixtures.js'
 export interface HttpResult {
   readonly response: Response
   readonly text: string
-  /** The parsed JSON body; undefined for an empty or non-JSON response. */
   readonly body: unknown
 }
 
 type Customize = (builder: TestingModuleBuilder) => TestingModuleBuilder
 
-/** The whole API in-process on a random port, with any provider swapped for a fake. */
 export class TestApp {
   private constructor(
     private readonly app: NestExpressApplication,
     readonly baseUrl: string,
-    /** Access token → user id, read by the fake verifier. */
     private readonly users: Map<string, string>
   ) {}
 
@@ -65,6 +63,10 @@ export class TestApp {
     const response = await fetch(`${this.baseUrl}${path}`, init)
     const text = await response.text()
     return { response, text, body: parseJson(text) }
+  }
+
+  get<TProvider>(type: Type<TProvider>): TProvider {
+    return this.app.get(type)
   }
 
   close(): Promise<void> {

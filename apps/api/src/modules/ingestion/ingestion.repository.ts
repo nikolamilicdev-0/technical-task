@@ -12,13 +12,10 @@ import type {
   ClaimReference,
 } from './ingestion.types.js'
 
-/**
- * The ingestion queue (DEC-005): the worker's calls take the service-role client, while
- * `requeueDocuments` and `documentExists` take the caller's RLS client.
- */
+// The worker's calls take the service-role client; `requeueDocuments` and `documentExists` take
+// the caller's RLS client.
 @Injectable()
 export class IngestionRepository {
-  /** Claims queued, due-for-retry and stale documents (`FOR UPDATE SKIP LOCKED`). */
   async claimPending(db: DatabaseClient, options: ClaimOptions): Promise<ClaimedDocument[]> {
     const { data, error, status } = await db.rpc(DATABASE_FUNCTIONS.claimPendingDocuments, {
       p_batch_size: options.batchSize,
@@ -29,7 +26,6 @@ export class IngestionRepository {
     return data.map(toClaimedDocument)
   }
 
-  /** Content hashes of the document's stored chunks under the model signature. */
   async existingChunkHashes(
     db: DatabaseClient,
     documentId: string,
@@ -45,7 +41,6 @@ export class IngestionRepository {
     return new Set(data.map((row) => row.content_hash))
   }
 
-  /** Upserts chunks by content hash; false once the content changed since the claim. */
   async upsertChunks(
     db: DatabaseClient,
     documentId: string,
@@ -63,10 +58,6 @@ export class IngestionRepository {
     return data !== STALE_CONTENT_RESULT
   }
 
-  /**
-   * Publishes exactly `chunkHashes`, dropping every other stored chunk of the document, and marks
-   * it ready; null once the content changed or the run lost its claim.
-   */
   async finalize(
     db: DatabaseClient,
     documentId: string,
@@ -84,7 +75,6 @@ export class IngestionRepository {
     return data === STALE_CONTENT_RESULT ? null : data
   }
 
-  /** Records a failed run of `claim`; without `retryInSeconds` no automatic retry is scheduled. */
   async markFailed(
     db: DatabaseClient,
     claim: ClaimReference,
@@ -101,7 +91,6 @@ export class IngestionRepository {
     if (error) throw new DatabaseRequestError(error, status)
   }
 
-  /** Re-queues ready documents embedded under another model signature (DEC-014). */
   async requeueForModel(db: DatabaseClient, signature: string): Promise<number> {
     const { data, error, status } = await db.rpc(DATABASE_FUNCTIONS.requeueDocumentsForModel, {
       p_embedding_model: signature,
@@ -110,7 +99,7 @@ export class IngestionRepository {
     return data
   }
 
-  /** Re-queues the caller's documents, one or all; the definer function checks ownership. */
+  /** The definer function checks ownership itself. */
   async requeueDocuments(db: DatabaseClient, documentId?: string): Promise<number> {
     const { data, error, status } = await db.rpc(
       DATABASE_FUNCTIONS.requeueDocuments,
@@ -120,7 +109,6 @@ export class IngestionRepository {
     return data
   }
 
-  /** Whether RLS lets the caller see the document. */
   async documentExists(db: DatabaseClient, documentId: string): Promise<boolean> {
     const { data, error, status } = await db
       .from(DATABASE_RELATIONS.documents)

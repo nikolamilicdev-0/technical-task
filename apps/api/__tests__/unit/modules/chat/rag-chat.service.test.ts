@@ -285,6 +285,20 @@ describe('RagChatService', () => {
     })
   })
 
+  it('drops U+0000 from the answer before streaming or storing it', async () => {
+    const clean = 'The Pro plan costs 20 euros [1].'
+    const { service, store, conversation } = await setup({
+      replies: [`${'\u0000'.repeat(6)}The Pro\u0000 plan costs 20 euros [1].`],
+    })
+
+    const { events } = await send(service, conversation)
+
+    const deltas = events.flatMap((event) => (event.type === 'delta' ? [event.text] : []))
+    expect(deltas.join('')).toBe(clean)
+    expect(deltas).not.toContain('')
+    expect(store.tables.messages[1]?.content).toBe(clean)
+  })
+
   it('reports the usage the provider gave, and estimates it, flagged, when it gave none', async () => {
     const reported = await setup({ replies: [{ text: ANSWER, usage: REPORTED_USAGE }] })
     const estimated = await setup()

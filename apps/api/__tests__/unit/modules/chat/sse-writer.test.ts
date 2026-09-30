@@ -11,7 +11,6 @@ import {
 import { formatSseEvent } from '../../../../src/modules/chat/sse-format.js'
 import { SseWriter } from '../../../../src/modules/chat/sse-writer.js'
 
-/** The slice of an Express response the writer touches, with everything it wrote. */
 class FakeResponse extends EventEmitter {
   statusCode = 0
   readonly headers = new Map<string, string>()

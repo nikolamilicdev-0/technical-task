@@ -36,7 +36,6 @@ export function buildDocument(overrides: Partial<Document> = {}): Document {
   }
 }
 
-/** A `documents` row as PostgREST returns it for the API's select list. */
 export function buildDocumentRow(overrides: Partial<DocumentRow> = {}): DocumentRow {
   return {
     id: TEST_DOCUMENT_ID,
@@ -57,7 +56,6 @@ export function buildDocumentRow(overrides: Partial<DocumentRow> = {}): Document
   }
 }
 
-/** A `document_summaries` row as PostgREST returns it for the API's select list. */
 export function buildDocumentSummaryRow(
   overrides: Partial<DocumentSummaryRow> = {}
 ): DocumentSummaryRow {

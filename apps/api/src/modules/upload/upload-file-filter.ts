@@ -7,10 +7,7 @@ import { UPLOAD_FILE_FIELD, UPLOAD_MESSAGES } from './upload.constants.js'
 
 type AcceptFile = (error: Error | null, acceptFile: boolean) => void
 
-/**
- * Multer `fileFilter`, before any of the file is buffered: a filename the database cannot store
- * gets 422, an unsupported type 415.
- */
+// Runs before any of the file is buffered.
 export function uploadFileFilter(_request: unknown, file: FileMetadata, accept: AcceptFile): void {
   if (containsNul(file.originalname)) {
     accept(invalidFilename(), false)

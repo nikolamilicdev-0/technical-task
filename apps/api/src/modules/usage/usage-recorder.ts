@@ -6,7 +6,6 @@ import type { TablesInsert } from '../../database/database.types.js'
 import { SupabaseClientFactory } from '../../database/supabase-client.factory.js'
 import type { UsageEvent } from './usage.types.js'
 
-/** Meters AI calls into `usage_events` through the service-role client, off the hot path (DEC-004). */
 @Injectable()
 export class UsageRecorder implements BeforeApplicationShutdown {
   readonly #logger = new Logger(UsageRecorder.name)
@@ -20,7 +19,6 @@ export class UsageRecorder implements BeforeApplicationShutdown {
     this.#pending.add(write)
   }
 
-  /** Resolves once every write started so far has settled. */
   async flush(): Promise<void> {
     await Promise.all(this.#pending)
   }

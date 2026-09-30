@@ -6,11 +6,8 @@ interface FusionEntry {
   readonly ranks: (number | null)[]
 }
 
-/**
- * Reciprocal Rank Fusion (Cormack et al., 2009): every list that returned a chunk adds
- * 1 / (k + rank), rank counted from 1, so chunks several lists agree on rise to the top.
- * Lists are best first; ties go to the higher vector similarity, then to the lower chunk id.
- */
+// Reciprocal Rank Fusion (Cormack et al., 2009): each list adds 1 / (k + rank), ranks from 1.
+// Lists are best first; ties go to the higher vector similarity, then to the lower chunk id.
 export function fuseRankings(
   lists: readonly (readonly CandidateChunk[])[],
   { k, limit }: FusionOptions
@@ -33,7 +30,6 @@ export function fuseRankings(
   return [...entries.values()].map(toRetrievedChunk).sort(compareFused).slice(0, limit)
 }
 
-// A chunk listed twice counts once, at its better position.
 function distinctChunks(list: readonly CandidateChunk[]): CandidateChunk[] {
   const seen = new Set<string>()
   return list.filter(({ chunkId }) => {

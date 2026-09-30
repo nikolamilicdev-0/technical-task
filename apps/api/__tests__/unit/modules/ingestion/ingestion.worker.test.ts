@@ -63,7 +63,6 @@ class ScriptedQueue {
   requeueFailure: Error | undefined
   readonly #gates = new Map<HeldCall, Gate>()
 
-  /** Holds the next call of `kind` open until the gate is released. */
   hold(kind: HeldCall): Gate {
     const held = gate()
     this.#gates.set(kind, held)

@@ -1,4 +1,3 @@
-/** Grounding rules; the numbered sources follow them in the same system message. */
 export const SYSTEM_RULES = [
   "You answer questions about the user's own documents, using only the numbered sources below.",
   '',
@@ -16,16 +15,13 @@ export const SYSTEM_RULES = [
 
 export const SOURCES_HEADING = 'Sources:'
 
-/** Replaces the sources when retrieval found none, so the model cannot answer from memory. */
 export const NO_SOURCES_NOTICE =
   "Sources: none. The user's documents contain nothing related to this question: tell the user " +
   'that you could not find it in their documents, and do not answer from general knowledge.'
 
-/** Wraps a source label: `[1] «Title › Heading»`. */
 export const SOURCE_LABEL_OPEN = '«'
 export const SOURCE_LABEL_CLOSE = '»'
 
-/** Between the rules, the heading and every numbered source. */
 export const PROMPT_SECTION_SEPARATOR = '\n\n'
 
 export const QUERY_REWRITE_INSTRUCTIONS = [

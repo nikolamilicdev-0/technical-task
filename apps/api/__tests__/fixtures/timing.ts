@@ -6,10 +6,8 @@ export const LONE_SURROGATE = /[\uD800-\uDFFF]/u
 
 const MICROSECONDS_PER_MILLISECOND = 1_000
 
-/**
- * What `work` returns and the CPU milliseconds it took. Vitest runs each test file in its own
- * process, so, unlike wall time, this barely moves while other suites load the machine.
- */
+// CPU time, not wall time: each test file runs in its own process, so other suites loading the
+// machine barely move it.
 export function timed<T>(work: () => T): { readonly value: T; readonly ms: number } {
   const before = process.cpuUsage()
   const value = work()

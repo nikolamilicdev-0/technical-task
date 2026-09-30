@@ -17,10 +17,7 @@ type Settle = (value: unknown) => unknown
 
 const OK_STATUS = 200
 
-/**
- * Stands in for the supabase-js query builder: every `from()` or `rpc()` starts a chain that
- * records each call and, once awaited, resolves to the next scripted result.
- */
+/** Every `from()` or `rpc()` chain records its calls and, awaited, resolves to the next result. */
 export function fakeDatabase(...results: readonly ScriptedResult[]) {
   const pending = [...results]
   const queries: RecordedCall[][] = []

@@ -13,7 +13,6 @@ export const tokenCountSchema = z.number().int().nonnegative()
 const NUL_CHARACTER = '\u0000'
 export const NUL_CHARACTER_MESSAGE = 'Must not contain NUL (U+0000) characters'
 
-/** Rejects NUL characters: required on every string the API stores as Postgres `text`. */
 export function withoutNul<TSchema extends z.ZodType<string>>(schema: TSchema): TSchema {
   return schema.refine((value) => !value.includes(NUL_CHARACTER), {
     message: NUL_CHARACTER_MESSAGE,

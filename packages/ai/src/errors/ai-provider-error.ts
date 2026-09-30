@@ -7,7 +7,6 @@ const RETRYABLE_CODES: ReadonlySet<AiErrorCode> = new Set([
   'server',
 ])
 
-/** Every failure raised by a chat or embedding model: a neutral code plus diagnostics. */
 export class AiProviderError extends Error {
   override readonly name = 'AiProviderError'
   readonly code: AiErrorCode
@@ -19,7 +18,6 @@ export class AiProviderError extends Error {
     this.details = details
   }
 
-  /** True for transient failures (rate limits, timeouts, outages) that may succeed later. */
   get retryable(): boolean {
     return RETRYABLE_CODES.has(this.code)
   }

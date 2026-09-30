@@ -13,7 +13,6 @@ import { conversationNotFound } from './chat-errors.js'
 import { ConversationsRepository } from './conversations.repository.js'
 import { MessagesRepository } from './messages.repository.js'
 
-/** Conversation CRUD for the caller; RLS turns other users' conversations into 404s. */
 @Injectable()
 export class ConversationsService {
   constructor(
@@ -30,7 +29,6 @@ export class ConversationsService {
     return this.conversations.insert(user.db, input)
   }
 
-  /** The conversation with every message, oldest first. */
   async get(user: UserContext, id: string): Promise<ConversationDetail> {
     const [conversation, messages] = await Promise.all([
       this.conversations.findById(user.db, id),

@@ -16,7 +16,6 @@ import type { OpenAiLikeClient } from './openai-like-client.types.js'
 
 const STREAM_USAGE_OPTIONS = { stream_options: { include_usage: true } }
 
-/** `ChatModel` over any OpenAI-compatible `/chat/completions` endpoint. */
 export class OpenAiCompatibleChatModel implements ChatModel {
   readonly provider: string
   readonly model: string
@@ -60,8 +59,8 @@ export class OpenAiCompatibleChatModel implements ChatModel {
         { signal: request.signal }
       )
       for await (const chunk of chunks) {
-        const choice = chunk.choices.at(0)
-        // The SDK types `delta` as required; tolerate compatible servers that leave it out.
+        // The SDK types `choices` and `delta` as required; tolerate servers that leave them out.
+        const choice = chunk.choices?.at(0)
         const text = choice?.delta?.content
         if (text) yield { type: 'delta', text }
         if (choice?.finish_reason) finishReason = toFinishReason(choice.finish_reason)

@@ -1,4 +1,3 @@
-/** Consecutive batches of at most `size` items, in order. */
 export function chunkArray<T>(items: readonly T[], size: number): T[][] {
   if (!Number.isInteger(size) || size < 1) {
     throw new RangeError(`Batch size must be a positive integer, got ${size}`)

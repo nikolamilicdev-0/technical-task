@@ -16,7 +16,6 @@ function cl100k(): Tiktoken {
   return sharedEncoding
 }
 
-/** Real cl100k counts (DEC-006): a characters-divided-by-four estimate is far off for code. */
 @Injectable()
 export class TokenCounter implements TokenCounting {
   readonly #encoding = cl100k()

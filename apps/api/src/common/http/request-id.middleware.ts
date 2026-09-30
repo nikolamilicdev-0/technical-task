@@ -8,12 +8,10 @@ import { REQUEST_ID_HEADER } from './http.constants.js'
 // Upstream ids (proxies, tracing) are kept only when they cannot smuggle anything into log lines.
 const SAFE_REQUEST_ID = /^[\w.:-]{1,128}$/
 
-/** A well-formed incoming `X-Request-Id`, otherwise a fresh UUID. */
 export function resolveRequestId(incoming: string | string[] | undefined): string {
   return typeof incoming === 'string' && SAFE_REQUEST_ID.test(incoming) ? incoming : randomUUID()
 }
 
-/** First middleware: tags the request and its response with the id every log line repeats. */
 export function assignRequestId(request: ApiRequest, response: Response, next: NextFunction): void {
   const requestId = resolveRequestId(request.headers[REQUEST_ID_HEADER])
   request.requestId = requestId

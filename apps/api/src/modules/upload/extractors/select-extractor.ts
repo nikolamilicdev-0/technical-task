@@ -24,10 +24,7 @@ const byMimeType = new Map<string, TextExtractor>(Object.entries(EXTRACTOR_BY_MI
 const byExtension = new Map<string, TextExtractor>(Object.entries(EXTRACTOR_BY_EXTENSION))
 const MIME_PARAMETER_SEPARATOR = ';'
 
-/**
- * The extractor for the declared MIME type, else for the extension (curl and some browsers
- * send Markdown as `application/octet-stream`); undefined when neither is accepted.
- */
+// curl and some browsers send Markdown as `application/octet-stream`: the extension decides then.
 export function selectExtractor({
   mimetype,
   originalname,
@@ -37,7 +34,6 @@ export function selectExtractor({
   )
 }
 
-// `Text/Plain; charset=utf-8` names the type `text/plain`.
 function mimeEssence(mimetype: string): string {
   const [essence] = mimetype.split(MIME_PARAMETER_SEPARATOR)
   return essence.trim().toLowerCase()

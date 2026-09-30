@@ -26,7 +26,6 @@ const messageRowSchema = z.object({
 })
 type ParsedMessageRow = z.output<typeof messageRowSchema>
 
-/** A stored message; questions carry no model, finish reason or usage. */
 export function toMessage(row: MessageRow): Message {
   const parsed = messageRowSchema.parse(row)
   const usage = toMessageUsage(parsed)
@@ -47,7 +46,6 @@ export function toQuestionInsert(conversationId: string, content: string): Messa
   return { conversation_id: conversationId, role: 'user', content }
 }
 
-/** An answer with its citation snapshot, what it cost and how it was produced. */
 export function toAnswerInsert(answer: AnswerRecord): MessageInsertRow {
   return {
     conversation_id: answer.conversationId,

@@ -7,7 +7,6 @@ import { LOG_LEVELS } from './config.constants.js'
 import { describeEnvIssues } from './env-issues.js'
 import { type Env, envSchema } from './env.schema.js'
 
-/** Validates the environment (normally `process.env`); one error lists every invalid variable. */
 export function loadAppConfig(source: Readonly<Record<string, string | undefined>>): AppConfig {
   const result = envSchema.safeParse(source)
   if (!result.success) {

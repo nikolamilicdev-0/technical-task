@@ -25,7 +25,6 @@ const FINISH_REASONS: ReadonlyMap<string, FinishReason> = new Map([
   ['content_filter', 'content_filter'],
 ])
 
-/** Request body shared by `complete()` and `stream()`; optional knobs are sent only when set. */
 export function toChatParams(
   endpoint: ResolvedChatEndpoint,
   request: ChatRequest
@@ -51,13 +50,11 @@ function toMaxTokensParams(
   return param === 'max_tokens' ? { max_tokens: maxTokens } : { max_completion_tokens: maxTokens }
 }
 
-/** Normalizes a provider finish reason; missing or unrecognized values become `unknown`. */
 export function toFinishReason(reason: string | null | undefined): FinishReason {
   if (!reason) return 'unknown'
   return FINISH_REASONS.get(reason) ?? 'unknown'
 }
 
-/** Maps chat or embedding usage; embedding responses have no completion tokens. */
 export function toTokenUsage(usage: CompletionUsage | CreateEmbeddingResponse.Usage): TokenUsage {
   return {
     promptTokens: usage.prompt_tokens,
@@ -66,7 +63,6 @@ export function toTokenUsage(usage: CompletionUsage | CreateEmbeddingResponse.Us
   }
 }
 
-/** Maps a non-streamed completion, preferring the model name the provider reports. */
 export function toChatCompletion(
   response: OpenAiChatCompletion,
   fallbackModel: string
@@ -80,7 +76,6 @@ export function toChatCompletion(
   }
 }
 
-/** Embedding request body: always floats, `dimensions` only where the provider accepts it. */
 export function toEmbeddingParams(
   endpoint: ResolvedEmbeddingEndpoint,
   texts: readonly string[]

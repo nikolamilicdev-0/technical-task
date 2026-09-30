@@ -6,7 +6,6 @@ import { describeError } from './describe-error.js'
 import { HTTP_SERVER_ERROR_MIN, RETRY_AFTER_HEADER } from './error.constants.js'
 import { mapErrorToResponse } from './error-mapping.js'
 
-/** The only exception filter: every failure, from any layer, leaves in the shared error shape. */
 @Catch()
 export class ApiExceptionFilter implements ExceptionFilter {
   readonly #logger = new Logger(ApiExceptionFilter.name)

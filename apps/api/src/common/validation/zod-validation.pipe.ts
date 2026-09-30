@@ -5,7 +5,6 @@ import { ApiHttpException } from '../errors/api-http.exception.js'
 import { DEFAULT_ERROR_MESSAGES } from '../errors/error.constants.js'
 import { groupIssues } from './zod-issues.js'
 
-/** Parses one request part with a contracts schema; failures become 422 `invalid_payload`. */
 export class ZodValidationPipe<TSchema extends z.ZodType> implements PipeTransform<
   unknown,
   z.output<TSchema>

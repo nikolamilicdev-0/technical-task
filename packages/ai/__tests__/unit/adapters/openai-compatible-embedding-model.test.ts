@@ -16,6 +16,12 @@ function vectorOf(length: number): number[] {
   return Array.from({ length }, (_, index) => index / length)
 }
 
+function withoutData(): ReturnType<typeof buildEmbeddingResponse> {
+  const response = buildEmbeddingResponse([vectorOf(2)])
+  Reflect.deleteProperty(response, 'data')
+  return response
+}
+
 function setup(script: FakeOpenAiScript = {}, endpoint: Partial<ResolvedEmbeddingEndpoint> = {}) {
   const client = new FakeOpenAiClient(script)
   const model = new OpenAiCompatibleEmbeddingModel(client, buildEmbeddingEndpoint(endpoint))
@@ -118,6 +124,7 @@ describe('OpenAiCompatibleEmbeddingModel', () => {
   it.each([
     ['a missing embedding', buildEmbeddingResponse([vectorOf(2)])],
     ['a duplicated index', buildEmbeddingResponse([vectorOf(2), vectorOf(2)], [0, 0])],
+    ['no data at all, though it answered 2xx', withoutData()],
   ])('rejects a response with %s as a server fault', async (_, response) => {
     const { model } = setup({ embeddingResponses: [response] })
     const error = await captureAiError(() => model.embed({ texts: ['alpha', 'beta'] }))

@@ -30,7 +30,6 @@ export function truncateUtf16(text: string, maxLength: number): string {
   return text.slice(0, splitsPair ? maxLength - 1 : maxLength)
 }
 
-/** True when `index` falls between the two halves of a surrogate pair. */
 export function splitsSurrogatePair(text: string, index: number): boolean {
   const before = text.charCodeAt(index - 1)
   const after = text.charCodeAt(index)
@@ -42,10 +41,13 @@ export function splitsSurrogatePair(text: string, index: number): boolean {
   )
 }
 
-// Postgres `text` cannot store U+0000: a value holding one fails its request with a 500.
 const NUL_CHARACTER = '\u0000'
 
 /** True when the text holds U+0000, which no Postgres `text` column can store. */
 export function containsNul(text: string): boolean {
   return text.includes(NUL_CHARACTER)
+}
+
+export function stripNul(text: string): string {
+  return text.replaceAll(NUL_CHARACTER, '')
 }

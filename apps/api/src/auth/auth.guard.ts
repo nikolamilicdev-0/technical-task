@@ -9,7 +9,6 @@ import { INVALID_TOKEN_MESSAGE, JWT_VERIFIER, MISSING_TOKEN_MESSAGE } from './au
 import { extractBearerToken } from './bearer-token.js'
 import type { JwtVerifier } from './jwt-verifier.types.js'
 
-/** Global guard: verifies the bearer token and attaches the caller's RLS-scoped `userContext`. */
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(

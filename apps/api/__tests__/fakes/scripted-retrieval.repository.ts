@@ -8,7 +8,6 @@ import type {
 
 type RetrievalStore = Pick<RetrievalRepository, keyof RetrievalRepository>
 
-/** Answers every search with scripted hits and records what was asked. */
 export class ScriptedRetrievalRepository implements RetrievalStore {
   vectorHits: CandidateChunk[] = []
   keywordHits: CandidateChunk[] = []

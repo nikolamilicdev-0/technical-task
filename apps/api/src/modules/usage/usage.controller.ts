@@ -15,7 +15,6 @@ import { UsageService } from './usage.service.js'
 export class UsageController {
   constructor(private readonly usage: UsageService) {}
 
-  /** `from`/`to` (ISO timestamps) and `timezone` (IANA) are optional: the last 30 days in UTC. */
   @Get(apiRoutes.usage.summary)
   summary(
     @CurrentUser() user: UserContext,

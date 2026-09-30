@@ -1,7 +1,9 @@
 import { apiErrorSchema, type UsageSummary, usageSummarySchema } from '@kb/contracts'
+import { PostgrestError } from '@supabase/supabase-js'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 import type { DatabaseClient } from '../../src/database/database-client.types.js'
+import { DatabaseRequestError } from '../../src/database/database-error.js'
 import { UsageRepository } from '../../src/modules/usage/usage.repository.js'
 import type { UsageWindow } from '../../src/modules/usage/usage.types.js'
 import { TestApp } from '../fakes/test-app.js'
@@ -17,12 +19,19 @@ const SUMMARY: UsageSummary = {
   ],
 }
 
+// Valid for `Intl`; the fake database below plays a Postgres whose tzdata lacks it.
+const ZONE_THE_DATABASE_LACKS = 'America/Ciudad_Juarez'
+const UNKNOWN_ZONE = { message: 'time zone not recognized', details: '', hint: '', code: '22023' }
+
 const windows: UsageWindow[] = []
 let api: TestApp
 
 beforeAll(async () => {
   const summary = (_db: DatabaseClient, window: UsageWindow): Promise<UsageSummary> => {
     windows.push(window)
+    if (window.timezone === ZONE_THE_DATABASE_LACKS) {
+      return Promise.reject(new DatabaseRequestError(new PostgrestError(UNKNOWN_ZONE), 400))
+    }
     return Promise.resolve(SUMMARY)
   }
   api = await TestApp.start((builder) =>
@@ -64,6 +73,8 @@ describe('usage summary over HTTP', () => {
       'from=2026-09-15T00:00:00Z&to=2026-09-01T00:00:00Z',
       'to',
     ],
+    ['a start after the default end', 'from=2999-01-01T00:00:00Z', 'from'],
+    ['a zone the database does not know', `timezone=${ZONE_THE_DATABASE_LACKS}`, 'timezone'],
   ])('rejects %s with 422', async (_, query, field) => {
     const { response, body } = await api.call(`/usage/summary?${query}`, { headers: api.signIn() })
 

@@ -7,7 +7,6 @@ import { IngestionService } from './ingestion.service.js'
 import { IngestionWorker } from './ingestion.worker.js'
 import { ReindexService } from './reindex.service.js'
 
-/** The durable ingestion queue: worker, chunking and embedding pipeline, and the reindex routes. */
 @Module({
   imports: [UsageModule],
   controllers: [IngestionController],

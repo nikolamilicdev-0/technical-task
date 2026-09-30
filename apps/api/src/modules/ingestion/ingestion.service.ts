@@ -6,6 +6,7 @@ import { TokenCounter } from '../../ai/token-counter.js'
 import type { TokenCounting } from '../../ai/token-counter.types.js'
 import { describeError } from '../../common/errors/describe-error.js'
 import { chunkArray } from '../../common/utils/chunk-array.js'
+import { elapsedMs } from '../../common/utils/elapsed.js'
 import { toStoredVector } from '../../common/utils/vector.js'
 import type { AiSetup, AppConfig } from '../../config/app-config.types.js'
 import { APP_CONFIG } from '../../config/config.constants.js'
@@ -32,7 +33,6 @@ const STALE: IngestionOutcome = { status: 'stale' }
 // The worker stays idle without AI; the stand-in embedding model would reject any batch anyway.
 const IDLE_EMBEDDING_BATCH_SIZE = 1
 
-/** Indexes one claimed document: chunk, embed what is new, store, then publish atomically. */
 @Injectable()
 export class IngestionService {
   readonly #logger = new Logger(IngestionService.name)
@@ -51,7 +51,7 @@ export class IngestionService {
     this.#maxAttempts = config.ingestion.maxAttempts
   }
 
-  /** Never throws: a failure is recorded on the document, with a retry when one may help. */
+  /** Never throws: a failure is recorded on the document. */
   async process(document: ClaimedDocument): Promise<IngestionOutcome> {
     // Only a stale claim gets past the limit: every earlier run died midway, so this one would too.
     if (document.attempt > this.#maxAttempts) {
@@ -105,13 +105,12 @@ export class IngestionService {
       provider: this.embedding.provider,
       model: result.model,
       usage: meterUsage(result.usage, () => estimateEmbeddingUsage(texts, this.counter)),
-      latencyMs: Math.round(performance.now() - startedAt),
+      latencyMs: elapsedMs(startedAt),
       documentId: document.id,
     })
     return result.embeddings
   }
 
-  /** False once the content changed since the claim. */
   async #store(
     { db, document, signature }: IndexingRun,
     rows: readonly ChunkUpsert[]
@@ -123,7 +122,6 @@ export class IngestionService {
     return true
   }
 
-  // An edit (re-queued by the documents trigger), a deletion or a newer claim superseded the run.
   #stale({ document }: IndexingRun): IngestionOutcome {
     this.#logger.log(
       `Document ${document.id} changed, was deleted or was claimed again while it was indexed; ` +

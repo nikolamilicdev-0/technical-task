@@ -5,7 +5,6 @@ import type { ReadinessFacts } from './health.types.js'
 
 type Checks = Readiness['checks']
 
-/** Ready once the database answers with the vector size the API writes; AI is reported, not required. */
 export function assessReadiness({ columnDimensions, aiConfigured }: ReadinessFacts): Readiness {
   const checks: Checks = {
     database: columnDimensions === undefined ? 'error' : 'ok',

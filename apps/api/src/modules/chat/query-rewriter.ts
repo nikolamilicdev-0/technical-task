@@ -15,12 +15,10 @@ import { QUERY_REWRITE_MAX_TOKENS, QUERY_REWRITE_TIMEOUT_MS } from './chat.const
 import type { RewriteRequest } from './chat.types.js'
 import { buildRewriteMessages, cleanRewrittenQuery } from './rewrite-prompt.js'
 
-/** Condenses a follow-up ("what about its pricing?") into a query that searches on its own. */
 @Injectable()
 export class QueryRewriter {
   readonly #logger = new Logger(QueryRewriter.name)
   readonly #enabled: boolean
-  /** A slow rewrite must not hold the answer up: past this, the question is searched as asked. */
   protected readonly timeoutMs: number = QUERY_REWRITE_TIMEOUT_MS
 
   constructor(
@@ -32,10 +30,7 @@ export class QueryRewriter {
     this.#enabled = config.rag.queryRewrite
   }
 
-  /**
-   * The standalone query, or null to search the question as asked: always for a first question
-   * (it stands on its own), with RAG_QUERY_REWRITE off, and when the rewrite fails or times out.
-   */
+  /** Null means the question is searched as asked: a first question, rewriting off or a failure. */
   async rewrite(user: UserContext, request: RewriteRequest): Promise<string | null> {
     const { question, history, conversationId, signal } = request
     if (!this.#enabled || history.length === 0) return null

@@ -1,6 +1,5 @@
 import type { DatabaseClient } from './database-client.types.js'
 
-/** The verified caller, attached to the request by the AuthGuard. */
 export interface UserContext {
   readonly userId: string
   readonly email?: string

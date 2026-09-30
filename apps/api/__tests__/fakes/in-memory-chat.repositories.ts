@@ -22,7 +22,6 @@ type MessagesStore = Pick<MessagesRepository, keyof MessagesRepository>
 class ChatTables {
   readonly conversations = new Map<string, Conversation>()
   readonly messages: Message[] = []
-  /** Every inserted row as the API sent it, metadata included. */
   readonly insertedRows: MessageInsertRow[] = []
   #clock = Date.parse('2026-09-30T08:00:00.000Z')
 
@@ -98,7 +97,6 @@ export class InMemoryConversationsRepository implements ConversationsStore {
 }
 
 export class InMemoryMessagesRepository implements MessagesStore {
-  /** Fails the next inserts, in order, with these errors. */
   readonly insertFailures: Error[] = []
 
   constructor(private readonly tables: ChatTables) {}
@@ -146,7 +144,6 @@ function toMessage(row: MessageInsertRow, createdAt: string): Message {
   }
 }
 
-/** Repositories over one shared set of tables. */
 export function inMemoryChat() {
   const tables = new ChatTables()
   return {

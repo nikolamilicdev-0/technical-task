@@ -2,46 +2,30 @@ import { readFileSync } from 'node:fs'
 
 import { apiErrorSchema, documentListSchema, documentSchema, MAX_UPLOAD_BYTES } from '@kb/contracts'
 import { EventEmitter2 } from '@nestjs/event-emitter'
-import type { NestExpressApplication } from '@nestjs/platform-express'
-import { Test } from '@nestjs/testing'
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
-import { AppModule } from '../../src/app.module.js'
-import { configureHttp } from '../../src/app.setup.js'
-import { JWT_VERIFIER } from '../../src/auth/auth.constants.js'
-import type { JwtVerifier } from '../../src/auth/jwt-verifier.types.js'
-import { APP_CONFIG } from '../../src/config/config.constants.js'
 import { DocumentsRepository } from '../../src/modules/documents/documents.repository.js'
 import {
   DOCUMENT_INGESTION_REQUESTED,
   type DocumentIngestionRequested,
 } from '../../src/modules/ingestion/ingestion.events.js'
 import { InMemoryDocumentsRepository } from '../fakes/in-memory-documents.repository.js'
-import { buildTestConfig, TEST_USER } from '../fixtures.js'
+import { TestApp } from '../fakes/test-app.js'
+import { TEST_USER } from '../fixtures.js'
 import { TEST_DOCUMENT_ID } from '../fixtures/documents.js'
 
-const TOKEN = 'token-documents'
-const AUTH = { Authorization: `Bearer ${TOKEN}` }
-const JSON_AUTH = { ...AUTH, 'Content-Type': 'application/json' }
 const NEW_DOCUMENT = { title: 'Release notes', content: '# Shipped', tags: ['release'] }
 
-const verify: JwtVerifier['verify'] = (token) =>
-  Promise.resolve(token === TOKEN ? { userId: TEST_USER.id, email: TEST_USER.email } : null)
-let app: NestExpressApplication
-let baseUrl: string
+let api: TestApp
+let auth: Record<string, string>
 let requested: DocumentIngestionRequested[] = []
 
-async function call(path: string, init: RequestInit = {}) {
-  const response = await fetch(`${baseUrl}/api${path}`, init)
-  const text = await response.text()
-  const body: unknown = text === '' ? undefined : JSON.parse(text)
-  return { response, body }
-}
+const jsonAuth = (): Record<string, string> => ({ ...auth, 'Content-Type': 'application/json' })
 
 function createDocument() {
-  return call('/documents', {
+  return api.call('/documents', {
     method: 'POST',
-    headers: JSON_AUTH,
+    headers: jsonAuth(),
     body: JSON.stringify(NEW_DOCUMENT),
   })
 }
@@ -50,24 +34,15 @@ function upload(file: Blob, filename: string, fields: Record<string, string> = {
   const form = new FormData()
   for (const [name, value] of Object.entries(fields)) form.append(name, value)
   form.append('file', file, filename)
-  return call('/documents/upload', { method: 'POST', headers: AUTH, body: form })
+  return api.call('/documents/upload', { method: 'POST', headers: auth, body: form })
 }
 
 beforeAll(async () => {
-  const config = buildTestConfig()
-  const moduleRef = await Test.createTestingModule({ imports: [AppModule] })
-    .overrideProvider(APP_CONFIG)
-    .useValue(config)
-    .overrideProvider(JWT_VERIFIER)
-    .useValue({ verify })
-    .overrideProvider(DocumentsRepository)
-    .useValue(new InMemoryDocumentsRepository())
-    .compile()
-  app = moduleRef.createNestApplication<NestExpressApplication>({ logger: false })
-  configureHttp(app, config)
-  await app.listen(0, '127.0.0.1')
-  baseUrl = await app.getUrl()
-  app.get(EventEmitter2).on(DOCUMENT_INGESTION_REQUESTED, (event: DocumentIngestionRequested) => {
+  api = await TestApp.start((builder) =>
+    builder.overrideProvider(DocumentsRepository).useValue(new InMemoryDocumentsRepository())
+  )
+  auth = api.signIn(TEST_USER.id)
+  api.get(EventEmitter2).on(DOCUMENT_INGESTION_REQUESTED, (event: DocumentIngestionRequested) => {
     requested.push(event)
   })
 })
@@ -77,7 +52,7 @@ beforeEach(() => {
 })
 
 afterAll(async () => {
-  await app.close()
+  await api.close()
 })
 
 describe('documents over HTTP', () => {
@@ -91,9 +66,9 @@ describe('documents over HTTP', () => {
   })
 
   it('rejects an invalid document with 422 and field errors', async () => {
-    const { response, body } = await call('/documents', {
+    const { response, body } = await api.call('/documents', {
       method: 'POST',
-      headers: JSON_AUTH,
+      headers: jsonAuth(),
       body: JSON.stringify({ title: ' ', tags: ['x'.repeat(41)] }),
     })
 
@@ -108,7 +83,7 @@ describe('documents over HTTP', () => {
   it('lists documents with the requested window', async () => {
     await createDocument()
 
-    const { response, body } = await call('/documents?limit=1&offset=0', { headers: AUTH })
+    const { response, body } = await api.call('/documents?limit=1&offset=0', { headers: auth })
 
     expect(response.status).toBe(200)
     const list = documentListSchema.parse(body)
@@ -118,7 +93,7 @@ describe('documents over HTTP', () => {
   })
 
   it('rejects a list query out of range with 422', async () => {
-    const { response, body } = await call('/documents?limit=0', { headers: AUTH })
+    const { response, body } = await api.call('/documents?limit=0', { headers: auth })
 
     expect(response.status).toBe(422)
     expect(apiErrorSchema.parse(body).errors).toHaveProperty('limit')
@@ -128,14 +103,14 @@ describe('documents over HTTP', () => {
     const created = documentSchema.parse((await createDocument()).body)
     const item = `/documents/${created.id}`
 
-    const read = await call(item, { headers: AUTH })
-    const patched = await call(item, {
+    const read = await api.call(item, { headers: auth })
+    const patched = await api.call(item, {
       method: 'PATCH',
-      headers: JSON_AUTH,
+      headers: jsonAuth(),
       body: JSON.stringify({ tags: ['q3'] }),
     })
-    const deleted = await call(item, { method: 'DELETE', headers: AUTH })
-    const gone = await call(item, { headers: AUTH })
+    const deleted = await api.call(item, { method: 'DELETE', headers: auth })
+    const gone = await api.call(item, { headers: auth })
 
     expect(read.response.status).toBe(200)
     expect(documentSchema.parse(read.body).content).toBe(NEW_DOCUMENT.content)
@@ -150,9 +125,9 @@ describe('documents over HTTP', () => {
     const created = documentSchema.parse((await createDocument()).body)
     requested = []
     const patch = (body: object) =>
-      call(`/documents/${created.id}`, {
+      api.call(`/documents/${created.id}`, {
         method: 'PATCH',
-        headers: JSON_AUTH,
+        headers: jsonAuth(),
         body: JSON.stringify(body),
       })
 
@@ -163,21 +138,21 @@ describe('documents over HTTP', () => {
   })
 
   it('answers 404 in the shared shape for a document that does not exist', async () => {
-    const { response, body } = await call(`/documents/${TEST_DOCUMENT_ID}`, { headers: AUTH })
+    const { response, body } = await api.call(`/documents/${TEST_DOCUMENT_ID}`, { headers: auth })
 
     expect(response.status).toBe(404)
     expect(body).toEqual({ code: 'not_found', messages: ['Document not found'] })
   })
 
   it('answers 422 for an id that is not a UUID', async () => {
-    const { response, body } = await call('/documents/not-a-uuid', { headers: AUTH })
+    const { response, body } = await api.call('/documents/not-a-uuid', { headers: auth })
 
     expect(response.status).toBe(422)
     expect(apiErrorSchema.parse(body).errors).toHaveProperty('id')
   })
 
   it('requires a signed-in caller', async () => {
-    const { response } = await call('/documents')
+    const { response } = await api.call('/documents')
 
     expect(response.status).toBe(401)
   })
@@ -241,7 +216,10 @@ describe('uploads over HTTP', () => {
   })
 
   it('routes POST /documents/upload to uploads, never to a document id', async () => {
-    const { response, body } = await call('/documents/upload', { method: 'POST', headers: AUTH })
+    const { response, body } = await api.call('/documents/upload', {
+      method: 'POST',
+      headers: auth,
+    })
 
     expect(response.status).toBe(422)
     expect(apiErrorSchema.parse(body).errors).toEqual({ file: ['A file is required'] })

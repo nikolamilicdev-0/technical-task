@@ -23,7 +23,6 @@ import type { UploadedDocumentFile, UploadFields } from './upload.types.js'
 export class UploadController {
   constructor(private readonly uploads: UploadService) {}
 
-  /** Multipart form: the `file` part plus optional `title` and `tags` (one part per tag). */
   @Post(apiRoutes.documents.upload)
   @Throttle({
     [DEFAULT_THROTTLER]: { limit: UPLOAD_RATE_LIMIT_PER_MINUTE, ttl: RATE_LIMIT_WINDOW_MS },

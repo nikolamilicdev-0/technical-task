@@ -1,6 +1,6 @@
-import { PostgrestError } from '@supabase/supabase-js'
 import { describe, expect, it } from 'vitest'
 
+import { DatabaseRequestError } from '../../../../src/database/database-error.js'
 import {
   DOCUMENT_COLUMNS,
   DOCUMENT_SUMMARY_COLUMNS,
@@ -69,14 +69,14 @@ describe('DocumentsRepository', () => {
       ])
     })
 
-    it('throws database failures as PostgrestError instances', async () => {
+    it('throws failures with their HTTP status', async () => {
       const failure = { code: '57014', message: 'canceling statement', details: '', hint: '' }
-      const { db } = fakeDatabase({ error: failure })
+      const { db } = fakeDatabase({ error: failure, status: 500 })
 
       const rejection = repository.list(db, PAGE)
 
-      await expect(rejection).rejects.toBeInstanceOf(PostgrestError)
-      await expect(rejection).rejects.toMatchObject({ code: '57014' })
+      await expect(rejection).rejects.toBeInstanceOf(DatabaseRequestError)
+      await expect(rejection).rejects.toMatchObject({ code: '57014', status: 500 })
     })
   })
 

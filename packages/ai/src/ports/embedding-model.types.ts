@@ -1,6 +1,6 @@
 import type { TokenUsage } from './chat-model.types.js'
 
-/** Texts to embed in one provider call; batching is the caller's job. */
+/** One provider call; batching is the caller's job. */
 export interface EmbeddingRequest {
   texts: readonly string[]
   signal?: AbortSignal
@@ -14,13 +14,12 @@ export interface EmbeddingResult {
   model: string
 }
 
-/** Embedding port; implementations throw `AiProviderError` only. */
+/** Implementations throw `AiProviderError` only. */
 export interface EmbeddingModel {
   readonly provider: string
   readonly model: string
-  /** Identifies the vector space: `model`, or `model#dimensions` when dimensions are configured. */
+  /** The vector space: `model`, or `model#dimensions` when dimensions are configured. */
   readonly signature: string
-  /** Configured output size; unset means the model's native size. */
   readonly dimensions?: number
   embed(request: EmbeddingRequest): Promise<EmbeddingResult>
 }

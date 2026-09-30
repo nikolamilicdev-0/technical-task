@@ -6,7 +6,6 @@ import { TextExtractionError } from './text-extraction.error.js'
 // pdf.js would print warnings about recoverable damage with console.log; failures still reject.
 const PDFJS_VERBOSITY_ERRORS = 0
 
-/** The text of every page, one line break between pages; damaged or encrypted files fail. */
 export async function extractPdfText(bytes: Uint8Array): Promise<string> {
   try {
     // unpdf refuses Node Buffers and detaches the array it reads, so it gets a copy.

@@ -3,7 +3,6 @@ import { HttpException } from '@nestjs/common'
 
 import type { ApiErrorDetails } from './errors.types.js'
 
-/** A deliberate API failure: the filter sends its body as-is, with the contract status of its code. */
 export class ApiHttpException extends HttpException {
   readonly body: ApiErrorBody
 

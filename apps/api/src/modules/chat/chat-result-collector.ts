@@ -9,10 +9,7 @@ import {
 import { toApiException } from './chat-errors.js'
 import type { ChatEventStream } from './chat.types.js'
 
-/**
- * Runs an exchange to the end for a JSON response. An `error` event throws the exception the
- * endpoint answers with; null means the run stopped without an answer (the client went away).
- */
+// An `error` event throws its exception; null means the run ended without an answer.
 export async function collectChatResult(events: ChatEventStream): Promise<ChatResult | null> {
   let usage: ChatUsage | undefined
   let failure: ChatErrorEvent | undefined

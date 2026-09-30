@@ -35,7 +35,6 @@ function contextFor(handler: () => void, userId: string) {
   return new ExecutionContextHost([request, response], RoutesUnderTest, handler)
 }
 
-/** How many requests pass before the guard answers 429. */
 async function allowedRequests(guard: UserThrottlerGuard, handler: () => void, userId: string) {
   for (let passed = 0; ; passed += 1) {
     const allowed = await guard.canActivate(contextFor(handler, userId)).catch((error: unknown) => {

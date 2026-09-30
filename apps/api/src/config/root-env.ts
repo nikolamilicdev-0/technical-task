@@ -4,7 +4,6 @@ import { dirname, join } from 'node:path'
 const WORKSPACE_MARKER = 'pnpm-workspace.yaml'
 const ENV_FILE_NAME = '.env'
 
-/** The nearest directory at or above `start` that holds pnpm-workspace.yaml. */
 export function findWorkspaceRoot(start: string): string | undefined {
   let directory = start
   while (!existsSync(join(directory, WORKSPACE_MARKER))) {
@@ -15,7 +14,7 @@ export function findWorkspaceRoot(start: string): string | undefined {
   return directory
 }
 
-/** Loads the monorepo's root `.env` (DEC-010); variables already set in the environment win. */
+/** Variables already set in the environment win over the root `.env` (DEC-010). */
 export function loadRootEnv(start: string = import.meta.dirname): string | undefined {
   const root = findWorkspaceRoot(start)
   const path = root === undefined ? undefined : join(root, ENV_FILE_NAME)
