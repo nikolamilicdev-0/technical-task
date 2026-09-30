@@ -1,8 +1,10 @@
 // @vitest-environment node
+import type { MessageRole } from '@kb/contracts'
 import { describe, expect, it } from 'vitest'
 
-import { getThreadView } from '@/features/chat/lib/get-thread-view'
-import type { ThreadViewInput } from '@/features/chat/types'
+import { NO_CITATIONS } from '@/features/chat/constants'
+import { endsOnStoppedQuestion, getThreadView } from '@/features/chat/lib/get-thread-view'
+import type { MessageItem, ThreadViewInput } from '@/features/chat/types'
 
 const input = (overrides: Partial<ThreadViewInput>): ThreadViewInput => ({
   saved: true,
@@ -34,5 +36,30 @@ describe('getThreadView', () => {
   it('is empty for a new chat until its first question appears', () => {
     expect(getThreadView(input({ saved: false, hasData: false, itemCount: 0 }))).toBe('empty')
     expect(getThreadView(input({ saved: false, hasData: false, itemCount: 2 }))).toBe('messages')
+  })
+})
+
+const item = (key: string, author: MessageRole): MessageItem => ({
+  key,
+  author,
+  content: 'text',
+  citations: NO_CITATIONS,
+  streaming: false,
+})
+
+describe('endsOnStoppedQuestion', () => {
+  const question = item('q2', 'user')
+  const history = [item('q1', 'user'), item('a1', 'assistant')]
+
+  it('holds when a stopped answer left the thread ending on its question', () => {
+    expect(endsOnStoppedQuestion('stopped', [...history, question])).toBe(true)
+  })
+
+  it('leaves partial answers, other statuses and empty threads to their own notes', () => {
+    const partial = [...history, question, item('a2', 'assistant')]
+    expect(endsOnStoppedQuestion('stopped', partial)).toBe(false)
+    expect(endsOnStoppedQuestion('error', [...history, question])).toBe(false)
+    expect(endsOnStoppedQuestion('streaming', [...history, question])).toBe(false)
+    expect(endsOnStoppedQuestion('stopped', [])).toBe(false)
   })
 })

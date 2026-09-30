@@ -37,6 +37,14 @@ export function formatDateTime(
   }).format(toDate(value))
 }
 
+/** `Sep 1 – 30, 2026`: a period in the viewer's calendar, with the parts both ends share once. */
+export function formatDateRange(from: DateInput, to: DateInput, locale = DEFAULT_LOCALE): string {
+  return new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).formatRange(
+    toDate(from),
+    toDate(to)
+  )
+}
+
 /** A `YYYY-MM-DD` bucket (usage by day) read and formatted in UTC so it never shifts a day. */
 export function formatDay(day: string, locale = DEFAULT_LOCALE): string {
   return new Intl.DateTimeFormat(locale, {

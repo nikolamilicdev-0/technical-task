@@ -1,5 +1,7 @@
 import type { CreateDocumentInput, Document, UpdateDocumentInput } from '@kb/contracts'
 
+import { haveSameTags } from '@/features/documents/lib/tags'
+
 /** The PATCH body for a submitted edit form: only the fields that differ from the saved document. */
 export function toUpdateInput(
   values: CreateDocumentInput,
@@ -14,8 +16,4 @@ export function toUpdateInput(
 
 export function hasChanges(input: UpdateDocumentInput): boolean {
   return Object.values(input).some((value) => value !== undefined)
-}
-
-function haveSameTags(left: readonly string[], right: readonly string[]): boolean {
-  return left.length === right.length && left.every((tag, index) => tag === right[index])
 }

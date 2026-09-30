@@ -5,7 +5,10 @@ import { Wordmark } from '@/core/components/shell/Wordmark'
 import { getDictionary } from '@/core/i18n/dictionary'
 import { getAuthStrings } from '@/features/auth/lib/auth-strings'
 
-/** Sign-in and sign-up frame: the product's promise beside the form from `lg` up. */
+/**
+ * Sign-in and sign-up frame: the product's promise beside the form from `lg` up. The promise
+ * panel, or the wordmark row below `lg`, is the banner, so no content sits outside a landmark.
+ */
 export function AuthShell({ children }: { children: ReactNode }) {
   const dictionary = getDictionary()
   const strings = getAuthStrings(dictionary)
@@ -14,6 +17,7 @@ export function AuthShell({ children }: { children: ReactNode }) {
   return (
     <Grid columns={{ base: 1, lg: 2 }} className="min-h-dvh">
       <Flex
+        as="header"
         direction="column"
         justify="between"
         gap="2xl"
@@ -30,7 +34,7 @@ export function AuthShell({ children }: { children: ReactNode }) {
         </Flex>
       </Flex>
       <Flex direction="column" className="px-4 py-6 sm:px-8">
-        <Flex className="lg:hidden">
+        <Flex as="header" className="lg:hidden">
           <Wordmark name={appName} />
         </Flex>
         <Flex as="main" align="center" justify="center" className="flex-1 py-10">

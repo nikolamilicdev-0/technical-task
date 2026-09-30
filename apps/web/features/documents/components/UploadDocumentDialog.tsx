@@ -20,10 +20,16 @@ import {
 interface UploadDocumentDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  /** Where focus goes on close; by default it returns to whatever opened the dialog. */
+  onCloseAutoFocus?: (event: Event) => void
 }
 
 /** Pick or drop one file, upload it with progress, then offer to open the new document. */
-export function UploadDocumentDialog({ open, onOpenChange }: UploadDocumentDialogProps) {
+export function UploadDocumentDialog({
+  open,
+  onOpenChange,
+  onCloseAutoFocus,
+}: UploadDocumentDialogProps) {
   const t = useT()
   const strings = getDocumentsStrings(t)
   const router = useRouter()
@@ -84,6 +90,11 @@ export function UploadDocumentDialog({ open, onOpenChange }: UploadDocumentDialo
     <UploadDropzone onFileAccepted={chooseFile} inputRef={pickerRef} />
   )
   const cancel = () => handleOpenChange(false)
+  // Opening starts at the file picker rather than the close button.
+  const focusPicker = (event: Event) => {
+    event.preventDefault()
+    pickerRef.current?.focus()
+  }
   const footer = (
     <>
       <Button variant="outline" onClick={cancel}>
@@ -104,6 +115,8 @@ export function UploadDocumentDialog({ open, onOpenChange }: UploadDocumentDialo
       description={strings.upload.description}
       closeLabel={t.common.close}
       footer={footer}
+      onOpenAutoFocus={focusPicker}
+      onCloseAutoFocus={onCloseAutoFocus}
     >
       <Flex direction="column" gap="md">
         {picker}

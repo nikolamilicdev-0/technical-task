@@ -36,6 +36,11 @@ export function hasRoomForTags(current: readonly string[]): boolean {
   return current.length < MAX_TAGS
 }
 
+/** The same tags in the same order. */
+export function haveSameTags(left: readonly string[], right: readonly string[]): boolean {
+  return left.length === right.length && left.every((tag, index) => tag === right[index])
+}
+
 /** The tag selection with `tag` checked or unchecked; other tags keep their order. */
 export function toggleTag(selected: readonly string[], tag: string, checked: boolean): string[] {
   const others = selected.filter((existing) => existing !== tag)

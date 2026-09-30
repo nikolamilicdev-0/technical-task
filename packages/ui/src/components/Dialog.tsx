@@ -3,7 +3,7 @@
 import { cva } from 'class-variance-authority'
 import { XIcon } from 'lucide-react'
 import { Dialog as DialogPrimitive } from 'radix-ui'
-import type { ReactNode } from 'react'
+import { type ReactNode, useRef } from 'react'
 
 import { cn } from '../lib/cn'
 import { Button } from './Button'
@@ -64,10 +64,14 @@ export interface DialogProps {
   /** Runs before focus moves in; `event.preventDefault()` lets a form focus its own field. */
   onOpenAutoFocus?: (event: Event) => void
   /**
-   * Runs as the dialog hands focus back. Without a `trigger` there is nothing to return to, so
-   * call `event.preventDefault()` and focus the right element yourself.
+   * Runs as focus goes back to the `trigger`, or without one to whatever opened the dialog if it
+   * is still on the page; call `event.preventDefault()` to place focus yourself instead.
    */
   onCloseAutoFocus?: (event: Event) => void
+}
+
+function focusedElement(): HTMLElement | null {
+  return document.activeElement instanceof HTMLElement ? document.activeElement : null
 }
 
 export function Dialog({
@@ -91,6 +95,21 @@ export function Dialog({
   ) : null
   const describedBy = description ? {} : WITHOUT_DESCRIPTION
   const titleClasses = cn('font-display text-xl leading-tight font-medium', hideTitle && 'sr-only')
+  // Radix returns focus to its trigger only; a dialog opened from state remembers its opener.
+  const openerRef = useRef<HTMLElement | null>(null)
+
+  const handleOpenAutoFocus = (event: Event) => {
+    openerRef.current = focusedElement()
+    onOpenAutoFocus?.(event)
+  }
+  const handleCloseAutoFocus = (event: Event) => {
+    const opener = openerRef.current
+    openerRef.current = null
+    onCloseAutoFocus?.(event)
+    if (event.defaultPrevented || trigger || !opener?.isConnected) return
+    event.preventDefault()
+    opener.focus()
+  }
 
   return (
     <DialogPrimitive.Root open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
@@ -99,8 +118,8 @@ export function Dialog({
         <DialogPrimitive.Overlay className={overlayVariants({ placement })}>
           <DialogPrimitive.Content
             className={contentVariants({ placement, size })}
-            onOpenAutoFocus={onOpenAutoFocus}
-            onCloseAutoFocus={onCloseAutoFocus}
+            onOpenAutoFocus={handleOpenAutoFocus}
+            onCloseAutoFocus={handleCloseAutoFocus}
             {...describedBy}
           >
             <Flex align="start" justify="between" gap="md">

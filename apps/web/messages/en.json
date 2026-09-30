@@ -245,6 +245,7 @@
     "thread": {
       "loading": "Loading conversation",
       "errorTitle": "This conversation didn't load",
+      "region": "Conversation",
       "messages": "Messages",
       "notFound": {
         "title": "Conversation not found",
@@ -306,6 +307,7 @@
         "one": "Reading {count} source…",
         "other": "Reading {count} sources…"
       },
+      "stoppedEarly": "Answer stopped before it started.",
       "usage": "{tokens} tokens",
       "usageEstimated": "About {tokens} tokens",
       "finish": {
@@ -343,7 +345,46 @@
   },
   "usage": {
     "title": "Usage",
-    "description": "Tokens used by chat and indexing over the last 30 days."
+    "description": "Tokens used by chat and indexing over the last 30 days.",
+    "loading": "Loading usage",
+    "errorTitle": "Usage didn't load",
+    "totals": {
+      "heading": "Totals",
+      "totalTokens": "Total tokens",
+      "promptTokens": "Prompt tokens",
+      "completionTokens": "Completion tokens",
+      "requests": "Requests",
+      "estimated": {
+        "one": "Includes estimates for {count} request",
+        "other": "Includes estimates for {count} requests"
+      }
+    },
+    "byDay": {
+      "heading": "Tokens by day",
+      "note": "Days without usage are left out."
+    },
+    "byModel": {
+      "heading": "By model",
+      "note": "Most tokens first.",
+      "columns": {
+        "provider": "Provider",
+        "model": "Model",
+        "kind": "Kind",
+        "promptTokens": "Prompt",
+        "completionTokens": "Completion",
+        "totalTokens": "Total",
+        "requests": "Requests"
+      }
+    },
+    "kinds": {
+      "chat": "Chat",
+      "embedding": "Embedding",
+      "query_rewrite": "Query rewrite"
+    },
+    "empty": {
+      "title": "No usage recorded yet",
+      "description": "Token counts show up here once a document is indexed or you ask a question."
+    }
   },
   "states": {
     "error": {

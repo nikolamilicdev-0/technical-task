@@ -1,6 +1,6 @@
 import { Button, Flex, Input } from '@kb/ui'
 import Link from 'next/link'
-import type { ChangeEvent } from 'react'
+import type { ChangeEvent, Ref } from 'react'
 
 import { routes } from '@/core/config/routes'
 import { useT } from '@/core/i18n/useT'
@@ -15,6 +15,8 @@ interface DocumentsToolbarProps {
   selectedTags: readonly string[]
   onSelectedTagsChange: (tags: string[]) => void
   onUpload: () => void
+  /** The Upload button, where focus returns once the upload dialog closes. */
+  uploadButtonRef?: Ref<HTMLButtonElement>
 }
 
 /** Title search and tag filter, then the two ways to add a document. */
@@ -25,6 +27,7 @@ export function DocumentsToolbar({
   selectedTags,
   onSelectedTagsChange,
   onUpload,
+  uploadButtonRef,
 }: DocumentsToolbarProps) {
   const strings = getDocumentsStrings(useT())
   const SearchIcon = icons.search
@@ -53,7 +56,12 @@ export function DocumentsToolbar({
         <DocumentsTagFilter tags={tags} selected={selectedTags} onChange={onSelectedTagsChange} />
       </Flex>
       <Flex gap="sm">
-        <Button variant="outline" onClick={onUpload} className="flex-1 sm:flex-none">
+        <Button
+          ref={uploadButtonRef}
+          variant="outline"
+          onClick={onUpload}
+          className="flex-1 sm:flex-none"
+        >
           <UploadIcon aria-hidden />
           {strings.actions.upload}
         </Button>

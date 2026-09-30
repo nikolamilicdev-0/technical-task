@@ -16,6 +16,7 @@ import { MessageList } from '@/features/chat/components/MessageList'
 import { MessagesSkeleton } from '@/features/chat/components/MessagesSkeleton'
 import { StreamErrorRow } from '@/features/chat/components/StreamErrorRow'
 import { StreamStatus } from '@/features/chat/components/StreamStatus'
+import { StreamStoppedRow } from '@/features/chat/components/StreamStoppedRow'
 import { useAutoScroll } from '@/features/chat/hooks/useAutoScroll'
 import { useChatStream } from '@/features/chat/hooks/useChatStream'
 import { useConversation } from '@/features/chat/hooks/useConversation'
@@ -23,7 +24,7 @@ import { buildMessageList } from '@/features/chat/lib/build-message-list'
 import { isReceiving } from '@/features/chat/lib/chat-stream-reducer'
 import { describeThreadTitle, getChatStrings } from '@/features/chat/lib/chat-strings'
 import { getIndexingSummary } from '@/features/chat/lib/get-indexing-summary'
-import { getThreadView } from '@/features/chat/lib/get-thread-view'
+import { endsOnStoppedQuestion, getThreadView } from '@/features/chat/lib/get-thread-view'
 import { activeScope } from '@/features/chat/lib/scope'
 import { useDocuments } from '@/features/documents/hooks/useDocuments'
 
@@ -80,6 +81,7 @@ export function ChatThreadSection({
 
   const errorRow =
     status === 'error' && error ? <StreamErrorRow error={error} onRetry={stream.retry} /> : null
+  const stoppedRow = endsOnStoppedQuestion(status, items) ? <StreamStoppedRow /> : null
   const renderBody = (): ReactNode => {
     switch (view) {
       case 'loading':
@@ -106,6 +108,7 @@ export function ChatThreadSection({
           <Flex direction="column" gap="lg">
             <MessageList items={items} />
             {errorRow}
+            {stoppedRow}
           </Flex>
         )
     }
@@ -140,6 +143,7 @@ export function ChatThreadSection({
         className="min-h-0 flex-1"
         viewportRef={viewportRef}
         viewportClassName="[&>div]:block!"
+        viewportLabel={strings.thread.region}
       >
         <Container size="md" ref={contentRef} className="py-6">
           {renderBody()}

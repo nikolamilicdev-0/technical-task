@@ -112,6 +112,33 @@ describe('DocumentForm', () => {
     expect(screen.getByLabelText(form.title)).toHaveValue('Notes v2')
   })
 
+  it('keeps text typed while a save is in flight, measured against the saved values', async () => {
+    let finishSave: () => void = () => undefined
+    const onSubmit = vi.fn(
+      () => new Promise<void>((resolve) => (finishSave = () => resolve(undefined)))
+    )
+    const { user } = setup({
+      defaultValues: SAVED_VALUES,
+      submitLabel: form.save,
+      editing: true,
+      onSubmit,
+    })
+    const title = screen.getByLabelText(form.title)
+    await user.type(title, ' v2')
+    await user.click(screen.getByRole('button', { name: form.save }))
+    await user.type(title, ' draft')
+    finishSave()
+
+    const save = screen.getByRole('button', { name: form.save })
+    await waitFor(() => expect(save).not.toHaveAttribute('aria-busy'))
+    expect(title).toHaveValue('Notes v2 draft')
+    expect(screen.getByText(form.unsaved)).toBeVisible()
+    expect(save).not.toHaveAttribute('aria-disabled')
+    // Discard goes back to what was saved, not to the values the form opened with.
+    await user.click(screen.getByRole('button', { name: form.discard }))
+    expect(title).toHaveValue('Notes v2')
+  })
+
   it('keeps the textarea in view while the user fixes a content error found from Preview', async () => {
     const { user } = setup({
       defaultValues: { ...SAVED_VALUES, content: '' },

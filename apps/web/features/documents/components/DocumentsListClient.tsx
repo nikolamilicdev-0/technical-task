@@ -1,7 +1,7 @@
 'use client'
 
 import { Flex, Text } from '@kb/ui'
-import { type ReactNode, useState } from 'react'
+import { type ReactNode, useRef, useState } from 'react'
 
 import { getErrorMessage } from '@/core/api/get-error-message'
 import { ErrorState } from '@/core/components/states/ErrorState'
@@ -20,7 +20,15 @@ export function DocumentsListClient() {
   const strings = getDocumentsStrings(t)
   const list = useDocumentsList()
   const [uploadOpen, setUploadOpen] = useState(false)
+  const uploadButtonRef = useRef<HTMLButtonElement>(null)
   const openUpload = () => setUploadOpen(true)
+  // A first upload swaps the empty state (and its button) for the toolbar, so focus lands on the
+  // toolbar's Upload button; with no toolbar yet the dialog returns focus to its opener.
+  const focusUploadButton = (event: Event) => {
+    if (!uploadButtonRef.current) return
+    event.preventDefault()
+    uploadButtonRef.current.focus()
+  }
 
   const renderResults = (): ReactNode => {
     const { count, note } = describeListCount(strings, {
@@ -49,6 +57,7 @@ export function DocumentsListClient() {
           selectedTags={list.selectedTags}
           onSelectedTagsChange={list.setSelectedTags}
           onUpload={openUpload}
+          uploadButtonRef={uploadButtonRef}
         />
         <Flex direction="column" gap="xs">
           <Text variant="caption" tone="muted" role="status">
@@ -84,7 +93,11 @@ export function DocumentsListClient() {
   return (
     <>
       {renderContent()}
-      <UploadDocumentDialog open={uploadOpen} onOpenChange={setUploadOpen} />
+      <UploadDocumentDialog
+        open={uploadOpen}
+        onOpenChange={setUploadOpen}
+        onCloseAutoFocus={focusUploadButton}
+      />
     </>
   )
 }
