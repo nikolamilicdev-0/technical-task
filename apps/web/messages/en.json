@@ -1,0 +1,429 @@
+{
+  "common": {
+    "appName": "Knowledge Base",
+    "cancel": "Cancel",
+    "close": "Close",
+    "retry": "Try again",
+    "loading": "Loading…",
+    "notifications": "Notifications",
+    "dismissNotification": "Dismiss notification"
+  },
+  "meta": {
+    "title": "Knowledge Base",
+    "titleTemplate": "%s · Knowledge Base",
+    "description": "Keep your documents in one place and ask questions answered from them, with the sources linked."
+  },
+  "nav": {
+    "label": "Main",
+    "documents": "Documents",
+    "chat": "Chat",
+    "usage": "Usage"
+  },
+  "shell": {
+    "skipToContent": "Skip to content",
+    "openNavigation": "Open navigation",
+    "closeNavigation": "Close navigation",
+    "accountMenu": "Account",
+    "signedInAs": "Signed in as {email}",
+    "signOut": "Sign out",
+    "signOutFailed": "Couldn't sign you out. Check your connection and try again."
+  },
+  "auth": {
+    "statement": "Answers from your own documents, with the sources to prove it.",
+    "supporting": "Add notes, PDFs and text files, then ask in plain language. Every answer links back to the passages it came from.",
+    "fields": {
+      "email": "Email",
+      "emailPlaceholder": "you@example.com",
+      "password": "Password",
+      "passwordHint": "At least {minimum} characters."
+    },
+    "login": {
+      "metaTitle": "Sign in",
+      "title": "Sign in",
+      "description": "Use the email and password you signed up with.",
+      "submit": "Sign in",
+      "sessionExpired": "Your session expired. Sign in again to continue.",
+      "footerPrompt": "New here?",
+      "footerLink": "Create an account"
+    },
+    "signup": {
+      "metaTitle": "Create account",
+      "title": "Create your account",
+      "description": "An email and a password is all it takes. Your documents stay private to you.",
+      "submit": "Create account",
+      "footerPrompt": "Already have an account?",
+      "footerLink": "Sign in"
+    },
+    "confirmation": {
+      "title": "Check your inbox",
+      "description": "We sent a confirmation link to {email}. Open it, then sign in.",
+      "action": "Go to sign in"
+    },
+    "errors": {
+      "invalidCredentials": "Email or password is incorrect.",
+      "emailNotConfirmed": "Confirm your email address first, then sign in.",
+      "userExists": "An account with this email already exists. Sign in instead.",
+      "weakPassword": "Choose a stronger password.",
+      "rateLimited": "Too many attempts. Wait a minute and try again.",
+      "signupDisabled": "New sign-ups are turned off.",
+      "network": "Can't reach the sign-in service. Check your connection and try again.",
+      "unknown": "Something went wrong. Try again."
+    }
+  },
+  "documents": {
+    "title": "Documents",
+    "description": "Everything you've added, ready to search and ask about.",
+    "actions": {
+      "new": "New document",
+      "upload": "Upload file"
+    },
+    "list": {
+      "loading": "Loading documents",
+      "searchLabel": "Search documents by title",
+      "searchPlaceholder": "Search by title",
+      "tags": "Tags",
+      "tagsSelected": {
+        "one": "Tags, {count} selected",
+        "other": "Tags, {count} selected"
+      },
+      "tagsHeading": "Show documents tagged",
+      "noTags": "No tags yet. Add them in the editor.",
+      "clearTags": "Clear selection",
+      "count": {
+        "one": "{count} document",
+        "other": "{count} documents"
+      },
+      "filteredCount": {
+        "one": "{shown} of {count} document",
+        "other": "{shown} of {count} documents"
+      },
+      "truncated": "Only the {shown} most recently updated are listed and searched.",
+      "errorTitle": "Documents didn't load"
+    },
+    "empty": {
+      "none": {
+        "title": "No documents yet",
+        "description": "Write a note in Markdown or upload a text, Markdown or PDF file. Chat answers come from what you add here."
+      },
+      "noMatches": {
+        "title": "No matching documents",
+        "description": "Nothing matches this search and tag selection. Try other words or clear the filters.",
+        "clear": "Clear filters"
+      }
+    },
+    "card": {
+      "tags": "Tags",
+      "moreTags": "+{count}",
+      "moreTagsLabel": {
+        "one": "{count} more tag",
+        "other": "{count} more tags"
+      },
+      "justNow": "just now",
+      "updated": "Updated {time}",
+      "updatedUpload": "Updated {time} · {filename}",
+      "emptyPreview": "No text preview."
+    },
+    "status": {
+      "pending": "Queued",
+      "processing": "Indexing",
+      "ready": "Ready",
+      "failed": "Failed"
+    },
+    "statusBar": {
+      "label": "Indexing status",
+      "pending": "Waiting to be indexed. Chat can use this document once it's ready.",
+      "processing": "Indexing now. This usually takes a few seconds.",
+      "ready": {
+        "one": "Indexed as {count} passage. Chat answers can cite it.",
+        "other": "Indexed as {count} passages. Chat answers can cite it."
+      },
+      "failed": "Indexing failed. Chat can't use this document until it's indexed.",
+      "retryScheduled": "Retrying automatically {time}.",
+      "reindex": "Retry indexing",
+      "reindexQueued": "Queued for indexing again"
+    },
+    "form": {
+      "title": "Title",
+      "titlePlaceholder": "e.g. Onboarding guide",
+      "tags": "Tags",
+      "tagsHint": "Press Enter or comma to add a tag, up to {maximum}.",
+      "tagsPlaceholder": "Add a tag",
+      "tagsFull": "Tag limit reached",
+      "removeTag": "Remove tag {tag}",
+      "content": "Content",
+      "contentPlaceholder": "Write or paste Markdown…",
+      "contentLength": {
+        "one": "Markdown · {count} character",
+        "other": "Markdown · {count} characters"
+      },
+      "contentView": "Content view",
+      "write": "Write",
+      "preview": "Preview",
+      "previewEmpty": "Nothing to preview yet.",
+      "unsaved": "Unsaved changes",
+      "discard": "Discard changes",
+      "save": "Save changes",
+      "create": "Create document"
+    },
+    "create": {
+      "metaTitle": "New document",
+      "title": "New document",
+      "description": "Write or paste Markdown. It's indexed for chat as soon as you create it.",
+      "created": "Document created"
+    },
+    "editor": {
+      "metaTitle": "Edit document",
+      "back": "All documents",
+      "loading": "Loading document",
+      "saved": "Changes saved",
+      "errorTitle": "This document didn't load",
+      "notFound": {
+        "title": "Document not found",
+        "description": "It may have been deleted, or the link is incomplete."
+      }
+    },
+    "delete": {
+      "title": "Delete this document",
+      "description": "It's removed from search and chat right away. This can't be undone.",
+      "action": "Delete document",
+      "confirmTitle": "Delete “{title}”?",
+      "confirmDescription": "The document and its index are removed for good. Earlier chat answers keep the excerpts they quoted.",
+      "confirm": "Delete",
+      "deleted": "Document deleted"
+    },
+    "upload": {
+      "title": "Upload a file",
+      "description": "Its text becomes a new document, indexed for chat.",
+      "dropzone": "Choose a file or drag it here",
+      "formats": "TXT, Markdown or PDF, up to {maximum}",
+      "remove": "Remove {filename}",
+      "submit": "Upload",
+      "progress": "Uploading… {percent}",
+      "processing": "Reading the file…",
+      "uploaded": "“{title}” uploaded",
+      "open": "Open",
+      "errors": {
+        "tooLarge": "This file is larger than {maximum}.",
+        "unsupportedType": "Only .txt, .md and .pdf files can be uploaded.",
+        "empty": "This file is empty.",
+        "unreadable": "No usable text could be read from this file. It may be a scanned or protected PDF, not UTF-8 text, or longer than {characters} characters."
+      }
+    }
+  },
+  "chat": {
+    "title": "Chat",
+    "conversationMetaTitle": "Conversation",
+    "newChat": "New chat",
+    "untitled": "Untitled conversation",
+    "list": {
+      "title": "Conversations",
+      "open": "Show conversations",
+      "loading": "Loading conversations",
+      "errorTitle": "Conversations didn't load",
+      "empty": {
+        "title": "No conversations yet",
+        "description": "Ask a question and the conversation is saved here."
+      },
+      "truncated": "Only the {shown} most recent are listed.",
+      "justNow": "just now",
+      "rename": "Rename “{title}”",
+      "delete": "Delete “{title}”"
+    },
+    "rename": {
+      "title": "Rename conversation",
+      "field": "Title",
+      "submit": "Save",
+      "renamed": "Conversation renamed"
+    },
+    "delete": {
+      "confirmTitle": "Delete “{title}”?",
+      "confirmDescription": "The conversation and all of its answers are removed for good.",
+      "confirm": "Delete",
+      "deleted": "Conversation deleted"
+    },
+    "thread": {
+      "loading": "Loading conversation",
+      "errorTitle": "This conversation didn't load",
+      "region": "Conversation",
+      "messages": "Messages",
+      "notFound": {
+        "title": "Conversation not found",
+        "description": "It may have been deleted, or the link is incomplete.",
+        "action": "Start a new chat"
+      }
+    },
+    "empty": {
+      "title": "Ask your documents",
+      "description": "Answers are written from what you've added and cite the passages they rely on.",
+      "promptsLabel": "Try asking",
+      "prompts": [
+        "Summarize my most recent document.",
+        "What are the key points across my documents?",
+        "List the deadlines and dates my documents mention.",
+        "What should a new team member read first?"
+      ],
+      "noDocuments": {
+        "title": "Add a document to get started",
+        "description": "Chat answers only from your own documents. Write a note or upload a file first.",
+        "action": "Go to documents"
+      }
+    },
+    "composer": {
+      "label": "Message",
+      "placeholder": "Ask about your documents…",
+      "hint": "Enter sends. Shift+Enter adds a new line.",
+      "send": "Send message",
+      "stop": "Stop answering",
+      "count": "{count} / {maximum}"
+    },
+    "scope": {
+      "all": "All documents",
+      "selected": {
+        "one": "{count} document",
+        "other": "{count} documents"
+      },
+      "label": "Answer from: {scope}",
+      "heading": "Answer only from",
+      "none": "No documents are ready yet.",
+      "limit": "Pick up to {maximum}.",
+      "clear": "Use all documents"
+    },
+    "indexing": {
+      "pending": {
+        "one": "{count} document is still being indexed, so answers can't use it yet.",
+        "other": "{count} documents are still being indexed, so answers can't use them yet."
+      },
+      "failed": {
+        "one": "{count} document couldn't be indexed and is left out:",
+        "other": "{count} documents couldn't be indexed and are left out:"
+      }
+    },
+    "message": {
+      "question": "You asked",
+      "answer": "Answer",
+      "searching": "Searching your documents…",
+      "reading": {
+        "one": "Reading {count} source…",
+        "other": "Reading {count} sources…"
+      },
+      "stoppedEarly": "Answer stopped before it started.",
+      "usage": "{tokens} tokens",
+      "usageEstimated": "About {tokens} tokens",
+      "finish": {
+        "aborted": "Stopped",
+        "length": "The answer reached its length limit.",
+        "content_filter": "The AI provider's content filter stopped this answer.",
+        "error": "An error cut this answer short."
+      }
+    },
+    "sources": {
+      "count": {
+        "one": "{count} source",
+        "other": "{count} sources"
+      },
+      "cited": "{count} cited",
+      "summary": "{sources} · {cited}",
+      "citedBadge": "Cited",
+      "chip": "Source {index}: {title}",
+      "open": "Open “{title}”"
+    },
+    "status": {
+      "idle": "",
+      "connecting": "Sending your question",
+      "streaming": "Writing the answer",
+      "done": "Answer ready",
+      "stopped": "Answer stopped",
+      "error": ""
+    },
+    "errors": {
+      "rateLimited": "You've sent a lot of messages in a short time. Try again in {seconds} s.",
+      "providerUnavailable": "The AI provider is unavailable right now. Try again in {seconds} s.",
+      "interrupted": "The connection dropped before the answer finished.",
+      "conversationGone": "This conversation no longer exists. Start a new chat to keep asking."
+    }
+  },
+  "usage": {
+    "title": "Usage",
+    "description": "Tokens used by chat and indexing over the last 30 days.",
+    "loading": "Loading usage",
+    "errorTitle": "Usage didn't load",
+    "totals": {
+      "heading": "Totals",
+      "totalTokens": "Total tokens",
+      "promptTokens": "Prompt tokens",
+      "completionTokens": "Completion tokens",
+      "requests": "Requests",
+      "estimated": {
+        "one": "Includes estimates for {count} request",
+        "other": "Includes estimates for {count} requests"
+      }
+    },
+    "byDay": {
+      "heading": "Tokens by day",
+      "note": "Days without usage are left out."
+    },
+    "byModel": {
+      "heading": "By model",
+      "note": "Most tokens first.",
+      "columns": {
+        "provider": "Provider",
+        "model": "Model",
+        "kind": "Kind",
+        "promptTokens": "Prompt",
+        "completionTokens": "Completion",
+        "totalTokens": "Total",
+        "requests": "Requests"
+      }
+    },
+    "kinds": {
+      "chat": "Chat",
+      "embedding": "Embedding",
+      "query_rewrite": "Query rewrite"
+    },
+    "empty": {
+      "title": "No usage recorded yet",
+      "description": "Token counts show up here once a document is indexed or you ask a question."
+    }
+  },
+  "states": {
+    "error": {
+      "title": "Something went wrong",
+      "description": "This page didn't load. Try again, and reload the page if it keeps happening."
+    },
+    "notFound": {
+      "title": "Page not found",
+      "description": "The page you're looking for doesn't exist or has moved.",
+      "action": "Go to documents"
+    }
+  },
+  "errors": {
+    "network": "Can't reach the server. Check your connection and try again.",
+    "unknown": "Something went wrong. Try again.",
+    "rateLimitedRetry": "Too many requests. Try again in {seconds} s.",
+    "codes": {
+      "invalid_payload": "Some fields need attention.",
+      "unauthenticated": "Your session expired. Sign in again.",
+      "forbidden": "You don't have access to this.",
+      "not_found": "We couldn't find that.",
+      "payload_too_large": "That file is too large.",
+      "unsupported_media_type": "That file type isn't supported.",
+      "rate_limited": "Too many requests. Wait a moment and try again.",
+      "ai_provider_error": "The AI provider returned an error. Try again.",
+      "ai_provider_unavailable": "The AI provider is unavailable right now. Try again shortly.",
+      "internal_error": "Something went wrong on our side. Try again."
+    }
+  },
+  "validation": {
+    "required": "Required.",
+    "email": "Enter a valid email address.",
+    "url": "Enter a valid URL.",
+    "tooShort": "Use at least {minimum} characters.",
+    "tooLong": "Use at most {maximum} characters.",
+    "tooFewItems": "Add at least {minimum}.",
+    "tooManyItems": "Add at most {maximum}.",
+    "tooSmall": "Must be at least {minimum}.",
+    "tooBig": "Must be at most {maximum}.",
+    "invalidOption": "Choose one of the available options.",
+    "invalid": "Check this value."
+  }
+}

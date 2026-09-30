@@ -19,14 +19,17 @@ function isIanaTimeZone(value: string): boolean {
   }
 }
 
+export const UNKNOWN_TIME_ZONE_MESSAGE = 'Unknown IANA time zone'
+export const USAGE_WINDOW_MESSAGE = '`from` must be earlier than `to`'
+
 export const usageSummaryQuerySchema = z
   .object({
     from: timestampSchema.optional(),
     to: timestampSchema.optional(),
-    timezone: z.string().refine(isIanaTimeZone, { message: 'Unknown IANA time zone' }).optional(),
+    timezone: z.string().refine(isIanaTimeZone, { message: UNKNOWN_TIME_ZONE_MESSAGE }).optional(),
   })
   .refine(({ from, to }) => !from || !to || Date.parse(from) < Date.parse(to), {
-    message: '`from` must be earlier than `to`',
+    message: USAGE_WINDOW_MESSAGE,
     path: ['to'],
   })
 export type UsageSummaryQuery = z.infer<typeof usageSummaryQuerySchema>

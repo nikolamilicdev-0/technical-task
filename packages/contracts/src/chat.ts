@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { idSchema } from './common.js'
+import { idSchema, withoutNul } from './common.js'
 import { errorCodeSchema, retryAfterSecondsSchema } from './errors.js'
 import { MAX_SCOPE_DOCUMENTS, MESSAGE_MAX_LENGTH } from './limits.js'
 import {
@@ -13,7 +13,7 @@ import {
 export const EVENT_STREAM_MEDIA_TYPE = 'text/event-stream'
 
 export const sendMessageSchema = z.object({
-  content: z.string().trim().min(1).max(MESSAGE_MAX_LENGTH),
+  content: withoutNul(z.string().trim().min(1).max(MESSAGE_MAX_LENGTH)),
   documentIds: z.array(idSchema).min(1).max(MAX_SCOPE_DOCUMENTS).optional(),
 })
 export type SendMessageInput = z.infer<typeof sendMessageSchema>
@@ -87,7 +87,6 @@ export const chatSseEventSchemas = {
   error: chatErrorEventSchema,
 } as const satisfies { [TType in ChatSseEventType]: z.ZodType<{ type: TType }> }
 
-/** Validates one SSE frame (`event:` name + `data:` JSON); unknown or malformed frames yield null. */
 export function parseChatSseEvent(name: string, json: string): ChatSseEvent | null {
   if (!isChatSseEventType(name)) return null
   const result = chatSseEventSchemas[name].safeParse(parseJson(json))

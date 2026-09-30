@@ -58,6 +58,7 @@ describe('sendMessageSchema', () => {
   it.each([
     ['a blank question', { content: ' \n ' }, 'content'],
     ['an overlong question', { content: 'q'.repeat(MESSAGE_MAX_LENGTH + 1) }, 'content'],
+    ['a NUL in the question', { content: 'Hi\u0000?' }, 'content'],
     [
       'an empty scope (omit it to search everything)',
       { content: 'Hi', documentIds: [] },

@@ -1,0 +1,97 @@
+# Chat walkthrough for the VS Code REST Client; http/README.md lists the variables to export.
+
+@baseUrl = http://localhost:4000/api
+@supabaseUrl = http://127.0.0.1:54321
+@publishableKey = {{$processEnv SUPABASE_PUBLISHABLE_KEY}}
+@email = {{$processEnv KB_EMAIL}}
+@password = {{$processEnv KB_PASSWORD}}
+@token = {{signIn.response.body.$.access_token}}
+@conversationId = {{createConversation.response.body.$.id}}
+@documentId = {{listDocuments.response.body.$.items[0].id}}
+
+### 1. Sign in; later requests reuse the access token
+# @name signIn
+POST {{supabaseUrl}}/auth/v1/token?grant_type=password
+apikey: {{publishableKey}}
+Content-Type: application/json
+
+{ "email": "{{email}}", "password": "{{password}}" }
+
+### 2. Create a conversation → 201; the title stays null until the first message names it
+# @name createConversation
+POST {{baseUrl}}/conversations
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{}
+
+### 3. Ask, streamed → text/event-stream: meta, sources, delta…, usage, done
+POST {{baseUrl}}/conversations/{{conversationId}}/messages
+Authorization: Bearer {{token}}
+Accept: text/event-stream
+Content-Type: application/json
+
+{ "content": "What changed in the latest release?" }
+
+### 4. A follow-up: rewritten into a standalone query before retrieval (the API logs it)
+POST {{baseUrl}}/conversations/{{conversationId}}/messages
+Authorization: Bearer {{token}}
+Accept: text/event-stream
+Content-Type: application/json
+
+{ "content": "And what about uploads?" }
+
+### 5. Without `Accept: text/event-stream` → the whole ChatResult as JSON
+POST {{baseUrl}}/conversations/{{conversationId}}/messages
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "content": "Summarise the release notes in one sentence." }
+
+### 6. The caller's documents, to pick a scope for the next request
+# @name listDocuments
+GET {{baseUrl}}/documents?status=ready&limit=10
+Authorization: Bearer {{token}}
+
+### 7. Search only the chosen documents (`documentIds`, at most 20)
+POST {{baseUrl}}/conversations/{{conversationId}}/messages
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "content": "What does this document say about limits?", "documentIds": ["{{documentId}}"] }
+
+### 8. The conversation with every message and its citation snapshot (`cited` per source)
+GET {{baseUrl}}/conversations/{{conversationId}}
+Authorization: Bearer {{token}}
+
+### 9. Conversations, most recently active first
+GET {{baseUrl}}/conversations?limit=20&offset=0
+Authorization: Bearer {{token}}
+
+### 10. Rename
+PATCH {{baseUrl}}/conversations/{{conversationId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "title": "Release notes Q&A" }
+
+### 11. An empty message → 422 invalid_payload with a field error
+POST {{baseUrl}}/conversations/{{conversationId}}/messages
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "content": "   " }
+
+### 12. An unknown (or another user's) conversation → 404 not_found, before any stream starts
+POST {{baseUrl}}/conversations/00000000-0000-4000-8000-000000000000/messages
+Authorization: Bearer {{token}}
+Accept: text/event-stream
+Content-Type: application/json
+
+{ "content": "Hello?" }
+
+### 13. Delete → 204; its messages go with it
+DELETE {{baseUrl}}/conversations/{{conversationId}}
+Authorization: Bearer {{token}}
+
+# More than RATE_LIMIT_CHAT_PER_MINUTE (20) messages a minute answer 429 with Retry-After.

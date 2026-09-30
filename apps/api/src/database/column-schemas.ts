@@ -1,0 +1,7 @@
+import { timestampSchema } from '@kb/contracts'
+import { z } from 'zod'
+
+/** PostgREST sends `+00:00` offsets with microseconds; clients get one canonical UTC format. */
+export const timestampColumn = timestampSchema.transform((value) => new Date(value).toISOString())
+
+export const countColumn = z.number().int().nonnegative()

@@ -21,21 +21,43 @@ describe('healthSchema', () => {
 
 describe('readinessSchema', () => {
   it.each([
-    ['a ready service', { status: 'ok', checks: { database: 'ok', embeddingDimensions: 'ok' } }],
+    [
+      'a ready service',
+      { status: 'ok', checks: { database: 'ok', embeddingDimensions: 'ok', ai: 'ok' } },
+    ],
+    [
+      'a ready service whose AI variables are still empty',
+      { status: 'ok', checks: { database: 'ok', embeddingDimensions: 'ok', ai: 'unconfigured' } },
+    ],
     [
       'a migrated column that does not match the API',
-      { status: 'error', checks: { database: 'ok', embeddingDimensions: 'mismatch' } },
+      { status: 'error', checks: { database: 'ok', embeddingDimensions: 'mismatch', ai: 'ok' } },
     ],
     [
       'an unreachable database',
-      { status: 'error', checks: { database: 'error', embeddingDimensions: 'unknown' } },
+      { status: 'error', checks: { database: 'error', embeddingDimensions: 'unknown', ai: 'ok' } },
     ],
   ])('accepts %s', (_, input) => {
     expect(readinessSchema.safeParse(input).success).toBe(true)
   })
 
-  it('rejects an unknown check result', () => {
-    const input = { status: 'ok', checks: { database: 'slow', embeddingDimensions: 'ok' } }
-    expect(issuePaths(readinessSchema, input)).toContain('checks.database')
+  it.each([
+    [
+      'an unknown database result',
+      { status: 'ok', checks: { database: 'slow', embeddingDimensions: 'ok', ai: 'ok' } },
+      'checks.database',
+    ],
+    [
+      'an unknown AI result',
+      { status: 'ok', checks: { database: 'ok', embeddingDimensions: 'ok', ai: 'missing' } },
+      'checks.ai',
+    ],
+    [
+      'a missing AI check',
+      { status: 'ok', checks: { database: 'ok', embeddingDimensions: 'ok' } },
+      'checks.ai',
+    ],
+  ])('rejects %s', (_, input, path) => {
+    expect(issuePaths(readinessSchema, input)).toContain(path)
   })
 })
