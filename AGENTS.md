@@ -25,6 +25,7 @@ Contributor guide for humans and coding agents. Read it before changing code; `D
 - `packages/eslint-config`, `packages/typescript-config`: shared lint and compiler presets.
 - `supabase/migrations`: schema, RLS policies, grants, ingestion and search functions.
 - `scripts/`: dependency-free `bootstrap` and `db:*` scripts. `http/`: REST Client walkthroughs. `docs/`: API reference, architecture notes, Loom outlines.
+- `specs/NNN-slug/`: one Spec Kit feature run each (spec, plan, research, data model, contracts, quickstart, tasks). `.specify/`: the constitution, templates and scripts. `.claude/skills/`: project skills.
 
 ## Rules
 
@@ -40,6 +41,27 @@ Contributor guide for humans and coding agents. Read it before changing code; `D
 10. No `any`; name every constant; one exported component per file, about 250 lines at most.
 11. Conventional commits (`type(scope): subject`; scopes in `commitlint.config.mjs`). Husky runs lint-staged and commitlint.
 12. Record architectural choices in `DECISIONS.md`: append a new `DEC-NNN`, never rewrite an old one.
+
+## Spec-driven workflow
+
+- `.specify/memory/constitution.md` has precedence: when this file, a skill or a plan disagrees with it, the constitution wins and the other document is fixed in the same change.
+- A new feature starts with `/speckit-specify <what and why>`. It creates `specs/NNN-slug/spec.md` (next free number) and points the machine-local `.specify/feature.json` at it. Continue with `/speckit-clarify` when questions remain, then `/speckit-plan` (its Constitution Check must pass), `/speckit-tasks`, `/speckit-analyze` and `/speckit-implement`; `/speckit-checklist` and `/speckit-converge` are optional passes.
+- Feature runs live in `specs/NNN-slug/`; `specs/001-knowledge-base/` records the initial build and is the worked example.
+- Fixes that change no contract, schema or decision skip the flow but still follow the rules above.
+- Amend the constitution with `/speckit-constitution`: bump its version, prepend a Sync Impact Report and realign `.specify/templates/` in the same change.
+- `specify init --here --force` keeps the constitution but restores the stock `plan`, `spec` and `tasks` templates over the customised ones in `.specify/templates/`; after a CLI upgrade, re-apply the customisations from git.
+
+## Project skills
+
+`.claude/skills/` holds the house rules per area; load the matching skill before changing that area.
+
+- `project-architecture`: where code belongs (apps, packages, web tiers, API layers).
+- `api-conventions`: Nest module layout, `ZodBody`/`ZodQuery`/`ZodParam`, `ApiHttpException`, service-role confinement, unit and pipeline tests.
+- `web-conventions`: tiers, `Body`/`Section`/`Client`, `@kb/ui` primitives, copy through `messages/en.json`, React Query keys and mutations, states, tests.
+- `data-layer`: migrations, RLS and grants, generated types, SQL functions, the ingestion state machine.
+- `ai-provider-layer`: ports, profiles, adding a provider, the `AI_*` split, embedding dimensions.
+- `feature-scaffold`: the end-to-end order for a new feature, from contracts to the DEC entry.
+- `speckit-*`: the Spec Kit commands installed by `specify init`; the CLI manages them, so do not edit them by hand.
 
 ## Gotchas
 

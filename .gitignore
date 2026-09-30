@@ -20,9 +20,12 @@ supabase/.temp/
 supabase/.branches/
 
 # Local tooling
-.claude/settings.local.json
 .DS_Store
 *.log
 
-# Claude Code worktrees and local settings live under .claude/
+# Claude Code: local settings and worktrees stay local; skills and launch.json are tracked
+.claude/settings.local.json
 .claude/worktrees/
+
+# Spec Kit: the CLI-managed .specify/.gitignore keeps feature.json (the active-feature pointer)
+# and extension local-config.yml files out of git; the rest of .specify/ and specs/ is tracked
