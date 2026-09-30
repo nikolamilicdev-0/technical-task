@@ -27,7 +27,7 @@ Outlines for both: [docs/loom-script.md](./docs/loom-script.md).
 | AI provider key | OpenAI or Gemini to start | Ollama needs none                             |
 
 ```bash
-git clone <repository-url> ai-knowledge-base && cd ai-knowledge-base
+git clone https://github.com/nikolamilicdev-0/ai-knowledge-base.git && cd ai-knowledge-base
 pnpm bootstrap   # asks: 1) Local Supabase (Docker)  2) Hosted Supabase project  3) Skip the database
 ```
 
