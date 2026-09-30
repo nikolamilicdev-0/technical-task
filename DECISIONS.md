@@ -225,3 +225,51 @@ Append-only log of architectural decisions. To change one, add a new entry that 
 **Why** A follow-up such as "and the price?" retrieves nothing on its own. A bounded, best-effort rewrite fixes that without letting a slow or failing model hold up the answer. Answering the original question means a poor rewrite can change only what is retrieved, never what is asked.
 
 **How to apply** The rewrite is metered as `query_rewrite` and stored in `metadata.retrieval.rewrittenQuery`. Set `RAG_QUERY_REWRITE=false` for providers where the extra call is too slow or too costly.
+
+## DEC-029 — Web chat session keyed to the URL
+
+**Decision** The chat thread is mounted per conversation id read from the pathname. The first message in a new chat creates the conversation, then swaps the URL with `history.replaceState` instead of a router navigation, and the session hook adopts the conversation it created so the stream stays mounted; "New chat" and back/forward remount the thread.
+
+**Why** A navigation during streaming would unmount the component holding the open response. Keying the session to the URL keeps browser history honest without losing the stream.
+
+**How to apply** Never `router.push` while a stream is open; after `done` the exchange is committed to the React Query cache and the lists and usage keys are invalidated.
+
+## DEC-030 — Citation relevance is relative, never a percentage
+
+**Decision** `Citation.score` is the fused rank score in hybrid mode (about 0.016–0.033 with k = 60) or cosine similarity in vector mode. The web shows each source's rank, a `Cited` badge and a bar relative to the best score in that answer.
+
+**Why** Neither score is a probability; rendering it as a percentage would mislead. Relative bars still show which sources dominated.
+
+**How to apply** Keep `[n]` ↔ `citations[n - 1]`; compute bars from `score / max(score)` per message.
+
+## DEC-031 — Web toolchain choices
+
+**Decision** `next build` depends on `typecheck` in turbo (`next build` deletes `.next/types` while a parallel `tsc` reads them); `vite-tsconfig-paths` is replaced by Vite's native `resolve.tsconfigPaths`; sign-out is a full reload to `/login` rather than clearing the query cache in place.
+
+**Why** Parallel typecheck and build raced; the tsconfig-paths plugin is unmaintained under TypeScript 6; clearing the cache while queries are mounted re-fetches without a token and triggers a spurious "session expired" redirect.
+
+**How to apply** Keep `apps/web/turbo.json` `build.dependsOn` as is; use `useSignOut` for every sign-out control.
+
+## DEC-032 — Usage window semantics
+
+**Decision** The usage page shows the last 30 calendar days in the viewer's time zone (`from` = local midnight 29 days ago with the browser's IANA zone; `to` = the API clock), lists only days with usage, newest first, caches the summary for 60 s and invalidates it after each answer; zero requests render the empty state.
+
+**Why** Calendar days match how people think about usage; server-side `to` avoids clock skew; a page of zeros is noise.
+
+**How to apply** Query through `usageKeys.summary(days)`; extend the API's `usage_summary` window parameters rather than post-filtering in the browser.
+
+## DEC-033 — Focus and keyboard rules for overlays and scroll regions
+
+**Decision** `@kb/ui` `Dialog` returns focus to whatever opened it when it has no trigger (consumers may override with `onCloseAutoFocus`); destructive confirms open on Cancel; scrollable regions that hold primary content use `ScrollArea` `viewportLabel` (named, focusable region) instead of ad-hoc `tabIndex`. Radix menus rendering outside the page tree is an accepted axe best-practice hit.
+
+**Why** State-opened dialogs otherwise drop focus to `<body>`; a stray Enter must never confirm a delete; keyboard users must be able to scroll the chat thread and the usage table.
+
+**How to apply** New dialogs and scroll areas use these primitives; do not add per-component focus hacks.
+
+## DEC-034 — Route groups and layout breakpoints in the web app
+
+**Decision** The documents list lives in `app/(app)/documents/(list)/` so its loading screen never covers `/documents/[id]` or `/documents/new` on a hard reload; the conversation sidebar appears from the `lg` breakpoint (a drawer below it) because the app sidebar already occupies the `md` space.
+
+**Why** Next.js streams the nearest `loading.tsx` of the segment tree; a sibling list skeleton flashing over the editor is confusing. Two sidebars at `md` leave the thread too narrow to read.
+
+**How to apply** Put a list route's `loading.tsx` in its own group when sibling routes share the folder.
