@@ -12,7 +12,6 @@ export const IDS = {
 export const ISO_TIMESTAMP = '2026-09-29T10:00:00.000Z'
 export const POSTGRES_TIMESTAMP = '2026-09-29T10:00:00.123456+00:00'
 
-/** Dotted paths of the issues a schema reports for `input`; empty when it parses. */
 export function issuePaths(schema: ZodType, input: unknown): string[] {
   const result = schema.safeParse(input)
   return result.success ? [] : result.error.issues.map((issue) => issue.path.join('.'))

@@ -1,0 +1,46 @@
+{
+  "name": "api",
+  "version": "0.0.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "type": "module",
+  "scripts": {
+    "build": "nest build",
+    "dev": "nest start --watch",
+    "start": "node dist/main.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "clean": "rm -rf dist .turbo coverage"
+  },
+  "dependencies": {
+    "@kb/ai": "workspace:*",
+    "@kb/contracts": "workspace:*",
+    "@nestjs/common": "^12.1.1",
+    "@nestjs/core": "^12.1.1",
+    "@nestjs/event-emitter": "^12.0.1",
+    "@nestjs/platform-express": "^12.1.1",
+    "@nestjs/schedule": "^12.0.2",
+    "@nestjs/throttler": "^6.7.1",
+    "@supabase/supabase-js": "^2.117.2",
+    "js-tiktoken": "^1.0.21",
+    "multer": "^2.4.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "unpdf": "^1.8.1",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@kb/eslint-config": "workspace:*",
+    "@kb/typescript-config": "workspace:*",
+    "@nestjs/cli": "^12.0.8",
+    "@nestjs/testing": "^12.1.1",
+    "@types/express": "^5.0.6",
+    "@types/multer": "^2.3.0",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

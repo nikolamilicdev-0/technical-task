@@ -1,0 +1,8 @@
+{
+  "extends": "@kb/typescript-config/nestjs.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["node"]
+  },
+  "include": ["src", "__tests__", "vitest.config.ts"]
+}

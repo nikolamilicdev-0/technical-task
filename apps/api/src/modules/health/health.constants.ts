@@ -1,0 +1,1 @@
+export const READINESS_TIMEOUT_MS = 3_000

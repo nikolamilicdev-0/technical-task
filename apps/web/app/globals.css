@@ -1,0 +1,5 @@
+@import 'tailwindcss';
+@import '@kb/ui/theme.css';
+
+/* Tailwind only scans this app by default; the primitives' classes live in the ui package. */
+@source '../../../packages/ui/src';

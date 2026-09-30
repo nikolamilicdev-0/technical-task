@@ -7,3 +7,6 @@ pnpm-lock.yaml
 supabase/.temp
 apps/api/src/database/database.types.ts
 AGENTS.md
+.claude/
+# Spec Kit state and templates are written by the Specify CLI; specs/ stays formatted
+.specify/

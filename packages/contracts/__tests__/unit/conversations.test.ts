@@ -37,6 +37,7 @@ describe('createConversationSchema', () => {
   it.each([
     ['a blank title', { title: '   ' }],
     ['an overlong title', { title: 't'.repeat(CONVERSATION_TITLE_MAX + 1) }],
+    ['a NUL in the title', { title: 'Plan\u0000ning' }],
   ])('rejects %s', (_, input) => {
     expect(issuePaths(createConversationSchema, input)).toContain('title')
   })
@@ -46,6 +47,7 @@ describe('updateConversationSchema', () => {
   it('requires a title', () => {
     expect(issuePaths(updateConversationSchema, {})).toContain('title')
     expect(updateConversationSchema.parse({ title: 'Renamed' })).toEqual({ title: 'Renamed' })
+    expect(issuePaths(updateConversationSchema, { title: 'Re\u0000named' })).toContain('title')
   })
 })
 
